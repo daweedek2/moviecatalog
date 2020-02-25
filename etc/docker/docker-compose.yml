@@ -1,0 +1,11 @@
+version: '3'
+services:
+  db:
+    image: postgres:10
+    container_name: ee_database
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: education_evenings
+    ports:
+    - "5555:5432"
