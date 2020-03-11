@@ -25,7 +25,7 @@ services:
       xpack.monitoring.elasticsearch.hosts: http://elastic:9200
     volumes:
       - ./logstash.conf:/logstash.conf
-      - ./debug.log:/debug.log
+      - ./debug.log:/moviecatalog.log
     command: logstash -f /logstash.conf
   db:
     image: mysql:8.0.19

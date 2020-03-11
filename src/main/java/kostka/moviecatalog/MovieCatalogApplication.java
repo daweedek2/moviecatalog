@@ -7,12 +7,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class MovieCatalogApplication {
+    static final Logger LOGGER = LoggerFactory.getLogger(MovieCatalogApplication.class);
     public static void main(final String[] args) {
-        Logger LOGGER = LoggerFactory.getLogger("jsonLogger");
         SpringApplication.run(MovieCatalogApplication.class, args);
         LOGGER.info("moviecatalog is running :)");
         LOGGER.debug("Debug message");
-        LOGGER.trace("Trace message");
+        LOGGER.error("Error just for testing!");
     }
 
 }
