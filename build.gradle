@@ -39,6 +39,12 @@ dependencies {
     compile group: 'redis.clients',
             name: 'jedis',
             version: '3.2.0'
+    compile group: 'org.apache.logging.log4j',
+            name: 'log4j-core',
+            version: '2.13.1'
+    compile group: 'com.fasterxml.jackson.core',
+            name: 'jackson-databind',
+            version: '2.10.3'
 }
 
 test {
