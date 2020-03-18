@@ -45,6 +45,14 @@ dependencies {
     compile group: 'com.fasterxml.jackson.core',
             name: 'jackson-databind',
             version: '2.10.3'
+    compile group: 'org.springframework.data',
+            name: 'spring-data-elasticsearch',
+            version: '3.2.5.RELEASE'
+    compile group: 'org.springframework.boot',
+            name: 'spring-boot-starter-data-elasticsearch',
+            version: '2.2.5.RELEASE'
+
+
 }
 
 test {

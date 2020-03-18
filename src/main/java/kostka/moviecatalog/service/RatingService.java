@@ -9,20 +9,20 @@ import java.util.Optional;
 
 @Service
 public class RatingService {
-    private MovieService movieService;
+    private MovieServiceImpl movieServiceImpl;
 
     @Autowired
-    public RatingService(final MovieService movieService) {
-        this.movieService = movieService;
+    public RatingService(final MovieServiceImpl movieServiceImpl) {
+        this.movieServiceImpl = movieServiceImpl;
     }
 
     public Movie createRating(final Long movieId, final int value) {
-        Optional<Movie> movieOptional = movieService.getMovie(movieId);
+        Optional<Movie> movieOptional = movieServiceImpl.getMovie(movieId);
         if (movieOptional.isEmpty()) {
             return null;
         }
         Movie movie = movieOptional.get();
         movie.setRating(value);
-        return movieService.saveMovie(movie);
+        return movieServiceImpl.saveMovie(movie);
     }
 }

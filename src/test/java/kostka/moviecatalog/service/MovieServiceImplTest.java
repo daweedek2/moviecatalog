@@ -16,22 +16,22 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MovieCatalogApplication.class)
 @Transactional
-public class MovieServiceTest {
+public class MovieServiceImplTest {
     @Autowired
     private MovieRepository movieRepository;
     @Autowired
-    private MovieService movieService;
+    private MovieServiceImpl movieServiceImpl;
 
     @Test
     public void createMovieTest() {
-        movieService.createMovie("test");
+        movieServiceImpl.createMovie("test");
 
         Assertions.assertEquals(1, movieRepository.findAll().size());
         Assertions.assertTrue(movieRepository.count() == 1);
     }
 
     @Test void getAllMoviesTest() {
-        List<Movie> allMovies = movieService.getAllMovies();
+        List<Movie> allMovies = movieServiceImpl.getAllMovies();
 
         Assertions.assertEquals(8, allMovies.size());
     }

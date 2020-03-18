@@ -15,17 +15,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class RatingServiceTest {
     private RatingService ratingService;
-    private MovieService movieService;
+    private MovieServiceImpl movieServiceImpl;
 
     @Autowired
-    public RatingServiceTest(RatingService ratingService, MovieService movieService) {
+    public RatingServiceTest(RatingService ratingService, MovieServiceImpl movieServiceImpl) {
         this.ratingService = ratingService;
-        this.movieService = movieService;
+        this.movieServiceImpl = movieServiceImpl;
     }
 
     @Test
     public void createRatingTest() {
-        Movie movie = movieService.createMovie("Seven");
+        Movie movie = movieServiceImpl.createMovie("Seven");
         ratingService.createRating(movie.getId(), 10);
 
         Assertions.assertEquals(10, movie.getRating());
