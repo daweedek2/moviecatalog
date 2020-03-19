@@ -16,11 +16,11 @@ import java.util.Optional;
 
 @RestController
 public class MovieCatalogController {
-    private MovieService movieService;
+    private MovieService<Movie> movieService;
     static final Logger LOGGER = LogManager.getLogger("CONSOLE_JSON_APPENDER");
 
     @Autowired
-    public MovieCatalogController(final MovieService movieService) {
+    public MovieCatalogController(final MovieService<Movie> movieService) {
         this.movieService = movieService;
     }
 
