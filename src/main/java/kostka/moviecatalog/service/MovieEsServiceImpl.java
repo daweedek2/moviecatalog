@@ -5,6 +5,8 @@ import kostka.moviecatalog.repository.MovieElasticSearchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -33,7 +35,8 @@ public class MovieEsServiceImpl implements MovieService<EsMovie> {
         return Optional.empty();
     }
 
-    public Iterable<EsMovie> getAllMovies() {
-        return movieElasticSearchRepository.findAll();
+    @Override
+    public List<EsMovie> getAllMovies() {
+        return new ArrayList<>();
     }
 }
