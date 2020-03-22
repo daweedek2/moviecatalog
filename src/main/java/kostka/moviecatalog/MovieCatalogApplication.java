@@ -13,8 +13,6 @@ public class MovieCatalogApplication {
     public static void main(final String[] args) {
         SpringApplication.run(MovieCatalogApplication.class, args);
         LOGGER.info("moviecatalog is running :)");
-        LOGGER.debug("Debug message");
-        LOGGER.error("Error just for testing!");
     }
 
 }
