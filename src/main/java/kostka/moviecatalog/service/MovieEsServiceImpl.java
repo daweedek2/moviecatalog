@@ -5,9 +5,9 @@ import kostka.moviecatalog.repository.MovieElasticSearchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class MovieEsServiceImpl implements MovieService<EsMovie> {
@@ -31,12 +31,19 @@ public class MovieEsServiceImpl implements MovieService<EsMovie> {
     }
 
     @Override
-    public Optional<EsMovie> getMovie(final Long movieId) {
-        return Optional.empty();
+    public EsMovie getMovie(final Long movieId) {
+        return new EsMovie();
     }
 
     @Override
     public List<EsMovie> getAllMovies() {
-        return new ArrayList<>();
+        Iterable<EsMovie> movies = movieElasticSearchRepository.findAll();
+        return StreamSupport.stream(movies.spliterator(), false).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<EsMovie> fullTextSearch(final String term) {
+        Iterable<EsMovie> foundMovies = movieElasticSearchRepository.fullTextSearch(term);
+        return StreamSupport.stream(foundMovies.spliterator(), false).collect(Collectors.toList());
     }
 }
