@@ -3,6 +3,7 @@ package kostka.moviecatalog.controller;
 import kostka.moviecatalog.entity.EsMovie;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.service.MovieService;
+import kostka.moviecatalog.service.RabbitMqSender;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +20,15 @@ import java.util.List;
 public class MovieCatalogController {
     private MovieService<Movie> movieService;
     private MovieService<EsMovie> esMovieService;
+    private RabbitMqSender rabbitMqSender;
     static final Logger LOGGER = LogManager.getLogger("CONSOLE_JSON_APPENDER");
 
     @Autowired
     public MovieCatalogController(final MovieService<Movie> movieService, final MovieService<EsMovie> esMovieService) {
+    public MovieCatalogController(final MovieService<Movie> movieService, final RabbitMqSender rabbitMqSender) {
         this.movieService = movieService;
         this.esMovieService = esMovieService;
+        this.rabbitMqSender = rabbitMqSender;
     }
 
     @GetMapping("/all")
@@ -54,5 +58,11 @@ public class MovieCatalogController {
     public Movie getMovieDetail(final @PathVariable("id") Long movieId) {
         LOGGER.info("get movie detail request");
         return movieService.getMovie(movieId);
+    }
+
+    @GetMapping("rabbit")
+    public void sendRabbitMqMessage(final @RequestParam("msg") String message) {
+        LOGGER.info("send Rabbit MQ message request");
+        rabbitMqSender.send(message);
     }
 }
