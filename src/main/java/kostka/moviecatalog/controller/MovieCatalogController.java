@@ -24,8 +24,9 @@ public class MovieCatalogController {
     static final Logger LOGGER = LogManager.getLogger("CONSOLE_JSON_APPENDER");
 
     @Autowired
-    public MovieCatalogController(final MovieService<Movie> movieService, final MovieService<EsMovie> esMovieService) {
-    public MovieCatalogController(final MovieService<Movie> movieService, final RabbitMqSender rabbitMqSender) {
+    public MovieCatalogController(final MovieService<Movie> movieService,
+                                  final MovieService<EsMovie> esMovieService,
+                                  final RabbitMqSender rabbitMqSender) {
         this.movieService = movieService;
         this.esMovieService = esMovieService;
         this.rabbitMqSender = rabbitMqSender;
