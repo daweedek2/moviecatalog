@@ -41,7 +41,16 @@ public class MovieCatalogController {
     @GetMapping("/create")
     public Movie createMovie(final @RequestParam("name") String name) {
         LOGGER.info("create movie request");
-        return movieService.createMovie(name);
+        Movie movie = null;
+        try {
+            movie = movieService.createMovie(name);
+        } catch (Exception e) {
+            LOGGER.info("Creation of movie failed");
+            return null;
+        }
+
+        rabbitMqSender.sendToElasticQueue(name);
+        return movie;
     }
 
     @GetMapping("/search")
@@ -59,11 +68,5 @@ public class MovieCatalogController {
     public Movie getMovieDetail(final @PathVariable("id") Long movieId) {
         LOGGER.info("get movie detail request");
         return movieService.getMovie(movieId);
-    }
-
-    @GetMapping("rabbit")
-    public void sendRabbitMqMessage(final @RequestParam("msg") String message) {
-        LOGGER.info("send Rabbit MQ message request");
-        rabbitMqSender.send(message);
     }
 }

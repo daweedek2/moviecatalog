@@ -1,8 +1,8 @@
 package kostka.moviecatalog.entity;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.CompletionField;
 import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
 
 
 @Document(indexName = "movie")
@@ -10,11 +10,11 @@ public class EsMovie {
 
     @Id
     private Long id;
-    @Field
+    @CompletionField
     private String name;
-    @Field
+    @CompletionField
     private String director;
-    @Field
+    @CompletionField
     private String description;
 
     public EsMovie() {

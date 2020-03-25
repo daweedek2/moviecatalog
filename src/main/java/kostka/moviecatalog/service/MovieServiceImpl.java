@@ -3,15 +3,19 @@ package kostka.moviecatalog.service;
 import kostka.moviecatalog.entity.EsMovie;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.repository.MovieRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class MovieServiceImpl implements MovieService<Movie> {
+    static final Logger LOGGER = LogManager.getLogger("CONSOLE_JSON_APPENDER");
     private MovieRepository movieRepository;
     private MovieEsServiceImpl movieEsService;
 
@@ -26,20 +30,16 @@ public class MovieServiceImpl implements MovieService<Movie> {
     public Movie createMovie(final String name) {
         Movie movie = new Movie();
         movie.setName(name);
-        Movie createdMovie = movieRepository.save(movie);
-        movieEsService.saveMovie(
-                new EsMovie(
-                        createdMovie.getId(),
-                        createdMovie.getName(),
-                        "davidDIrector",
-                        createdMovie.getDescription()
-                )
-        );
-        return createdMovie;
+        movie.setCamera("randomCamera");
+        movie.setDescription("randomDescription");
+        movie.setMusic("randomMusic");
+        movie.setDirector("randomDirector");
+        return movieRepository.save(movie);
     }
 
     @Override
     public Movie saveMovie(final Movie movie) {
+        LOGGER.info("DB movie with name '{}' is created in MySQL", movie.getName());
         return movieRepository.save(movie);
     }
 
