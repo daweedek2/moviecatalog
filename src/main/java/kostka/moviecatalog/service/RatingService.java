@@ -4,9 +4,6 @@ import kostka.moviecatalog.entity.Movie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
-
 @Service
 public class RatingService {
     private MovieServiceImpl movieServiceImpl;
@@ -17,11 +14,7 @@ public class RatingService {
     }
 
     public Movie createRating(final Long movieId, final int value) {
-        Optional<Movie> movieOptional = movieServiceImpl.getMovie(movieId);
-        if (movieOptional.isEmpty()) {
-            return null;
-        }
-        Movie movie = movieOptional.get();
+        Movie movie = movieServiceImpl.getMovie(movieId);
         movie.setRating(value);
         return movieServiceImpl.saveMovie(movie);
     }

@@ -2,6 +2,7 @@ package kostka.moviecatalog.entity;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
 
 
 @Document(indexName = "movie")
@@ -9,8 +10,11 @@ public class EsMovie {
 
     @Id
     private Long id;
+    @Field
     private String name;
+    @Field
     private String director;
+    @Field
     private String description;
 
     public EsMovie() {
