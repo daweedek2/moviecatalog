@@ -59,7 +59,10 @@ public class MovieServiceImpl implements MovieService<Movie> {
 
     @Override
     public List<Movie> fullTextSearch(final String searchTerm) {
-        List<EsMovie> esMovies = movieEsService.fullTextSearch(searchTerm);
-        return esMovies.stream().map(esMovie -> getMovie(esMovie.getId())).collect(Collectors.toList());
+        List<Long> ids = movieEsService.fullTextSearch(searchTerm)
+                .stream()
+                .map(EsMovie::getId)
+                .collect(Collectors.toList());
+        return movieRepository.findByIdIn(ids);
     }
 }
