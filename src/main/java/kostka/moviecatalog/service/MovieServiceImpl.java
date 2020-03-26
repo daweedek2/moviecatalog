@@ -18,12 +18,15 @@ public class MovieServiceImpl implements MovieService<Movie> {
     static final Logger LOGGER = LogManager.getLogger("CONSOLE_JSON_APPENDER");
     private MovieRepository movieRepository;
     private MovieEsServiceImpl movieEsService;
+    private RedisService redisService;
 
     @Autowired
     public MovieServiceImpl(final MovieRepository movieRepository,
-                            final MovieEsServiceImpl movieEsService) {
+                            final MovieEsServiceImpl movieEsService,
+                            final RedisService redisService) {
         this.movieRepository = movieRepository;
         this.movieEsService = movieEsService;
+        this.redisService = redisService;
     }
 
     @Override
@@ -64,5 +67,13 @@ public class MovieServiceImpl implements MovieService<Movie> {
                 .map(EsMovie::getId)
                 .collect(Collectors.toList());
         return movieRepository.findByIdIn(ids);
+    }
+
+    @Override
+    public List<Movie> get5LatestMovies() {
+        List<String> stringIds = redisService.getLatestMovieIds();
+        List<Long> longIds = new ArrayList<>();
+        stringIds.forEach(id -> longIds.add(Long.valueOf(id)));
+        return movieRepository.findByIdIn(longIds);
     }
 }

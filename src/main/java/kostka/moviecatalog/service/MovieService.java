@@ -7,6 +7,6 @@ public interface MovieService<T> {
     T saveMovie(T movie);
     T getMovie(Long movieId);
     List<T> getAllMovies();
-
     List<T> fullTextSearch(String term);
+    List<T> get5LatestMovies();
 }
