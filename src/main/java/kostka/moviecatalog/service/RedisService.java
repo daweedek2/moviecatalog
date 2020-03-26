@@ -11,7 +11,6 @@ import java.util.List;
 @Service
 public class RedisService {
     static final String LATEST_MOVIES_KEY = "latestMovies";
-    private static final Long N_LATEST_MOVIES = 5L;
 
     private static final Logger LOGGER = LogManager.getLogger("CONSOLE_JSON_APPENDER");
 
@@ -24,13 +23,10 @@ public class RedisService {
 
     public void updateLatestMovie(final String movieId) {
         LOGGER.info("Adding movieId '{}' to the redis cache", movieId);
-        while (redisTemplate.opsForList().size(LATEST_MOVIES_KEY) >= N_LATEST_MOVIES) {
-            String removedId = redisTemplate.opsForList().rightPop(LATEST_MOVIES_KEY);
-            LOGGER.info("Removing movieId '{}' from Redis cache of top 5 latest movies", removedId);
-        }
         redisTemplate.opsForList().leftPush(LATEST_MOVIES_KEY, movieId);
+        redisTemplate.opsForList().trim(LATEST_MOVIES_KEY, 0L, 4L);
         LOGGER.info("MovieId '{}' is added to the redis cache", movieId);
-        LOGGER.info("Current list of latest movies: {}",
+        LOGGER.info("Current list of top 5 latest movies: '{}'",
                 redisTemplate.opsForList().range(LATEST_MOVIES_KEY, 0L, -1L));
     }
 

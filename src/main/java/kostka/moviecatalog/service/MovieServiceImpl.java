@@ -66,14 +66,13 @@ public class MovieServiceImpl implements MovieService<Movie> {
                 .stream()
                 .map(EsMovie::getId)
                 .collect(Collectors.toList());
-        return movieRepository.findByIdIn(ids);
+        return movieRepository.findByIdInOrderByIdDesc(ids);
     }
 
     @Override
     public List<Movie> get5LatestMovies() {
         List<String> stringIds = redisService.getLatestMovieIds();
-        List<Long> longIds = new ArrayList<>();
-        stringIds.forEach(id -> longIds.add(Long.valueOf(id)));
-        return movieRepository.findByIdIn(longIds);
+        List<Long> longIds = stringIds.stream().map(Long::valueOf).collect(Collectors.toList());
+        return movieRepository.findByIdInOrderByIdDesc(longIds);
     }
 }
