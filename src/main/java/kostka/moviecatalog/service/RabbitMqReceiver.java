@@ -14,17 +14,22 @@ import org.springframework.stereotype.Component;
 public class RabbitMqReceiver {
     public static final String TOPIC_EXCHANGE = "movie-exchange";
     public static final String ELASTIC_QUEUE = "elastic-queue";
+    public static final String LATEST_MOVIES_QUEUE = "latest-movies-queue";
     public static final String DEFAULT_QUEUE = "default-queue";
     public static final String CREATE_MOVIE_KEY = "createMovie";
+    public static final String LATEST_MOVIES_KEY = "latestMovies";
     public static final String DEFAULT_KEY = "default";
 
     private static final Logger LOGGER = LogManager.getLogger("CONSOLE_JSON_APPENDER");
 
-    private MovieService<EsMovie> movieService;
+    private MovieService<EsMovie> esMovieService;
+    private RedisService redisService;
 
     @Autowired
-    public RabbitMqReceiver(final MovieService<EsMovie> movieService) {
-        this.movieService = movieService;
+    public RabbitMqReceiver(final MovieService<EsMovie> esMovieService,
+                            final RedisService redisService) {
+        this.esMovieService = esMovieService;
+        this.redisService = redisService;
     }
 
     @RabbitListener(
@@ -36,17 +41,18 @@ public class RabbitMqReceiver {
     )
     public void receiveMessageElasticQueue(final String movieName) {
         LOGGER.info("Received movie from rabbitMQ elastic-queue with name '{}'.", movieName);
-        movieService.createMovie(movieName);
+        esMovieService.createMovie(movieName);
     }
 
     @RabbitListener(
             bindings = @QueueBinding(
                     exchange = @Exchange(TOPIC_EXCHANGE),
-                    key = DEFAULT_KEY,
-                    value = @Queue(DEFAULT_QUEUE)
+                    key = LATEST_MOVIES_KEY,
+                    value = @Queue(LATEST_MOVIES_QUEUE)
             )
     )
-    public void receiveMessageDefaultQueue(final String message) {
-        LOGGER.info("Received message from rabbitMQ default queue: '{}'.", message);
+    public void receiveMessageLatestMoviesQueue(final String movieId) {
+        LOGGER.info("Received movieId from rabbitMQ latest-movies queue: '{}'.", movieId);
+        redisService.updateLatestMovie(movieId);
     }
 }

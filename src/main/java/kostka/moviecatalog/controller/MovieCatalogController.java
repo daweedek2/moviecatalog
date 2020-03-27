@@ -50,6 +50,7 @@ public class MovieCatalogController {
         }
 
         rabbitMqSender.sendToElasticQueue(name);
+        rabbitMqSender.sendToLatestMoviesQueue(movie.getId().toString());
         return movie;
     }
 
@@ -63,6 +64,12 @@ public class MovieCatalogController {
     public List<EsMovie> fullTextSearchEsMovie(final @RequestParam("term") String searchTerm) {
         LOGGER.info("fulltext search request EsMovie");
         return esMovieService.fullTextSearch(searchTerm);
+    }
+
+    @GetMapping("/latest5")
+    public List<Movie> get5LatestMovies() {
+        LOGGER.info("get 5 latest movies request");
+        return movieService.get5LatestMovies();
     }
 
     public Movie getMovieDetail(final @PathVariable("id") Long movieId) {
