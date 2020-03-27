@@ -20,7 +20,7 @@ public class RabbitMqReceiver {
     public static final String DEFAULT_QUEUE = "default-queue";
     public static final String CREATE_MOVIE_KEY = "createMovie";
     public static final String LATEST_MOVIES_KEY = "latestMovies";
-    public static final String RATING_KEY = "rating";
+    public static final String TOP_RATING_KEY = "rating";
     public static final String DEFAULT_KEY = "default";
 
     private static final Logger LOGGER = LogManager.getLogger("CONSOLE_JSON_APPENDER");
@@ -65,11 +65,11 @@ public class RabbitMqReceiver {
     @RabbitListener(
             bindings = @QueueBinding(
                     exchange = @Exchange(TOPIC_EXCHANGE),
-                    key = RATING_KEY,
+                    key = TOP_RATING_KEY,
                     value = @Queue(RATING_QUEUE)
             )
     )
-    public void receiveMessageRatingQueue(final String message) {
+    public void receiveMessageRatingQueue() {
         LOGGER.info("Received message from RabbitMQ rating-queue to recalculate TOP5 movies by rating");
         redisService.updateTopRatingMovies(movieService.getTop5RatingMoviesFromDB());
     }

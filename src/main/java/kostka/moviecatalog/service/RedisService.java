@@ -10,10 +10,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static kostka.moviecatalog.service.RabbitMqReceiver.LATEST_MOVIES_KEY;
+import static kostka.moviecatalog.service.RabbitMqReceiver.TOP_RATING_KEY;
+
 @Service
 public class RedisService {
-    public static final String LATEST_MOVIES_KEY = "latestMovies";
-    public static final String TOP_RATING_MOVIES_KEY = "topRatingMovies";
     public static final long START = 0L;
     public static final long LIMIT = 4L;
     public static final long END = -1L;
@@ -36,11 +37,6 @@ public class RedisService {
                 redisTemplate.opsForList().range(LATEST_MOVIES_KEY, START, END));
     }
 
-    public List<String> getLatestMovieIds() {
-        LOGGER.info("Getting top 5 latest movies from Redis cache.");
-        return redisTemplate.opsForList().range(LATEST_MOVIES_KEY, START, END);
-    }
-
     public void updateTopRatingMovies(final List<Movie> movies) {
         List<String> ids = movies.stream()
                 .map(Movie::getId)
@@ -48,15 +44,15 @@ public class RedisService {
                 .collect(Collectors.toList());
 
         LOGGER.info("Adding movie Ids '{}' to the top rating redis cache", ids);
-        redisTemplate.opsForList().leftPushAll(TOP_RATING_MOVIES_KEY, ids);
-        redisTemplate.opsForList().trim(TOP_RATING_MOVIES_KEY, START, LIMIT);
+        redisTemplate.opsForList().leftPushAll(TOP_RATING_KEY, ids);
+        redisTemplate.opsForList().trim(TOP_RATING_KEY, START, LIMIT);
         LOGGER.info("Ids '{}' are added to the top rating redis cache", ids);
         LOGGER.info("Current list of top 5 rating movies: '{}'",
-                redisTemplate.opsForList().range(TOP_RATING_MOVIES_KEY, START, END));
+                redisTemplate.opsForList().range(TOP_RATING_KEY, START, END));
     }
 
-    public List<String> getTopRatingMovieIds() {
-        LOGGER.info("Getting top 5 rating movies from Redis cache.");
-        return redisTemplate.opsForList().range(TOP_RATING_MOVIES_KEY, START, END);
+    public List<String> getListFromCacheWithKey(final String key) {
+        LOGGER.info("Getting movie Ids from Redis cache with key '{}'.", key);
+        return redisTemplate.opsForList().range(key, START, END);
     }
 }

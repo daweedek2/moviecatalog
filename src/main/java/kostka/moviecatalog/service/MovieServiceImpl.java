@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static kostka.moviecatalog.service.RabbitMqReceiver.LATEST_MOVIES_KEY;
+import static kostka.moviecatalog.service.RabbitMqReceiver.TOP_RATING_KEY;
+
 @Service
 public class MovieServiceImpl implements MovieService<Movie> {
     static final Logger LOGGER = LogManager.getLogger("CONSOLE_JSON_APPENDER");
@@ -70,8 +73,7 @@ public class MovieServiceImpl implements MovieService<Movie> {
 
     @Override
     public List<Movie> get5LatestMovies() {
-        List<String> stringIds = redisService.getLatestMovieIds();
-        List<Long> longIds = stringIds.stream().map(Long::valueOf).collect(Collectors.toList());
+        List<Long> longIds = getMovieIdsFromRedisCache(LATEST_MOVIES_KEY);
         return movieRepository.findByIdInOrderByIdDesc(longIds);
     }
 
@@ -82,8 +84,12 @@ public class MovieServiceImpl implements MovieService<Movie> {
 
     @Override
     public List<Movie> getTop5RatingMoviesFromCache() {
-        List<String> stringIds = redisService.getTopRatingMovieIds();
-        List<Long> longIds = stringIds.stream().map(Long::valueOf).collect(Collectors.toList());
+        List<Long> longIds = getMovieIdsFromRedisCache(TOP_RATING_KEY);
         return movieRepository.findByIdInOrderByRatingDesc(longIds);
+    }
+
+    private List<Long> getMovieIdsFromRedisCache(final String key) {
+        List<String> stringIds = redisService.getListFromCacheWithKey(key);
+        return stringIds.stream().map(Long::valueOf).collect(Collectors.toList());
     }
 }
