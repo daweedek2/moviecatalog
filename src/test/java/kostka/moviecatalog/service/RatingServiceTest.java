@@ -1,6 +1,7 @@
 package kostka.moviecatalog.service;
 
 import kostka.moviecatalog.MovieCatalogApplication;
+import kostka.moviecatalog.dto.MovieDto;
 import kostka.moviecatalog.entity.Movie;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -15,17 +16,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class RatingServiceTest {
     private RatingService ratingService;
-    private MovieServiceImpl movieServiceImpl;
+    private DbMovieService dbMovieService;
 
     @Autowired
-    public RatingServiceTest(RatingService ratingService, MovieServiceImpl movieServiceImpl) {
+    public RatingServiceTest(RatingService ratingService, DbMovieService dbMovieService) {
         this.ratingService = ratingService;
-        this.movieServiceImpl = movieServiceImpl;
+        this.dbMovieService = dbMovieService;
     }
 
     @Test
     public void createRatingTest() {
-        Movie movie = movieServiceImpl.createMovie("Seven");
+        Movie movie = dbMovieService.createMovie(new MovieDto());
         ratingService.createRating(movie.getId(), 10);
 
         Assertions.assertEquals(10, movie.getRating());

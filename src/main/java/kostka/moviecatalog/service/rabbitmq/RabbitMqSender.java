@@ -1,4 +1,4 @@
-package kostka.moviecatalog.service;
+package kostka.moviecatalog.service.rabbitmq;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -6,10 +6,10 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static kostka.moviecatalog.service.RabbitMqReceiver.CREATE_MOVIE_KEY;
-import static kostka.moviecatalog.service.RabbitMqReceiver.LATEST_MOVIES_KEY;
-import static kostka.moviecatalog.service.RabbitMqReceiver.TOP_RATING_KEY;
-import static kostka.moviecatalog.service.RabbitMqReceiver.TOPIC_EXCHANGE;
+import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.CREATE_MOVIE_KEY;
+import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.LATEST_MOVIES_KEY;
+import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.TOP_RATING_KEY;
+import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.TOPIC_EXCHANGE;
 
 @Service
 public class RabbitMqSender {

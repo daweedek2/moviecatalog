@@ -1,8 +1,10 @@
 package kostka.moviecatalog.service;
 
+import kostka.moviecatalog.dto.MovieDto;
 import kostka.moviecatalog.entity.EsMovie;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.repository.MovieRepository;
+import kostka.moviecatalog.service.redis.RedisService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,43 +14,35 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static kostka.moviecatalog.service.RabbitMqReceiver.LATEST_MOVIES_KEY;
-import static kostka.moviecatalog.service.RabbitMqReceiver.TOP_RATING_KEY;
+import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.LATEST_MOVIES_KEY;
+import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.TOP_RATING_KEY;
 
 @Service
-public class MovieServiceImpl implements MovieService<Movie> {
+public class DbMovieService {
     static final Logger LOGGER = LogManager.getLogger("CONSOLE_JSON_APPENDER");
     private MovieRepository movieRepository;
-    private MovieEsServiceImpl movieEsService;
+    private EsMovieService esMovieService;
     private RedisService redisService;
 
     @Autowired
-    public MovieServiceImpl(final MovieRepository movieRepository,
-                            final MovieEsServiceImpl movieEsService,
-                            final RedisService redisService) {
+    public DbMovieService(final MovieRepository movieRepository,
+                          final EsMovieService esMovieService,
+                          final RedisService redisService) {
         this.movieRepository = movieRepository;
-        this.movieEsService = movieEsService;
+        this.esMovieService = esMovieService;
         this.redisService = redisService;
     }
 
-    @Override
-    public Movie createMovie(final String name) {
-        Movie movie = new Movie();
-        movie.setName(name);
-        movie.setCamera("randomCamera");
-        movie.setDescription("randomDescription");
-        movie.setMusic("randomMusic");
-        movie.setDirector("randomDirector");
+    public Movie createMovie(final MovieDto dto) {
+        Movie movie = this.populateMovieFromDto(dto);
         LOGGER.info("DB movie with name '{}' is created in MySQL", movie.getName());
         return movieRepository.save(movie);
     }
 
-    @Override
     public Movie saveMovie(final Movie movie) {
         return movieRepository.save(movie);
     }
 
-    @Override
     public Movie getMovie(final Long movieId) {
         Optional<Movie> movie = movieRepository.findById(movieId);
         if (movie.isEmpty()) {
@@ -57,32 +51,27 @@ public class MovieServiceImpl implements MovieService<Movie> {
         return movie.get();
     }
 
-    @Override
     public List<Movie> getAllMovies() {
         return movieRepository.findAll();
     }
 
-    @Override
     public List<Movie> fullTextSearch(final String searchTerm) {
-        List<Long> ids = movieEsService.fullTextSearch(searchTerm)
+        List<Long> ids = esMovieService.fullTextSearch(searchTerm)
                 .stream()
                 .map(EsMovie::getId)
                 .collect(Collectors.toList());
         return movieRepository.findByIdInOrderByIdDesc(ids);
     }
 
-    @Override
     public List<Movie> get5LatestMovies() {
         List<Long> longIds = getMovieIdsFromRedisCache(LATEST_MOVIES_KEY);
         return movieRepository.findByIdInOrderByIdDesc(longIds);
     }
 
-    @Override
     public List<Movie> getTop5RatingMoviesFromDB() {
         return movieRepository.findTop5ByOrderByRatingDesc();
     }
 
-    @Override
     public List<Movie> getTop5RatingMoviesFromCache() {
         List<Long> longIds = getMovieIdsFromRedisCache(TOP_RATING_KEY);
         return movieRepository.findByIdInOrderByRatingDesc(longIds);
@@ -91,5 +80,15 @@ public class MovieServiceImpl implements MovieService<Movie> {
     private List<Long> getMovieIdsFromRedisCache(final String key) {
         List<String> stringIds = redisService.getListFromCacheWithKey(key);
         return stringIds.stream().map(Long::valueOf).collect(Collectors.toList());
+    }
+
+    private Movie populateMovieFromDto(final MovieDto dto) {
+        Movie movie = new Movie();
+        movie.setName(dto.getName());
+        movie.setDescription(dto.getDescription());
+        movie.setDirector(dto.getDirector());
+        movie.setMusic(dto.getMusic());
+        movie.setCamera(dto.getCamera());
+        return movie;
     }
 }

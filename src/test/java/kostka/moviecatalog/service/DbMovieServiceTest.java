@@ -1,6 +1,7 @@
 package kostka.moviecatalog.service;
 
 import kostka.moviecatalog.MovieCatalogApplication;
+import kostka.moviecatalog.dto.MovieDto;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.repository.MovieRepository;
 import org.junit.jupiter.api.Test;
@@ -16,22 +17,22 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MovieCatalogApplication.class)
 @Transactional
-public class MovieServiceImplTest {
+public class DbMovieServiceTest {
     @Autowired
     private MovieRepository movieRepository;
     @Autowired
-    private MovieServiceImpl movieServiceImpl;
+    private DbMovieService dbMovieService;
 
     @Test
     public void createMovieTest() {
-        movieServiceImpl.createMovie("test");
+        dbMovieService.createMovie(new MovieDto());
 
         Assertions.assertEquals(1, movieRepository.findAll().size());
-        Assertions.assertTrue(movieRepository.count() == 1);
+        Assertions.assertEquals(1, movieRepository.count());
     }
 
     @Test void getAllMoviesTest() {
-        List<Movie> allMovies = movieServiceImpl.getAllMovies();
+        List<Movie> allMovies = dbMovieService.getAllMovies();
 
         Assertions.assertEquals(8, allMovies.size());
     }

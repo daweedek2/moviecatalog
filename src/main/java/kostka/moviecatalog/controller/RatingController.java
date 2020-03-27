@@ -1,14 +1,19 @@
 package kostka.moviecatalog.controller;
 
+import kostka.moviecatalog.dto.RatingDto;
 import kostka.moviecatalog.entity.Movie;
-import kostka.moviecatalog.service.RabbitMqSender;
+import kostka.moviecatalog.service.rabbitmq.RabbitMqSender;
 import kostka.moviecatalog.service.RatingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping(value = "/rating")
@@ -23,12 +28,17 @@ public class RatingController {
         this.rabbitMqSender = rabbitMqSender;
     }
 
-    @GetMapping("/create")
-    public Movie createRating(final @RequestParam("id") Long movieId,
-                               final @RequestParam("value") int value) {
+    @PostMapping("/create")
+    public ResponseEntity<Movie> createRating(final @Valid @RequestBody RatingDto dto) {
         LOGGER.info("create rating request");
-        Movie ratedMovie = ratingService.createRating(movieId, value);
+        Movie ratedMovie = null;
+        try {
+            ratedMovie = ratingService.createRating(dto);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
         rabbitMqSender.sendToRatingQueue();
-        return ratedMovie;
+        return new ResponseEntity<>(ratedMovie, HttpStatus.OK);
     }
 }
