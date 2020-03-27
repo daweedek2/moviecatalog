@@ -1,7 +1,8 @@
-package kostka.moviecatalog.service;
+package kostka.moviecatalog.service.rabbitmq;
 
-import kostka.moviecatalog.entity.EsMovie;
-import kostka.moviecatalog.entity.Movie;
+import kostka.moviecatalog.service.DbMovieService;
+import kostka.moviecatalog.service.EsMovieService;
+import kostka.moviecatalog.service.redis.RedisService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.amqp.rabbit.annotation.Exchange;
@@ -25,16 +26,16 @@ public class RabbitMqReceiver {
 
     private static final Logger LOGGER = LogManager.getLogger("CONSOLE_JSON_APPENDER");
 
-    private MovieService<EsMovie> esMovieService;
-    private MovieService<Movie> movieService;
+    private EsMovieService esMovieService;
+    private DbMovieService dbMovieService;
     private RedisService redisService;
 
     @Autowired
-    public RabbitMqReceiver(final MovieService<EsMovie> esMovieService,
-                            final MovieService<Movie> movieService,
+    public RabbitMqReceiver(final EsMovieService esMovieService,
+                            final DbMovieService dbmovieService,
                             final RedisService redisService) {
         this.esMovieService = esMovieService;
-        this.movieService = movieService;
+        this.dbMovieService = dbmovieService;
         this.redisService = redisService;
     }
 
@@ -45,9 +46,9 @@ public class RabbitMqReceiver {
                     value = @Queue(ELASTIC_QUEUE)
             )
     )
-    public void receiveMessageElasticQueue(final String movieName) {
-        LOGGER.info("Received movie from rabbitMQ elastic-queue with name '{}'.", movieName);
-        esMovieService.createMovie(movieName);
+    public void receiveMessageElasticQueue(final String id) {
+        LOGGER.info("Received movie from rabbitMQ elastic-queue with id '{}'.", id);
+        esMovieService.createMovie(id);
     }
 
     @RabbitListener(
@@ -71,6 +72,6 @@ public class RabbitMqReceiver {
     )
     public void receiveMessageRatingQueue() {
         LOGGER.info("Received message from RabbitMQ rating-queue to recalculate TOP5 movies by rating");
-        redisService.updateTopRatingMovies(movieService.getTop5RatingMoviesFromDB());
+        redisService.updateTopRatingMovies(dbMovieService.getTop5RatingMoviesFromDB());
     }
 }

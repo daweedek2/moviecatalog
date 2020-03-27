@@ -1,4 +1,4 @@
-package kostka.moviecatalog.service;
+package kostka.moviecatalog.service.redis;
 
 import kostka.moviecatalog.entity.Movie;
 import org.apache.logging.log4j.LogManager;
@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static kostka.moviecatalog.service.RabbitMqReceiver.LATEST_MOVIES_KEY;
-import static kostka.moviecatalog.service.RabbitMqReceiver.TOP_RATING_KEY;
+import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.LATEST_MOVIES_KEY;
+import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.TOP_RATING_KEY;
 
 @Service
 public class RedisService {
@@ -44,8 +44,8 @@ public class RedisService {
                 .collect(Collectors.toList());
 
         LOGGER.info("Adding movie Ids '{}' to the top rating redis cache", ids);
-        redisTemplate.opsForList().leftPushAll(TOP_RATING_KEY, ids);
-        redisTemplate.opsForList().trim(TOP_RATING_KEY, START, LIMIT);
+        redisTemplate.opsForList().trim(TOP_RATING_KEY, END, START);
+        redisTemplate.opsForList().rightPushAll(TOP_RATING_KEY, ids);
         LOGGER.info("Ids '{}' are added to the top rating redis cache", ids);
         LOGGER.info("Current list of top 5 rating movies: '{}'",
                 redisTemplate.opsForList().range(TOP_RATING_KEY, START, END));
