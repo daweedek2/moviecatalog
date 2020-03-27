@@ -10,4 +10,6 @@ import java.util.List;
 public interface MovieRepository extends JpaRepository<Movie, Long> {
     List<Movie> findMovieByName(String name);
     List<Movie> findByIdInOrderByIdDesc(List<Long> ids);
+    List<Movie> findByIdInOrderByRatingDesc(List<Long> ids);
+    List<Movie> findTop5ByOrderByRatingDesc();
 }

@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,12 +36,12 @@ public class MovieServiceImpl implements MovieService<Movie> {
         movie.setDescription("randomDescription");
         movie.setMusic("randomMusic");
         movie.setDirector("randomDirector");
+        LOGGER.info("DB movie with name '{}' is created in MySQL", movie.getName());
         return movieRepository.save(movie);
     }
 
     @Override
     public Movie saveMovie(final Movie movie) {
-        LOGGER.info("DB movie with name '{}' is created in MySQL", movie.getName());
         return movieRepository.save(movie);
     }
 
@@ -74,5 +73,17 @@ public class MovieServiceImpl implements MovieService<Movie> {
         List<String> stringIds = redisService.getLatestMovieIds();
         List<Long> longIds = stringIds.stream().map(Long::valueOf).collect(Collectors.toList());
         return movieRepository.findByIdInOrderByIdDesc(longIds);
+    }
+
+    @Override
+    public List<Movie> getTop5RatingMoviesFromDB() {
+        return movieRepository.findTop5ByOrderByRatingDesc();
+    }
+
+    @Override
+    public List<Movie> getTop5RatingMoviesFromCache() {
+        List<String> stringIds = redisService.getTopRatingMovieIds();
+        List<Long> longIds = stringIds.stream().map(Long::valueOf).collect(Collectors.toList());
+        return movieRepository.findByIdInOrderByRatingDesc(longIds);
     }
 }

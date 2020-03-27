@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import static kostka.moviecatalog.service.RabbitMqReceiver.CREATE_MOVIE_KEY;
 import static kostka.moviecatalog.service.RabbitMqReceiver.LATEST_MOVIES_KEY;
+import static kostka.moviecatalog.service.RabbitMqReceiver.RATING_KEY;
 import static kostka.moviecatalog.service.RabbitMqReceiver.TOPIC_EXCHANGE;
 
 @Service
@@ -30,5 +31,11 @@ public class RabbitMqSender {
         LOGGER.info("Starting sending of movieId '{}' to rabbitMQ latest-movies-queue.", message);
         rabbitTemplate.convertAndSend(TOPIC_EXCHANGE, LATEST_MOVIES_KEY, message);
         LOGGER.info("MovieId '{}' is sent to rabbitMQ latest-movies-queue.", message);
+    }
+
+    public void sendToRatingQueue() {
+        LOGGER.info("Starting sending recalculate top 5 movies request to rabbitMQ rating-queue.");
+        rabbitTemplate.convertAndSend(TOPIC_EXCHANGE, RATING_KEY, "recalculate-rating");
+        LOGGER.info("Recalculate top 5 movies request is sent to rabbitMQ rating-queue.");
     }
 }
