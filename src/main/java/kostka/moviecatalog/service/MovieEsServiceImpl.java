@@ -39,12 +39,12 @@ public class MovieEsServiceImpl implements MovieService<EsMovie> {
         esMovie.setName(dbMovie.getName());
         esMovie.setDirector(dbMovie.getDirector() + "ES");
         esMovie.setDescription(dbMovie.getDescription() + "ES");
+        LOGGER.info("Movie with name '{}' is created in ElasticSearch", esMovie.getName());
         return saveMovie(esMovie);
     }
 
     @Override
     public EsMovie saveMovie(final EsMovie esMovie) {
-        LOGGER.info("Movie with name '{}' is created in ElasticSearch", esMovie.getName());
         return movieElasticSearchRepository.save(esMovie);
     }
 
@@ -68,5 +68,15 @@ public class MovieEsServiceImpl implements MovieService<EsMovie> {
     public List<EsMovie> fullTextSearch(final String term) {
         Iterable<EsMovie> foundMovies = movieElasticSearchRepository.fullTextSearch(term);
         return StreamSupport.stream(foundMovies.spliterator(), false).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<EsMovie> getTop5RatingMoviesFromDB() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<EsMovie> getTop5RatingMoviesFromCache() {
+        return Collections.emptyList();
     }
 }

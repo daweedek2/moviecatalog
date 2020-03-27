@@ -25,7 +25,7 @@ public class Movie {
     @Column
     private String description;
     @Column
-    private Integer rating;
+    private int rating;
 
     public Movie(final Long id,
                  final String name,
@@ -33,7 +33,7 @@ public class Movie {
                  final String camera,
                  final String music,
                  final String description,
-                 final Integer rating) {
+                 final int rating) {
         this.id = id;
         this.name = name;
         this.director = director;
@@ -94,11 +94,11 @@ public class Movie {
         this.description = description;
     }
 
-    public Integer getRating() {
+    public int getRating() {
         return rating;
     }
 
-    public void setRating(final Integer rating) {
+    public void setRating(final int rating) {
         this.rating = rating;
     }
 

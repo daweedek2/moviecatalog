@@ -9,4 +9,6 @@ public interface MovieService<T> {
     List<T> getAllMovies();
     List<T> fullTextSearch(String term);
     List<T> get5LatestMovies();
+    List<T> getTop5RatingMoviesFromDB();
+    List<T> getTop5RatingMoviesFromCache();
 }
