@@ -18,6 +18,7 @@ import java.util.List;
 @SpringBootTest(classes = MovieCatalogApplication.class)
 @Transactional
 public class DbMovieServiceTest {
+    public static final String TEST_NAME = "testName";
     @Autowired
     private MovieRepository movieRepository;
     @Autowired
@@ -25,7 +26,10 @@ public class DbMovieServiceTest {
 
     @Test
     public void createMovieTest() {
-        dbMovieService.createMovie(new MovieDto());
+        MovieDto dto = new MovieDto();
+        dto.setName(TEST_NAME);
+        dbMovieService.createMovie(dto);
+
 
         Assertions.assertEquals(1, movieRepository.findAll().size());
         Assertions.assertEquals(1, movieRepository.count());

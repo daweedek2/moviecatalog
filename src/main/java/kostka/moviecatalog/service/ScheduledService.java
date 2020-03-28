@@ -15,7 +15,7 @@ public class ScheduledService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScheduledService.class);
 
-    public ScheduledService(final RabbitMqSender rabbitMqSender) {
+    public ScheduledService(RabbitMqSender rabbitMqSender) {
         this.rabbitMqSender = rabbitMqSender;
     }
 /*
