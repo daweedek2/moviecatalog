@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>MovieCatalog</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <h2>MovieCatalog</h2>
+    <br>
+    <h4>All movies</h4>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Director</th>
+            <th>Camera</th>
+            <th>Music</th>
+            <th>Description</th>
+            <th>Rating</th>
+        </tr>
+        </thead>
+        <tbody id="movies">
+        </tbody>
+    </table>
+    <br>
+    <br>
+    <br>
+    <h4>5 latest movies</h4>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Director</th>
+            <th>Camera</th>
+            <th>Music</th>
+            <th>Description</th>
+            <th>Rating</th>
+        </tr>
+        </thead>
+        <tbody id="latestMovies">
+        </tbody>
+    </table>
+    <br>
+    <br>
+    <br>
+    <h4>TOP 5 movies by rating</h4>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Director</th>
+            <th>Camera</th>
+            <th>Music</th>
+            <th>Description</th>
+            <th>Rating</th>
+        </tr>
+        </thead>
+        <tbody id="topMovies">
+        </tbody>
+    </table>
+</div>
+
+<script>
+    getMovies("/movies/all", '#movies');
+    getMovies("/movies/latest5", '#latestMovies');
+    getMovies("/movies/top5", '#topMovies');
+
+    function getMovies(endpoint, table) {
+        $(document).ready(function () {
+            $.getJSON(endpoint, function (data) {
+                var movieData = getMovieData(data);
+                $(table).append(movieData);
+            });
+        });
+    }
+
+    function getMovieData(data) {
+        var movieData = '';
+        $.each(data, function (key, value) {
+            movieData += '<tr>';
+            movieData += '<td>' + value.id + '</td>';
+            movieData += '<td>' + value.name + '</td>';
+            movieData += '<td>' + value.director + '</td>';
+            movieData += '<td>' + value.camera + '</td>';
+            movieData += '<td>' + value.music + '</td>';
+            movieData += '<td>' + value.description + '</td>';
+            movieData += '<td>' + value.rating + '</td>';
+            movieData += '</tr>';
+        });
+        return movieData;
+    }
+</script>
+
+</body>
+</html>
