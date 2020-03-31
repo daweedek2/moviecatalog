@@ -57,7 +57,7 @@ public class MovieCatalogController {
         }
 
         rabbitMqSender.sendToElasticQueue(movie.getId().toString());
-        rabbitMqSender.sendToLatestMoviesQueue(movie.getId().toString());
+        rabbitMqSender.sendToLatestMoviesQueue();
         rabbitMqSender.sendToRatingQueue();
         return new ResponseEntity<>(movie, HttpStatus.OK);
     }
@@ -77,7 +77,7 @@ public class MovieCatalogController {
     @GetMapping("/latest5")
     public List<Movie> get5LatestMovies() {
         LOGGER.info("get 5 latest movies request");
-        return dbMovieService.get5LatestMovies();
+        return dbMovieService.get5LatestMoviesFromCache();
     }
 
     @GetMapping("/top5")

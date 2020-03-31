@@ -27,15 +27,15 @@ public class RabbitMqSender {
         LOGGER.info("Movie name '{}' is sent to rabbitMQ elastic-queue.", movieName);
     }
 
-    public void sendToLatestMoviesQueue(final String message) {
-        LOGGER.info("Starting sending of movieId '{}' to rabbitMQ latest-movies-queue.", message);
-        rabbitTemplate.convertAndSend(TOPIC_EXCHANGE, LATEST_MOVIES_KEY, message);
-        LOGGER.info("MovieId '{}' is sent to rabbitMQ latest-movies-queue.", message);
+    public void sendToLatestMoviesQueue() {
+        LOGGER.info("Starting sending recalculate latest movies request to rabbitMQ latest-movies-queue.");
+        rabbitTemplate.convertAndSend(TOPIC_EXCHANGE, LATEST_MOVIES_KEY, LATEST_MOVIES_KEY);
+        LOGGER.info("Recalculate latest movies request sent to rabbitMQ latest-movies-queue.");
     }
 
     public void sendToRatingQueue() {
         LOGGER.info("Starting sending recalculate top 5 movies request to rabbitMQ rating-queue.");
-        rabbitTemplate.convertAndSend(TOPIC_EXCHANGE, TOP_RATING_KEY, "recalculate-rating");
+        rabbitTemplate.convertAndSend(TOPIC_EXCHANGE, TOP_RATING_KEY, TOP_RATING_KEY);
         LOGGER.info("Recalculate top 5 movies request is sent to rabbitMQ rating-queue.");
     }
 }
