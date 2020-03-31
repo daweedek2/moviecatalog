@@ -10,17 +10,18 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
 public class EsMovieService {
     static final Logger LOGGER = LogManager.getLogger("CONSOLE_JSON_APPENDER");
-    public static final String NAME_FIELD = "name";
-    public static final String DESCRIPTION_FIELD = "description";
-    public static final String DIRECTOR_FIELD = "director";
     private MovieElasticSearchRepository movieElasticSearchRepository;
     private MovieRepository movieRepository;
 
@@ -48,14 +49,15 @@ public class EsMovieService {
     }
 
     public List<EsMovie> fullTextSearch(final String term) {
-        LOGGER.info("Searching in ElasticSearch for term '{}' in fields {}, {}, {}",
-                term, NAME_FIELD, DESCRIPTION_FIELD, DIRECTOR_FIELD);
         QueryStringQueryBuilder builder = QueryBuilders
                 .queryStringQuery(term)
-                .field(NAME_FIELD)
-                .field(DESCRIPTION_FIELD)
-                .field(DIRECTOR_FIELD)
                 .autoGenerateSynonymsPhraseQuery(true);
+        Set<Field> esMovieStringFields = Arrays.stream(EsMovie.class.getDeclaredFields())
+                .filter(field -> field.getType().equals(String.class))
+                .collect(Collectors.toSet());
+        esMovieStringFields
+                .forEach(field -> builder.field(field.getName()));
+        LOGGER.info("Searching in ElasticSearch for term '{}' in String fields {}", term, esMovieStringFields);
         Iterable<EsMovie> foundMovies = movieElasticSearchRepository.search(builder);
         return StreamSupport.stream(foundMovies.spliterator(), false).collect(Collectors.toList());
     }
