@@ -58,9 +58,9 @@ public class RabbitMqReceiver {
                     value = @Queue(LATEST_MOVIES_QUEUE)
             )
     )
-    public void receiveMessageLatestMoviesQueue(final String movieId) {
-        LOGGER.info("Received movieId from rabbitMQ latest-movies queue: '{}'.", movieId);
-        redisService.updateLatestMovie(movieId);
+    public void receiveMessageLatestMoviesQueue() {
+        LOGGER.info("Received message from RabbitMQ latest-movies-queue to recalculate latest movies.");
+        redisService.updateLatestMovies(dbMovieService.get5LatestMoviesFromDB());
     }
 
     @RabbitListener(

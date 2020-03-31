@@ -63,7 +63,7 @@ public class DbMovieService {
         return movieRepository.findByIdInOrderByIdDesc(ids);
     }
 
-    public List<Movie> get5LatestMovies() {
+    public List<Movie> get5LatestMoviesFromCache() {
         List<Long> longIds = getMovieIdsFromRedisCache(LATEST_MOVIES_KEY);
         return movieRepository.findByIdInOrderByIdDesc(longIds);
     }
@@ -71,6 +71,11 @@ public class DbMovieService {
     public List<Movie> getTop5RatingMoviesFromDB() {
         return movieRepository.findTop5ByOrderByRatingDesc();
     }
+
+    public List<Movie> get5LatestMoviesFromDB() {
+        return movieRepository.findTop5ByOrderByIdDesc();
+    }
+
 
     public List<Movie> getTop5RatingMoviesFromCache() {
         List<Long> longIds = getMovieIdsFromRedisCache(TOP_RATING_KEY);

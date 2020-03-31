@@ -28,12 +28,17 @@ public class RedisService {
         this.redisTemplate = redisTemplate;
     }
 
-    public void updateLatestMovie(final String movieId) {
-        LOGGER.info("Adding movieId '{}' to the latest movies redis cache", movieId);
-        redisTemplate.opsForList().leftPush(LATEST_MOVIES_KEY, movieId);
-        redisTemplate.opsForList().trim(LATEST_MOVIES_KEY, START, LIMIT);
-        LOGGER.info("MovieId '{}' is added to the latest movies redis cache", movieId);
-        LOGGER.info("Current list of top 5 latest movies: '{}'",
+    public void updateLatestMovies(final List<Movie> movies) {
+        List<String> ids = movies.stream()
+                .map(Movie::getId)
+                .map(String::valueOf)
+                .collect(Collectors.toList());
+
+        LOGGER.info("Adding movie Ids '{}' to the latest movies redis cache", ids);
+        redisTemplate.opsForList().trim(LATEST_MOVIES_KEY, END, START);
+        redisTemplate.opsForList().rightPushAll(LATEST_MOVIES_KEY, ids);
+        LOGGER.info("Ids '{}' are added to the latest movies redis cache", ids);
+        LOGGER.info("Current list of 5 latest movies movies: '{}'",
                 redisTemplate.opsForList().range(LATEST_MOVIES_KEY, START, END));
     }
 

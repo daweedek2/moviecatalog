@@ -12,4 +12,5 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     List<Movie> findByIdInOrderByIdDesc(List<Long> ids);
     List<Movie> findByIdInOrderByRatingDesc(List<Long> ids);
     List<Movie> findTop5ByOrderByRatingDesc();
+    List<Movie> findTop5ByOrderByIdDesc();
 }
