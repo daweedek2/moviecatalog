@@ -1,5 +1,6 @@
 package kostka.moviecatalog.service.rabbitmq;
 
+import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.service.DbMovieService;
 import kostka.moviecatalog.service.EsMovieService;
 import kostka.moviecatalog.service.redis.RedisService;
@@ -10,7 +11,10 @@ import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class RabbitMqReceiver {
@@ -29,14 +33,17 @@ public class RabbitMqReceiver {
     private EsMovieService esMovieService;
     private DbMovieService dbMovieService;
     private RedisService redisService;
+    private SimpMessagingTemplate messagingTemplate;
 
     @Autowired
     public RabbitMqReceiver(final EsMovieService esMovieService,
                             final DbMovieService dbmovieService,
-                            final RedisService redisService) {
+                            final RedisService redisService,
+                            final SimpMessagingTemplate messagingTemplate) {
         this.esMovieService = esMovieService;
         this.dbMovieService = dbmovieService;
         this.redisService = redisService;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @RabbitListener(
@@ -49,6 +56,8 @@ public class RabbitMqReceiver {
     public void receiveMessageElasticQueue(final String id) {
         LOGGER.info("Received movie from rabbitMQ elastic-queue with id '{}'.", id);
         esMovieService.createMovie(id);
+        LOGGER.info("Sending STOMP to refresh all movies table");
+        messagingTemplate.convertAndSend("/topic/allMovies", dbMovieService.getAllMovies());
     }
 
     @RabbitListener(
@@ -60,7 +69,10 @@ public class RabbitMqReceiver {
     )
     public void receiveMessageLatestMoviesQueue() {
         LOGGER.info("Received message from RabbitMQ latest-movies-queue to recalculate latest movies.");
-        redisService.updateLatestMovies(dbMovieService.get5LatestMoviesFromDB());
+        List<Movie> latestMovies = dbMovieService.get5LatestMoviesFromDB();
+        redisService.updateLatestMovies(latestMovies);
+        LOGGER.info("Sending STOMP to refresh latest movies table");
+        messagingTemplate.convertAndSend("/topic/latestMovies", latestMovies);
     }
 
     @RabbitListener(
@@ -72,6 +84,9 @@ public class RabbitMqReceiver {
     )
     public void receiveMessageRatingQueue() {
         LOGGER.info("Received message from RabbitMQ rating-queue to recalculate TOP5 movies by rating");
-        redisService.updateTopRatingMovies(dbMovieService.getTop5RatingMoviesFromDB());
+        List<Movie> topMovies = dbMovieService.getTop5RatingMoviesFromDB();
+        redisService.updateTopRatingMovies(topMovies);
+        LOGGER.info("Sending STOMP to refresh topRated movies table");
+        messagingTemplate.convertAndSend("/topic/topRatedMovies", topMovies);
     }
 }
