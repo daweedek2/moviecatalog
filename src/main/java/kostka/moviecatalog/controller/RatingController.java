@@ -39,6 +39,8 @@ public class RatingController {
         }
 
         rabbitMqSender.sendToRatingQueue();
+        rabbitMqSender.sendToAllMoviesQueue();
+        rabbitMqSender.sendToLatestMoviesQueue();
         return new ResponseEntity<>(ratedMovie, HttpStatus.OK);
     }
 }

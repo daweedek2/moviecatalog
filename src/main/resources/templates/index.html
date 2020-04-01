@@ -20,35 +20,31 @@
         window.onload = function() {
             console.log('window onload function');
             connect();
-        }
+        };
 
         window.onclose = function () {
             disconnect();
-        }
+        };
 
         function connect() {
             var socket = new SockJS('/movies');
             stompClient = Stomp.over(socket);
             stompClient.connect({}, function(frame) {
                 console.log('Connected: ' + frame);
-                stompClient.subscribe('/topic/topRatedMovies', function(topRatedMoviesData) {
-                    test(JSON.parse(topRatedMoviesData.body), topMovies);
+                stompClient.subscribe('/topic/topRatedMovies', function(topRatedMoviesMessage) {
+                    updateTable(JSON.parse(topRatedMoviesMessage.body), topMovies);
                     console.log('topRatedData here');
                 });
-                stompClient.subscribe('/topic/latestMovies', function(latestMoviesData) {
-                    test(JSON.parse(latestMoviesData.body), latestMovies);
+                stompClient.subscribe('/topic/latestMovies', function(latestMoviesMessage) {
+                    updateTable(JSON.parse(latestMoviesMessage.body), latestMovies);
                     console.log('latest movies here');
                 });
-                stompClient.subscribe('/topic/allMovies', function(allMoviesData) {
-                    test(JSON.parse(allMoviesData.body), allMovies);
+                stompClient.subscribe('/topic/allMovies', function(allMoviesMessage) {
+                    updateTable(JSON.parse(allMoviesMessage.body), allMovies);
                     console.log('all movies here');
-                    console.log(JSON.parse(allMoviesData.body));
+                    console.log(JSON.parse(allMoviesMessage.body));
                 });
             });
-        }
-        function register() {
-            stompClient.send("/rating/refresh", {}, {});
-            stompClient.send("/movies/refresh", {}, {});
         }
 
         function disconnect() {
@@ -58,19 +54,8 @@
             console.log("Disconnected");
         }
 
-        function alert(data) {
-            window.alert("Please refresh your browser" + data);
-        }
-
-        function showMovies(movies, tableId) {
-            var moviesTable = document.getElementById(tableId);
-            moviesTable.parentElement.removeChild(moviesTable);
-            moviesTable.parentElement.appendChild(moviesTable);
-        }
-
-        function test(movies, tableId) {
+        function updateTable(movies, tableId) {
             // / EXTRACT VALUE FOR HTML HEADER.
-            // // ('Book ID', 'Book Name', 'Category' and 'Price')
             var col = [];
             for (var i = 0; i < movies.length; i++) {
                 for (var key in movies[i]) {
@@ -84,30 +69,27 @@
             var table = document.createElement("table");
 
             // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
-
             var tr = table.insertRow(-1);                   // TABLE ROW.
-
-            for (var i = 0; i < col.length; i++) {
+            for (var l = 0; l < col.length; l++) {
                 var th = document.createElement("th");      // TABLE HEADER.
-                th.innerHTML = col[i];
+                th.innerHTML = col[l];
                 tr.appendChild(th);
             }
 
             // ADD JSON DATA TO THE TABLE AS ROWS.
-            for (var i = 0; i < movies.length; i++) {
-
+            for (var k = 0; k < movies.length; k++) {
                 tr = table.insertRow(-1);
-
                 for (var j = 0; j < col.length; j++) {
                     var tabCell = tr.insertCell(-1);
-                    tabCell.innerHTML = movies[i][col[j]];
+                    tabCell.innerHTML = movies[k][col[j]];
                 }
             }
 
             // FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
             var divContainer = document.getElementById(tableId);
-            divContainer.parentElement.removeChild(divContainer);
-            divContainer.parentElement.appendChild(divContainer);
+            if (divContainer.childElementCount > 0) {
+                divContainer.removeAttribute('table');
+            }
             divContainer.innerHTML = "";
             divContainer.appendChild(table);
         }

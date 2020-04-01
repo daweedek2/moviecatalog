@@ -21,11 +21,13 @@ public class RabbitMqReceiver {
     public static final String TOPIC_EXCHANGE = "movie-exchange";
     public static final String ELASTIC_QUEUE = "elastic-queue";
     public static final String LATEST_MOVIES_QUEUE = "latest-movies-queue";
+    public static final String ALL_MOVIES_QUEUE = "all-movies-queue";
     public static final String RATING_QUEUE = "rating-queue";
     public static final String DEFAULT_QUEUE = "default-queue";
     public static final String CREATE_MOVIE_KEY = "createMovie";
     public static final String LATEST_MOVIES_KEY = "latestMovies";
     public static final String TOP_RATING_KEY = "rating";
+    public static final String ALL_MOVIES_KEY = "all-movies";
     public static final String DEFAULT_KEY = "default";
 
     private static final Logger LOGGER = LogManager.getLogger("CONSOLE_JSON_APPENDER");
@@ -56,8 +58,6 @@ public class RabbitMqReceiver {
     public void receiveMessageElasticQueue(final String id) {
         LOGGER.info("Received movie from rabbitMQ elastic-queue with id '{}'.", id);
         esMovieService.createMovie(id);
-        LOGGER.info("Sending STOMP to refresh all movies table");
-        messagingTemplate.convertAndSend("/topic/allMovies", dbMovieService.getAllMovies());
     }
 
     @RabbitListener(
@@ -88,5 +88,19 @@ public class RabbitMqReceiver {
         redisService.updateTopRatingMovies(topMovies);
         LOGGER.info("Sending STOMP to refresh topRated movies table");
         messagingTemplate.convertAndSend("/topic/topRatedMovies", topMovies);
+    }
+
+    @RabbitListener(
+            bindings = @QueueBinding(
+                    exchange = @Exchange(TOPIC_EXCHANGE),
+                    key = ALL_MOVIES_KEY,
+                    value = @Queue(ALL_MOVIES_QUEUE)
+            )
+    )
+    public void receiveMessageAllMoviesQueue() {
+        LOGGER.info("Received message from RabbitMQ all-movies-queue to recalculate all movies");
+        List<Movie> allMovies = dbMovieService.getAllMovies();
+        LOGGER.info("Sending STOMP to refresh all movies table");
+        messagingTemplate.convertAndSend("/topic/allMovies", allMovies);
     }
 }
