@@ -16,6 +16,9 @@
         var allMovies = 'allMovies';
         var topMovies = 'topMovies';
         var latestMovies = 'latestMovies';
+        var topMoviesUrl = '/movies/top5';
+        var latestMoviesUrl = '/movies/latest5';
+        var allMoviesUrl = '/movies/all';
 
         window.onload = function() {
             console.log('window onload function');
@@ -26,23 +29,33 @@
             disconnect();
         };
 
+        function getDataFromUrlToTable(url, table) {
+            getJSON(url,
+                function (err, data) {
+                    if (err !== null) {
+                        alert('Movies are not loaded: ' + err);
+                    } else {
+                        updateTable(data, table);
+                    }
+                });
+        }
+
         function connect() {
             var socket = new SockJS('/movies');
             stompClient = Stomp.over(socket);
             stompClient.connect({}, function(frame) {
                 console.log('Connected: ' + frame);
-                stompClient.subscribe('/topic/topRatedMovies', function(topRatedMoviesMessage) {
-                    updateTable(JSON.parse(topRatedMoviesMessage.body), topMovies);
-                    console.log('topRatedData here');
+                stompClient.subscribe('/topic/rating', function(topRatedMoviesMessage) {
+                    getDataFromUrlToTable(topMoviesUrl, topMovies);
+                    console.log(topRatedMoviesMessage);
                 });
                 stompClient.subscribe('/topic/latestMovies', function(latestMoviesMessage) {
-                    updateTable(JSON.parse(latestMoviesMessage.body), latestMovies);
-                    console.log('latest movies here');
+                    getDataFromUrlToTable(latestMoviesUrl, latestMovies);
+                    console.log(latestMoviesMessage);
                 });
-                stompClient.subscribe('/topic/allMovies', function(allMoviesMessage) {
-                    updateTable(JSON.parse(allMoviesMessage.body), allMovies);
-                    console.log('all movies here');
-                    console.log(JSON.parse(allMoviesMessage.body));
+                stompClient.subscribe('/topic/all-movies', function(allMoviesMessage) {
+                    getDataFromUrlToTable(allMoviesUrl, allMovies);
+                    console.log(allMoviesMessage);
                 });
             });
         }
@@ -93,6 +106,21 @@
             divContainer.innerHTML = "";
             divContainer.appendChild(table);
         }
+
+        var getJSON = function(url, callback) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.responseType = 'json';
+            xhr.onload = function() {
+                var status = xhr.status;
+                if (status === 200) {
+                    callback(null, xhr.response);
+                } else {
+                    callback(status, xhr.response);
+                }
+            };
+            xhr.send();
+        };
 
     </script>
 </head>

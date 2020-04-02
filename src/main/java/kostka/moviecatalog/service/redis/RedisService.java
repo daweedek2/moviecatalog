@@ -1,8 +1,8 @@
 package kostka.moviecatalog.service.redis;
 
 import kostka.moviecatalog.entity.Movie;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public class RedisService {
     public static final long LIMIT = 4L;
     public static final long END = -1L;
 
-    private static final Logger LOGGER = LogManager.getLogger("CONSOLE_JSON_APPENDER");
+    private static final Logger LOGGER = LoggerFactory.getLogger(RedisService.class);
 
     private RedisTemplate<String, String> redisTemplate;
 

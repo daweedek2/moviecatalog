@@ -3,15 +3,15 @@ package kostka.moviecatalog.service.rabbitmq;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.service.DbMovieService;
 import kostka.moviecatalog.service.EsMovieService;
+import kostka.moviecatalog.service.STOMPService;
 import kostka.moviecatalog.service.redis.RedisService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -30,22 +30,22 @@ public class RabbitMqReceiver {
     public static final String ALL_MOVIES_KEY = "all-movies";
     public static final String DEFAULT_KEY = "default";
 
-    private static final Logger LOGGER = LogManager.getLogger("CONSOLE_JSON_APPENDER");
+    private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMqReceiver.class);
 
     private EsMovieService esMovieService;
     private DbMovieService dbMovieService;
     private RedisService redisService;
-    private SimpMessagingTemplate messagingTemplate;
+    private STOMPService stompService;
 
     @Autowired
     public RabbitMqReceiver(final EsMovieService esMovieService,
                             final DbMovieService dbmovieService,
                             final RedisService redisService,
-                            final SimpMessagingTemplate messagingTemplate) {
+                            final STOMPService stompService) {
         this.esMovieService = esMovieService;
         this.dbMovieService = dbmovieService;
         this.redisService = redisService;
-        this.messagingTemplate = messagingTemplate;
+        this.stompService = stompService;
     }
 
     @RabbitListener(
@@ -70,9 +70,11 @@ public class RabbitMqReceiver {
     public void receiveMessageLatestMoviesQueue() {
         LOGGER.info("Received message from RabbitMQ latest-movies-queue to recalculate latest movies.");
         List<Movie> latestMovies = dbMovieService.get5LatestMoviesFromDB();
+        if (latestMovies.isEmpty()) {
+            return;
+        }
         redisService.updateLatestMovies(latestMovies);
-        LOGGER.info("Sending STOMP to refresh latest movies table");
-        messagingTemplate.convertAndSend("/topic/latestMovies", latestMovies);
+        stompService.sendSTOMPToUpdateLatestMovies();
     }
 
     @RabbitListener(
@@ -85,9 +87,11 @@ public class RabbitMqReceiver {
     public void receiveMessageRatingQueue() {
         LOGGER.info("Received message from RabbitMQ rating-queue to recalculate TOP5 movies by rating");
         List<Movie> topMovies = dbMovieService.getTop5RatingMoviesFromDB();
+        if (topMovies.isEmpty()) {
+            return;
+        }
         redisService.updateTopRatingMovies(topMovies);
-        LOGGER.info("Sending STOMP to refresh topRated movies table");
-        messagingTemplate.convertAndSend("/topic/topRatedMovies", topMovies);
+        stompService.sendSTOMPToUpdateTopRatedMovies();
     }
 
     @RabbitListener(
@@ -99,8 +103,6 @@ public class RabbitMqReceiver {
     )
     public void receiveMessageAllMoviesQueue() {
         LOGGER.info("Received message from RabbitMQ all-movies-queue to recalculate all movies");
-        List<Movie> allMovies = dbMovieService.getAllMovies();
-        LOGGER.info("Sending STOMP to refresh all movies table");
-        messagingTemplate.convertAndSend("/topic/allMovies", allMovies);
+        stompService.sendSTOMPToUpdateAllMovies();
     }
 }

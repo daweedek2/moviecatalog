@@ -4,10 +4,10 @@ import kostka.moviecatalog.entity.EsMovie;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.repository.MovieElasticSearchRepository;
 import kostka.moviecatalog.repository.MovieRepository;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +21,7 @@ import java.util.stream.StreamSupport;
 
 @Service
 public class EsMovieService {
-    static final Logger LOGGER = LogManager.getLogger("CONSOLE_JSON_APPENDER");
+    static final Logger LOGGER = LoggerFactory.getLogger(EsMovieService.class);
     private MovieElasticSearchRepository movieElasticSearchRepository;
     private MovieRepository movieRepository;
 
