@@ -1,7 +1,7 @@
 package kostka.moviecatalog;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
@@ -13,7 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableCaching
 @EnableScheduling
 public class MovieCatalogApplication {
-    static final Logger LOGGER = LogManager.getLogger("CONSOLE_JSON_APPENDER");
+    static final Logger LOGGER = LoggerFactory.getLogger(MovieCatalogApplication.class);
     public static void main(final String[] args) {
         SpringApplication.run(MovieCatalogApplication.class, args);
         LOGGER.info("moviecatalog is running :)");

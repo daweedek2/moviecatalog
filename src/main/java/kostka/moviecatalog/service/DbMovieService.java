@@ -5,8 +5,8 @@ import kostka.moviecatalog.entity.EsMovie;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.repository.MovieRepository;
 import kostka.moviecatalog.service.redis.RedisService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.TOP_RATING_K
 
 @Service
 public class DbMovieService {
-    static final Logger LOGGER = LogManager.getLogger("CONSOLE_JSON_APPENDER");
+    static final Logger LOGGER = LoggerFactory.getLogger(DbMovieService.class);
     private MovieRepository movieRepository;
     private EsMovieService esMovieService;
     private RedisService redisService;

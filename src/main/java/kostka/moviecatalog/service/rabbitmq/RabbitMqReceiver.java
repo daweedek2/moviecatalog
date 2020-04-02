@@ -1,10 +1,12 @@
 package kostka.moviecatalog.service.rabbitmq;
 
+import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.service.DbMovieService;
 import kostka.moviecatalog.service.EsMovieService;
+import kostka.moviecatalog.service.STOMPService;
 import kostka.moviecatalog.service.redis.RedisService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
@@ -12,31 +14,38 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class RabbitMqReceiver {
     public static final String TOPIC_EXCHANGE = "movie-exchange";
     public static final String ELASTIC_QUEUE = "elastic-queue";
     public static final String LATEST_MOVIES_QUEUE = "latest-movies-queue";
+    public static final String ALL_MOVIES_QUEUE = "all-movies-queue";
     public static final String RATING_QUEUE = "rating-queue";
     public static final String DEFAULT_QUEUE = "default-queue";
     public static final String CREATE_MOVIE_KEY = "createMovie";
     public static final String LATEST_MOVIES_KEY = "latestMovies";
     public static final String TOP_RATING_KEY = "rating";
+    public static final String ALL_MOVIES_KEY = "all-movies";
     public static final String DEFAULT_KEY = "default";
 
-    private static final Logger LOGGER = LogManager.getLogger("CONSOLE_JSON_APPENDER");
+    private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMqReceiver.class);
 
     private EsMovieService esMovieService;
     private DbMovieService dbMovieService;
     private RedisService redisService;
+    private STOMPService stompService;
 
     @Autowired
     public RabbitMqReceiver(final EsMovieService esMovieService,
                             final DbMovieService dbmovieService,
-                            final RedisService redisService) {
+                            final RedisService redisService,
+                            final STOMPService stompService) {
         this.esMovieService = esMovieService;
         this.dbMovieService = dbmovieService;
         this.redisService = redisService;
+        this.stompService = stompService;
     }
 
     @RabbitListener(
@@ -60,7 +69,12 @@ public class RabbitMqReceiver {
     )
     public void receiveMessageLatestMoviesQueue() {
         LOGGER.info("Received message from RabbitMQ latest-movies-queue to recalculate latest movies.");
-        redisService.updateLatestMovies(dbMovieService.get5LatestMoviesFromDB());
+        List<Movie> latestMovies = dbMovieService.get5LatestMoviesFromDB();
+        if (latestMovies.isEmpty()) {
+            return;
+        }
+        redisService.updateLatestMovies(latestMovies);
+        stompService.sendSTOMPToUpdateLatestMovies();
     }
 
     @RabbitListener(
@@ -72,6 +86,23 @@ public class RabbitMqReceiver {
     )
     public void receiveMessageRatingQueue() {
         LOGGER.info("Received message from RabbitMQ rating-queue to recalculate TOP5 movies by rating");
-        redisService.updateTopRatingMovies(dbMovieService.getTop5RatingMoviesFromDB());
+        List<Movie> topMovies = dbMovieService.getTop5RatingMoviesFromDB();
+        if (topMovies.isEmpty()) {
+            return;
+        }
+        redisService.updateTopRatingMovies(topMovies);
+        stompService.sendSTOMPToUpdateTopRatedMovies();
+    }
+
+    @RabbitListener(
+            bindings = @QueueBinding(
+                    exchange = @Exchange(TOPIC_EXCHANGE),
+                    key = ALL_MOVIES_KEY,
+                    value = @Queue(ALL_MOVIES_QUEUE)
+            )
+    )
+    public void receiveMessageAllMoviesQueue() {
+        LOGGER.info("Received message from RabbitMQ all-movies-queue to recalculate all movies");
+        stompService.sendSTOMPToUpdateAllMovies();
     }
 }

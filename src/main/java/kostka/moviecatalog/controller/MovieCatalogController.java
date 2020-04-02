@@ -6,8 +6,8 @@ import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.service.DbMovieService;
 import kostka.moviecatalog.service.EsMovieService;
 import kostka.moviecatalog.service.rabbitmq.RabbitMqSender;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +28,7 @@ public class MovieCatalogController {
     private DbMovieService dbMovieService;
     private EsMovieService esMovieService;
     private RabbitMqSender rabbitMqSender;
-    static final Logger LOGGER = LogManager.getLogger("CONSOLE_JSON_APPENDER");
-
+    static final Logger LOGGER = LoggerFactory.getLogger(MovieCatalogController.class);
     @Autowired
     public MovieCatalogController(final DbMovieService dbMovieService,
                                   final EsMovieService esMovieService,
@@ -52,13 +51,14 @@ public class MovieCatalogController {
         try {
             movie = dbMovieService.createMovie(dto);
         } catch (Exception e) {
-            LOGGER.info("Creation of movie failed");
+            LOGGER.error("Creation of movie failed", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         rabbitMqSender.sendToElasticQueue(movie.getId().toString());
         rabbitMqSender.sendToLatestMoviesQueue();
         rabbitMqSender.sendToRatingQueue();
+        rabbitMqSender.sendToAllMoviesQueue();
         return new ResponseEntity<>(movie, HttpStatus.OK);
     }
 
