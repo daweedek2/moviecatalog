@@ -51,7 +51,7 @@ public class MovieCatalogController {
         try {
             movie = dbMovieService.createMovie(dto);
         } catch (Exception e) {
-            LOGGER.info("Creation of movie failed");
+            LOGGER.error("Creation of movie failed", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 

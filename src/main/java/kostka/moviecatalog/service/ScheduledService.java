@@ -25,7 +25,7 @@ public class ScheduledService {
         try {
             rabbitMqSender.sendToLatestMoviesQueue();
         } catch (Exception e) {
-            LOGGER.info(SCHEDULED_TASK_NO_MOVIE_IN_DB);
+            LOGGER.error(SCHEDULED_TASK_NO_MOVIE_IN_DB, e);
         }
         }
 
@@ -35,7 +35,7 @@ public class ScheduledService {
         try {
             rabbitMqSender.sendToRatingQueue();
         } catch (Exception e) {
-            LOGGER.info(SCHEDULED_TASK_NO_MOVIE_IN_DB);
+            LOGGER.error(SCHEDULED_TASK_NO_MOVIE_IN_DB, e);
         }
     }
 
@@ -45,7 +45,7 @@ public class ScheduledService {
         try {
             rabbitMqSender.sendToAllMoviesQueue();
         } catch (Exception e) {
-            LOGGER.info(SCHEDULED_TASK_NO_MOVIE_IN_DB);
+            LOGGER.error(SCHEDULED_TASK_NO_MOVIE_IN_DB, e);
         }
     }
 }

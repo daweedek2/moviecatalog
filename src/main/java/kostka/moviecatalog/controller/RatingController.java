@@ -35,6 +35,7 @@ public class RatingController {
         try {
             ratedMovie = ratingService.createRating(dto);
         } catch (Exception e) {
+            LOGGER.error("Rating creation failed", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
