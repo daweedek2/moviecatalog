@@ -32,7 +32,7 @@ public class DbMovieServiceTest {
     }
 
     @Test void getAllMoviesTest() {
-        List<Movie> allMovies = dbMovieService.getAllMovies();
+        List<Movie> allMovies = dbMovieService.getAllMoviesFromDB();
 
         Assertions.assertEquals(8, allMovies.size());
     }

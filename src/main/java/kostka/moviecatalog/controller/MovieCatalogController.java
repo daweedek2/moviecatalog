@@ -39,9 +39,9 @@ public class MovieCatalogController {
     }
 
     @GetMapping("/all")
-    public List<Movie> getAllMovies() {
+    public String getAllMovies() {
         LOGGER.info("get all movies request");
-        return dbMovieService.getAllMovies();
+        return dbMovieService.getAllMoviesFromCache();
     }
 
     @PostMapping("/create")
@@ -75,13 +75,13 @@ public class MovieCatalogController {
     }
 
     @GetMapping("/latest5")
-    public List<Movie> get5LatestMovies() {
+    public String get5LatestMovies() {
         LOGGER.info("get 5 latest movies request");
         return dbMovieService.get5LatestMoviesFromCache();
     }
 
     @GetMapping("/top5")
-    public List<Movie> getTopRatingMovies() {
+    public String getTopRatingMovies() {
         LOGGER.info("get 5 top rating movies request");
         return dbMovieService.getTop5RatingMoviesFromCache();
     }

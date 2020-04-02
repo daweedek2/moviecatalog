@@ -1,5 +1,6 @@
 package kostka.moviecatalog.service.rabbitmq;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.service.DbMovieService;
 import kostka.moviecatalog.service.EsMovieService;
@@ -29,6 +30,7 @@ public class RabbitMqReceiver {
     public static final String TOP_RATING_KEY = "rating";
     public static final String ALL_MOVIES_KEY = "all-movies";
     public static final String DEFAULT_KEY = "default";
+    public static final String CANNOT_PARSE_JSON = "Cannot parse JSON";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMqReceiver.class);
 
@@ -73,7 +75,12 @@ public class RabbitMqReceiver {
         if (latestMovies.isEmpty()) {
             return;
         }
-        redisService.updateLatestMovies(latestMovies);
+        try {
+            redisService.updateMoviesInRedis(latestMovies, LATEST_MOVIES_KEY);
+        } catch (JsonProcessingException e) {
+            LOGGER.error(CANNOT_PARSE_JSON, e);
+            return;
+        }
         stompService.sendSTOMPToUpdateLatestMovies();
     }
 
@@ -90,7 +97,12 @@ public class RabbitMqReceiver {
         if (topMovies.isEmpty()) {
             return;
         }
-        redisService.updateTopRatingMovies(topMovies);
+        try {
+            redisService.updateMoviesInRedis(topMovies, TOP_RATING_KEY);
+        } catch (JsonProcessingException e) {
+            LOGGER.error(CANNOT_PARSE_JSON, e);
+            return;
+        }
         stompService.sendSTOMPToUpdateTopRatedMovies();
     }
 
@@ -103,6 +115,16 @@ public class RabbitMqReceiver {
     )
     public void receiveMessageAllMoviesQueue() {
         LOGGER.info("Received message from RabbitMQ all-movies-queue to recalculate all movies");
+        List<Movie> allMovies = dbMovieService.getAllMoviesFromDB();
+        if (allMovies.isEmpty()) {
+            return;
+        }
+        try {
+            redisService.updateMoviesInRedis(allMovies, ALL_MOVIES_KEY);
+        } catch (JsonProcessingException e) {
+            LOGGER.error(CANNOT_PARSE_JSON, e);
+            return;
+        }
         stompService.sendSTOMPToUpdateAllMovies();
     }
 }
