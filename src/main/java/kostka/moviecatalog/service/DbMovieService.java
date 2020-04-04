@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.ALL_MOVIES_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.LATEST_MOVIES_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.TOP_RATING_KEY;
 
@@ -51,7 +52,7 @@ public class DbMovieService {
         return movie.get();
     }
 
-    public List<Movie> getAllMovies() {
+    public List<Movie> getAllMoviesFromDB() {
         return movieRepository.findAll();
     }
 
@@ -63,11 +64,6 @@ public class DbMovieService {
         return movieRepository.findByIdInOrderByIdDesc(ids);
     }
 
-    public List<Movie> get5LatestMoviesFromCache() {
-        List<Long> longIds = getMovieIdsFromRedisCache(LATEST_MOVIES_KEY);
-        return movieRepository.findByIdInOrderByIdDesc(longIds);
-    }
-
     public List<Movie> getTop5RatingMoviesFromDB() {
         return movieRepository.findTop5ByOrderByRatingDesc();
     }
@@ -77,14 +73,16 @@ public class DbMovieService {
     }
 
 
-    public List<Movie> getTop5RatingMoviesFromCache() {
-        List<Long> longIds = getMovieIdsFromRedisCache(TOP_RATING_KEY);
-        return movieRepository.findByIdInOrderByRatingDesc(longIds);
+    public String getTop5RatingMoviesFromCache() {
+        return redisService.getMoviesWithKey(TOP_RATING_KEY);
     }
 
-    private List<Long> getMovieIdsFromRedisCache(final String key) {
-        List<String> stringIds = redisService.getListFromCacheWithKey(key);
-        return stringIds.stream().map(Long::valueOf).collect(Collectors.toList());
+    public String getAllMoviesFromCache() {
+        return redisService.getMoviesWithKey(ALL_MOVIES_KEY);
+    }
+
+    public String get5LatestMoviesFromCache() {
+        return redisService.getMoviesWithKey(LATEST_MOVIES_KEY);
     }
 
     private Movie populateMovieFromDto(final MovieDto dto) {
