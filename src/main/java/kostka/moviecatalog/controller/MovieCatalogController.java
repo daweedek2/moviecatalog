@@ -56,9 +56,10 @@ public class MovieCatalogController {
         }
 
         rabbitMqSender.sendToElasticQueue(movie.getId().toString());
-        rabbitMqSender.sendToLatestMoviesQueue();
-        rabbitMqSender.sendToRatingQueue();
-        rabbitMqSender.sendToAllMoviesQueue();
+//        rabbitMqSender.sendToLatestMoviesQueue();
+//        rabbitMqSender.sendToRatingQueue();
+//        rabbitMqSender.sendToAllMoviesQueue();
+        rabbitMqSender.sendUpdateRequestToQueue();
         return new ResponseEntity<>(movie, HttpStatus.OK);
     }
 

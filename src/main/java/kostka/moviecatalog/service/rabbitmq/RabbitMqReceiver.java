@@ -1,6 +1,5 @@
 package kostka.moviecatalog.service.rabbitmq;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.service.DbMovieService;
 import kostka.moviecatalog.service.EsMovieService;
@@ -16,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Component
 public class RabbitMqReceiver {
@@ -24,11 +24,13 @@ public class RabbitMqReceiver {
     public static final String LATEST_MOVIES_QUEUE = "latest-movies-queue";
     public static final String ALL_MOVIES_QUEUE = "all-movies-queue";
     public static final String RATING_QUEUE = "rating-queue";
+    public static final String RECALCULATE_QUEUE = "recalculate-queue";
     public static final String DEFAULT_QUEUE = "default-queue";
     public static final String CREATE_MOVIE_KEY = "createMovie";
     public static final String LATEST_MOVIES_KEY = "latestMovies";
     public static final String TOP_RATING_KEY = "rating";
     public static final String ALL_MOVIES_KEY = "all-movies";
+    public static final String RECALCULATE_KEY = "recalculate";
     public static final String DEFAULT_KEY = "default";
     public static final String CANNOT_PARSE_JSON = "Cannot parse JSON";
 
@@ -61,7 +63,7 @@ public class RabbitMqReceiver {
         LOGGER.info("Received movie from rabbitMQ elastic-queue with id '{}'.", id);
         esMovieService.createMovie(id);
     }
-
+/*
     @RabbitListener(
             bindings = @QueueBinding(
                     exchange = @Exchange(TOPIC_EXCHANGE),
@@ -79,7 +81,6 @@ public class RabbitMqReceiver {
             redisService.updateMoviesInRedis(latestMovies, LATEST_MOVIES_KEY);
         } catch (JsonProcessingException e) {
             LOGGER.error(CANNOT_PARSE_JSON, e);
-            return;
         }
         stompService.sendSTOMPToUpdateLatestMovies();
     }
@@ -101,7 +102,6 @@ public class RabbitMqReceiver {
             redisService.updateMoviesInRedis(topMovies, TOP_RATING_KEY);
         } catch (JsonProcessingException e) {
             LOGGER.error(CANNOT_PARSE_JSON, e);
-            return;
         }
         stompService.sendSTOMPToUpdateTopRatedMovies();
     }
@@ -123,8 +123,36 @@ public class RabbitMqReceiver {
             redisService.updateMoviesInRedis(allMovies, ALL_MOVIES_KEY);
         } catch (JsonProcessingException e) {
             LOGGER.error(CANNOT_PARSE_JSON, e);
-            return;
         }
         stompService.sendSTOMPToUpdateAllMovies();
+    } */
+
+    @RabbitListener(
+            bindings = @QueueBinding(
+                    exchange = @Exchange(TOPIC_EXCHANGE),
+                    key = RECALCULATE_KEY,
+                    value = @Queue(RECALCULATE_QUEUE)
+            )
+    )
+
+    public void receiveUpdateRequestRecalculateQueue() {
+        LOGGER.info("Received message from RabbitMQ to recalculate all tables.");
+        try {
+            CompletableFuture<List<Movie>> allMovies = dbMovieService.getAllMoviesFromDB();
+            CompletableFuture<List<Movie>> topMovies = dbMovieService.getTop5RatingMoviesFromDB();
+            CompletableFuture<List<Movie>> latestMovies = dbMovieService.get5LatestMoviesFromDB();
+
+            CompletableFuture<Void> allMoviesRedis = redisService
+                    .tryToUpdateMoviesInRedis(allMovies, ALL_MOVIES_KEY);
+            CompletableFuture<Void> topMoviesRedis = redisService
+                    .tryToUpdateMoviesInRedis(topMovies, TOP_RATING_KEY);
+            CompletableFuture<Void> latestMoviesRedis = redisService
+                    .tryToUpdateMoviesInRedis(latestMovies, LATEST_MOVIES_KEY);
+
+            CompletableFuture.allOf(allMoviesRedis, topMoviesRedis, latestMoviesRedis).join();
+            stompService.sendSTOMPToUpdateAllTables();
+        } catch (Exception e) {
+            LOGGER.error("Completable future error?", e);
+        }
     }
 }

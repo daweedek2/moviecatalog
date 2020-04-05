@@ -8,10 +8,13 @@ import kostka.moviecatalog.service.redis.RedisService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.ALL_MOVIES_KEY;
@@ -19,8 +22,10 @@ import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.LATEST_MOVIE
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.TOP_RATING_KEY;
 
 @Service
+@EnableAsync
 public class DbMovieService {
     static final Logger LOGGER = LoggerFactory.getLogger(DbMovieService.class);
+    public static final long SLEEP_TIME = 5000L;
     private MovieRepository movieRepository;
     private EsMovieService esMovieService;
     private RedisService redisService;
@@ -52,10 +57,6 @@ public class DbMovieService {
         return movie.get();
     }
 
-    public List<Movie> getAllMoviesFromDB() {
-        return movieRepository.findAll();
-    }
-
     public List<Movie> fullTextSearch(final String searchTerm) {
         List<Long> ids = esMovieService.fullTextSearch(searchTerm)
                 .stream()
@@ -64,14 +65,28 @@ public class DbMovieService {
         return movieRepository.findByIdInOrderByIdDesc(ids);
     }
 
-    public List<Movie> getTop5RatingMoviesFromDB() {
-        return movieRepository.findTop5ByOrderByRatingDesc();
+    @Async
+    public CompletableFuture<List<Movie>> getAllMoviesFromDB() {
+        LOGGER.info("get all from DB");
+        return CompletableFuture.completedFuture(movieRepository.findAll());
     }
 
-    public List<Movie> get5LatestMoviesFromDB() {
-        return movieRepository.findTop5ByOrderByIdDesc();
+    @Async
+    public CompletableFuture<List<Movie>> getTop5RatingMoviesFromDB() {
+        LOGGER.info("get top 5 from DB");
+        try {
+            Thread.sleep(SLEEP_TIME);
+        } catch (Exception e) {
+            LOGGER.error("sleep error", e);
+        }
+        return CompletableFuture.completedFuture(movieRepository.findTop5ByOrderByRatingDesc());
     }
 
+    @Async
+    public CompletableFuture<List<Movie>> get5LatestMoviesFromDB() {
+        LOGGER.info("get latest 5 from DB");
+        return CompletableFuture.completedFuture(movieRepository.findTop5ByOrderByIdDesc());
+    }
 
     public String getTop5RatingMoviesFromCache() {
         return redisService.getMoviesWithKey(TOP_RATING_KEY);

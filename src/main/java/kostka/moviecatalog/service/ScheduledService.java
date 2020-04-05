@@ -3,7 +3,6 @@ package kostka.moviecatalog.service;
 import kostka.moviecatalog.service.rabbitmq.RabbitMqSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,7 +17,7 @@ public class ScheduledService {
     public ScheduledService(final RabbitMqSender rabbitMqSender) {
         this.rabbitMqSender = rabbitMqSender;
     }
-
+/*
     @Scheduled(initialDelay = INIT_DELAY, fixedDelay = FIXED_DELAY)
     public void refreshLatestMovies() {
         LOGGER.info("[Scheduled task] Refreshing latest movies.");
@@ -47,5 +46,5 @@ public class ScheduledService {
         } catch (Exception e) {
             LOGGER.error(SCHEDULED_TASK_NO_MOVIE_IN_DB, e);
         }
-    }
+    }*/
 }

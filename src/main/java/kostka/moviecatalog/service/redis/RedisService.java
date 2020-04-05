@@ -7,9 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.CANNOT_PARSE_JSON;
 
 @Service
 public class RedisService {
@@ -37,5 +41,28 @@ public class RedisService {
     private String getJsonStringFromList(final List<Movie> movies) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(movies);
+    }
+
+    @Async
+    public CompletableFuture<Void> tryToUpdateMoviesInRedis(
+            final CompletableFuture<List<Movie>> completableFuture,
+            final String key) {
+        List<Movie> movies;
+        try {
+            movies = completableFuture.get();
+        } catch (Exception e) {
+            LOGGER.error("Error during get CompletableFuture Movies", e);
+            return CompletableFuture.failedFuture(e);
+        }
+        if (movies.isEmpty()) {
+            return CompletableFuture.completedFuture(null);
+        }
+        try {
+            this.updateMoviesInRedis(movies, key);
+            return CompletableFuture.completedFuture(null);
+        } catch (JsonProcessingException e) {
+            LOGGER.error(CANNOT_PARSE_JSON, e);
+            return CompletableFuture.failedFuture(e);
+        }
     }
 }
