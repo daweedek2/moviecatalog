@@ -56,6 +56,7 @@ function connect() {
 
 function searchMovies() {
     var term = document.getElementById("searchText").value;
+    console.log('Searching movies with term: ' + term);
     getDataFromUrlToTable(searchMoviesUrl+term, searchedMovies);
 }
 

@@ -3,6 +3,7 @@ package kostka.moviecatalog.service;
 import kostka.moviecatalog.service.rabbitmq.RabbitMqSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -47,4 +48,14 @@ public class ScheduledService {
             LOGGER.error(SCHEDULED_TASK_NO_MOVIE_IN_DB, e);
         }
     }*/
+
+    @Scheduled(initialDelay = INIT_DELAY, fixedDelay = FIXED_DELAY)
+    public void updateAllMoviesInRedisAndFE() {
+        LOGGER.info("[Scheduled task] Refreshing all movies stored in REDIS and then inform FE via stomp.");
+        try {
+            rabbitMqSender.sendUpdateRequestToQueue();
+        } catch (Exception e) {
+            LOGGER.error(SCHEDULED_TASK_NO_MOVIE_IN_DB, e);
+        }
+    }
 }

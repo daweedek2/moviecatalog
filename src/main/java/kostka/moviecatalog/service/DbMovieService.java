@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,7 +21,6 @@ import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.LATEST_MOVIE
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.TOP_RATING_KEY;
 
 @Service
-@EnableAsync
 public class DbMovieService {
     static final Logger LOGGER = LoggerFactory.getLogger(DbMovieService.class);
     public static final long SLEEP_TIME = 5000L;
