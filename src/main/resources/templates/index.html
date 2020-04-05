@@ -17,6 +17,14 @@
 
 <div class="container">
     <h2>MovieCatalog</h2>
+    <form action="#" id="searchForm">
+        <div class="form-group">
+            <input type="text" class="form-control" id="searchText" aria-describedby="searchHelp" placeholder="Enter search string...">
+            <small id="searchHelp" class="form-text text-muted">Search is supported for fields Name, Director and Description.</small>
+        </div>
+        <button type="submit" class="btn btn-primary" onclick="searchMovies()">Search</button>
+    </form>
+    <p id="searchMovies"></p>
     <br>
     <h4>All movies</h4>
     <p id="allMovies"></p>
