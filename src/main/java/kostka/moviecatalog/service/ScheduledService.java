@@ -18,7 +18,7 @@ public class ScheduledService {
     public ScheduledService(final RabbitMqSender rabbitMqSender) {
         this.rabbitMqSender = rabbitMqSender;
     }
-
+/*
     @Scheduled(initialDelay = INIT_DELAY, fixedDelay = FIXED_DELAY)
     public void refreshLatestMovies() {
         LOGGER.info("[Scheduled task] Refreshing latest movies.");
@@ -44,6 +44,16 @@ public class ScheduledService {
         LOGGER.info("[Scheduled task] Refreshing latest movies.");
         try {
             rabbitMqSender.sendToAllMoviesQueue();
+        } catch (Exception e) {
+            LOGGER.error(SCHEDULED_TASK_NO_MOVIE_IN_DB, e);
+        }
+    }*/
+
+    @Scheduled(initialDelay = INIT_DELAY, fixedDelay = FIXED_DELAY)
+    public void updateAllMoviesInRedisAndFE() {
+        LOGGER.info("[Scheduled task] Refreshing all movies stored in REDIS and then inform FE via stomp.");
+        try {
+            rabbitMqSender.sendUpdateRequestToQueue();
         } catch (Exception e) {
             LOGGER.error(SCHEDULED_TASK_NO_MOVIE_IN_DB, e);
         }

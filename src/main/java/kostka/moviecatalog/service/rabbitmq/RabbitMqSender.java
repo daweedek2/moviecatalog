@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.ALL_MOVIES_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.CREATE_MOVIE_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.LATEST_MOVIES_KEY;
+import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.RECALCULATE_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.TOPIC_EXCHANGE;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.TOP_RATING_KEY;
 
@@ -44,5 +45,10 @@ public class RabbitMqSender {
         LOGGER.info("Starting sending recalculate all movies request to rabbitMQ all-movies-queue.");
         rabbitTemplate.convertAndSend(TOPIC_EXCHANGE, ALL_MOVIES_KEY, ALL_MOVIES_KEY);
         LOGGER.info("Recalculate all movies request sent to rabbitMQ all-movies-queue.");
+    }
+
+    public void sendUpdateRequestToQueue() {
+        LOGGER.info("Sending recalculate all tables request to rabbitMQ recalculate-queue.");
+        rabbitTemplate.convertAndSend(TOPIC_EXCHANGE, RECALCULATE_KEY, RECALCULATE_KEY);
     }
 }

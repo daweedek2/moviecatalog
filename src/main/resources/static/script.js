@@ -45,11 +45,18 @@ function connect() {
             getDataFromUrlToTable(allMoviesUrl, allMovies);
             console.log(allMoviesMessage);
         });
+        stompClient.subscribe('/topic/recalculate', function(recalculateMessage) {
+            getDataFromUrlToTable(allMoviesUrl, allMovies);
+            getDataFromUrlToTable(topMoviesUrl, topMovies);
+            getDataFromUrlToTable(latestMoviesUrl, latestMovies);
+            console.log(recalculateMessage);
+        });
     });
 }
 
 function searchMovies() {
     var term = document.getElementById("searchText").value;
+    console.log('Searching movies with term: ' + term);
     getDataFromUrlToTable(searchMoviesUrl+term, searchedMovies);
 }
 
