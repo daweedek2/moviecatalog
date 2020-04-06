@@ -2,9 +2,11 @@ var stompClient = null;
 var allMovies = 'allMovies';
 var topMovies = 'topMovies';
 var latestMovies = 'latestMovies';
+var searchedMovies = 'searchMovies';
 var topMoviesUrl = '/movies/top5';
 var latestMoviesUrl = '/movies/latest5';
 var allMoviesUrl = '/movies/all';
+var searchMoviesUrl = '/movies/search?term=';
 
 window.onload = function() {
     console.log('window onload function');
@@ -44,6 +46,11 @@ function connect() {
             console.log(allMoviesMessage);
         });
     });
+}
+
+function searchMovies() {
+    var term = document.getElementById("searchText").value;
+    getDataFromUrlToTable(searchMoviesUrl+term, searchedMovies);
 }
 
 function disconnect() {
