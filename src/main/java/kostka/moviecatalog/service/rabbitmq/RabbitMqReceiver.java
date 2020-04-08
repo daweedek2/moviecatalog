@@ -63,69 +63,6 @@ public class RabbitMqReceiver {
         LOGGER.info("Received movie from rabbitMQ elastic-queue with id '{}'.", id);
         esMovieService.createMovie(id);
     }
-/*
-    @RabbitListener(
-            bindings = @QueueBinding(
-                    exchange = @Exchange(TOPIC_EXCHANGE),
-                    key = LATEST_MOVIES_KEY,
-                    value = @Queue(LATEST_MOVIES_QUEUE)
-            )
-    )
-    public void receiveMessageLatestMoviesQueue() {
-        LOGGER.info("Received message from RabbitMQ latest-movies-queue to recalculate latest movies.");
-        List<Movie> latestMovies = dbMovieService.get5LatestMoviesFromDB();
-        if (latestMovies.isEmpty()) {
-            return;
-        }
-        try {
-            redisService.updateMoviesInRedis(latestMovies, LATEST_MOVIES_KEY);
-        } catch (JsonProcessingException e) {
-            LOGGER.error(CANNOT_PARSE_JSON, e);
-        }
-        stompService.sendSTOMPToUpdateLatestMovies();
-    }
-
-    @RabbitListener(
-            bindings = @QueueBinding(
-                    exchange = @Exchange(TOPIC_EXCHANGE),
-                    key = TOP_RATING_KEY,
-                    value = @Queue(RATING_QUEUE)
-            )
-    )
-    public void receiveMessageRatingQueue() {
-        LOGGER.info("Received message from RabbitMQ rating-queue to recalculate TOP5 movies by rating");
-        List<Movie> topMovies = dbMovieService.getTop5RatingMoviesFromDB();
-        if (topMovies.isEmpty()) {
-            return;
-        }
-        try {
-            redisService.updateMoviesInRedis(topMovies, TOP_RATING_KEY);
-        } catch (JsonProcessingException e) {
-            LOGGER.error(CANNOT_PARSE_JSON, e);
-        }
-        stompService.sendSTOMPToUpdateTopRatedMovies();
-    }
-
-    @RabbitListener(
-            bindings = @QueueBinding(
-                    exchange = @Exchange(TOPIC_EXCHANGE),
-                    key = ALL_MOVIES_KEY,
-                    value = @Queue(ALL_MOVIES_QUEUE)
-            )
-    )
-    public void receiveMessageAllMoviesQueue() {
-        LOGGER.info("Received message from RabbitMQ all-movies-queue to recalculate all movies");
-        List<Movie> allMovies = dbMovieService.getAllMoviesFromDB();
-        if (allMovies.isEmpty()) {
-            return;
-        }
-        try {
-            redisService.updateMoviesInRedis(allMovies, ALL_MOVIES_KEY);
-        } catch (JsonProcessingException e) {
-            LOGGER.error(CANNOT_PARSE_JSON, e);
-        }
-        stompService.sendSTOMPToUpdateAllMovies();
-    } */
 
     @RabbitListener(
             bindings = @QueueBinding(
@@ -134,7 +71,6 @@ public class RabbitMqReceiver {
                     value = @Queue(RECALCULATE_QUEUE)
             )
     )
-
     public void receiveUpdateRequestRecalculateQueue() {
         LOGGER.info("Received message from RabbitMQ to recalculate all tables.");
         try {

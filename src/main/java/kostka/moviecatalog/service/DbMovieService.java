@@ -3,6 +3,8 @@ package kostka.moviecatalog.service;
 import kostka.moviecatalog.dto.MovieDto;
 import kostka.moviecatalog.entity.EsMovie;
 import kostka.moviecatalog.entity.Movie;
+import kostka.moviecatalog.exception.InvalidDtoException;
+import kostka.moviecatalog.exception.MovieNotFoundException;
 import kostka.moviecatalog.repository.MovieRepository;
 import kostka.moviecatalog.service.redis.RedisService;
 import org.slf4j.Logger;
@@ -38,6 +40,10 @@ public class DbMovieService {
     }
 
     public Movie createMovie(final MovieDto dto) {
+        if (dto.getName() == null) {
+            LOGGER.error("Movie dto does not contain name.");
+            throw new InvalidDtoException();
+        }
         Movie movie = this.populateMovieFromDto(dto);
         LOGGER.info("DB movie with name '{}' is created in MySQL", movie.getName());
         return movieRepository.save(movie);
@@ -50,7 +56,7 @@ public class DbMovieService {
     public Movie getMovie(final Long movieId) {
         Optional<Movie> movie = movieRepository.findById(movieId);
         if (movie.isEmpty()) {
-            return null;
+            throw new MovieNotFoundException();
         }
         return movie.get();
     }

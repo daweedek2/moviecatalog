@@ -39,9 +39,6 @@ public class RatingController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-//        rabbitMqSender.sendToRatingQueue();
-//        rabbitMqSender.sendToAllMoviesQueue();
-//        rabbitMqSender.sendToLatestMoviesQueue();
         rabbitMqSender.sendUpdateRequestToQueue();
         return new ResponseEntity<>(ratedMovie, HttpStatus.OK);
     }

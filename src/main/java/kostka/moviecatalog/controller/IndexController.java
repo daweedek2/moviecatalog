@@ -18,9 +18,6 @@ public class IndexController {
 
     @GetMapping
     public String index() {
-//        rabbitMqSender.sendToAllMoviesQueue();
-//        rabbitMqSender.sendToLatestMoviesQueue();
-//        rabbitMqSender.sendToRatingQueue();
         rabbitMqSender.sendUpdateRequestToQueue();
         return "index";
     }
