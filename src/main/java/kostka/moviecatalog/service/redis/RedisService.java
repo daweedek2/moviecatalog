@@ -45,15 +45,8 @@ public class RedisService {
 
     @Async
     public CompletableFuture<Void> tryToUpdateMoviesInRedis(
-            final CompletableFuture<List<Movie>> completableFuture,
+            final List<Movie> movies,
             final String key) {
-        List<Movie> movies;
-        try {
-            movies = completableFuture.get();
-        } catch (Exception e) {
-            LOGGER.error("Error during get CompletableFuture Movies", e);
-            return CompletableFuture.failedFuture(e);
-        }
         if (movies.isEmpty()) {
             return CompletableFuture.completedFuture(null);
         }
