@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.CANNOT_PARSE_JSON;
 
@@ -45,8 +46,9 @@ public class RedisService {
 
     @Async
     public CompletableFuture<Void> tryToUpdateMoviesInRedis(
-            final List<Movie> movies,
+            final Supplier<List<Movie>> moviesSupplier,
             final String key) {
+        List<Movie> movies = moviesSupplier.get();
         if (movies.isEmpty()) {
             return CompletableFuture.completedFuture(null);
         }
