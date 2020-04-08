@@ -7,6 +7,10 @@ var topMoviesUrl = '/movies/top5';
 var latestMoviesUrl = '/movies/latest5';
 var allMoviesUrl = '/movies/all';
 var searchMoviesUrl = '/movies/search?term=';
+var specMoviesUrl = '/movies/spec'
+var specFieldParam = '?field=';
+var specOperationParam = '&operation=';
+var specValueParam = '&value=';
 
 window.onload = function() {
     console.log('window onload function');
@@ -58,6 +62,15 @@ function searchMovies() {
     var term = document.getElementById("searchText").value;
     console.log('Searching movies with term: ' + term);
     getDataFromUrlToTable(searchMoviesUrl+term, searchedMovies);
+}
+
+function specSearchMovies() {
+    var field = document.getElementById("specField").value;
+    var operation = document.getElementById("specOperation").value;
+    var value = document.getElementById("specValue").value;
+    console.log('Searching movies with specification: ' + field + operation + value);
+    var url = specMoviesUrl + specFieldParam + field + specOperationParam + operation + specValueParam + value;
+    getDataFromUrlToTable(url, searchedMovies);
 }
 
 function disconnect() {

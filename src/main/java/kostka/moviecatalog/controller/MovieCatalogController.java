@@ -1,10 +1,12 @@
 package kostka.moviecatalog.controller;
 
 import kostka.moviecatalog.dto.MovieDto;
+import kostka.moviecatalog.dto.SearchCriteriaDto;
 import kostka.moviecatalog.entity.EsMovie;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.service.DbMovieService;
 import kostka.moviecatalog.service.EsMovieService;
+import kostka.moviecatalog.service.MovieSpecificationService;
 import kostka.moviecatalog.service.rabbitmq.RabbitMqSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,14 +30,17 @@ public class MovieCatalogController {
     private DbMovieService dbMovieService;
     private EsMovieService esMovieService;
     private RabbitMqSender rabbitMqSender;
+    private MovieSpecificationService specificationService;
     static final Logger LOGGER = LoggerFactory.getLogger(MovieCatalogController.class);
     @Autowired
     public MovieCatalogController(final DbMovieService dbMovieService,
                                   final EsMovieService esMovieService,
-                                  final RabbitMqSender rabbitMqSender) {
+                                  final RabbitMqSender rabbitMqSender,
+                                  final MovieSpecificationService specificationService) {
         this.dbMovieService = dbMovieService;
         this.esMovieService = esMovieService;
         this.rabbitMqSender = rabbitMqSender;
+        this.specificationService = specificationService;
     }
 
     @GetMapping("/all")
@@ -61,6 +66,19 @@ public class MovieCatalogController {
 //        rabbitMqSender.sendToAllMoviesQueue();
         rabbitMqSender.sendUpdateRequestToQueue();
         return new ResponseEntity<>(movie, HttpStatus.OK);
+    }
+
+    @GetMapping("/spec")
+    public List<Movie> getMoviesBySpec(final @RequestParam("field") String field,
+                                       final @RequestParam("operation") String operation,
+                                       final @RequestParam("value") String value) {
+        LOGGER.info("Search movies by JPA Specification request");
+        SearchCriteriaDto dto = new SearchCriteriaDto();
+        dto.setField(field);
+        dto.setOperation(operation);
+        dto.setValue(value);
+
+        return specificationService.getMoviesWithCriteria(dto);
     }
 
     @GetMapping("/search")
