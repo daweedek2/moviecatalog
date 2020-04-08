@@ -8,12 +8,10 @@ import kostka.moviecatalog.service.redis.RedisService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.ALL_MOVIES_KEY;
@@ -63,27 +61,24 @@ public class DbMovieService {
         return movieRepository.findByIdInOrderByIdDesc(ids);
     }
 
-    @Async
-    public CompletableFuture<List<Movie>> getAllMoviesFromDB() {
+    public List<Movie> getAllMoviesFromDB() {
         LOGGER.info("get all from DB");
-        return CompletableFuture.completedFuture(movieRepository.findAll());
+        return movieRepository.findAll();
     }
 
-    @Async
-    public CompletableFuture<List<Movie>> getTop5RatingMoviesFromDB() {
+    public List<Movie> getTop5RatingMoviesFromDB() {
         LOGGER.info("get top 5 from DB");
         try {
             Thread.sleep(SLEEP_TIME);
         } catch (Exception e) {
             LOGGER.error("sleep error", e);
         }
-        return CompletableFuture.completedFuture(movieRepository.findTop5ByOrderByRatingDesc());
+        return movieRepository.findTop5ByOrderByRatingDesc();
     }
 
-    @Async
-    public CompletableFuture<List<Movie>> get5LatestMoviesFromDB() {
+    public List<Movie> get5LatestMoviesFromDB() {
         LOGGER.info("get latest 5 from DB");
-        return CompletableFuture.completedFuture(movieRepository.findTop5ByOrderByIdDesc());
+        return movieRepository.findTop5ByOrderByIdDesc();
     }
 
     public String getTop5RatingMoviesFromCache() {

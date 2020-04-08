@@ -1,6 +1,5 @@
 package kostka.moviecatalog.service.rabbitmq;
 
-import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.service.DbMovieService;
 import kostka.moviecatalog.service.EsMovieService;
 import kostka.moviecatalog.service.STOMPService;
@@ -14,7 +13,6 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Component
@@ -138,16 +136,12 @@ public class RabbitMqReceiver {
     public void receiveUpdateRequestRecalculateQueue() {
         LOGGER.info("Received message from RabbitMQ to recalculate all tables.");
         try {
-            CompletableFuture<List<Movie>> allMovies = dbMovieService.getAllMoviesFromDB();
-            CompletableFuture<List<Movie>> topMovies = dbMovieService.getTop5RatingMoviesFromDB();
-            CompletableFuture<List<Movie>> latestMovies = dbMovieService.get5LatestMoviesFromDB();
-
             CompletableFuture<Void> allMoviesRedis = redisService
-                    .tryToUpdateMoviesInRedis(allMovies, ALL_MOVIES_KEY);
+                    .tryToUpdateMoviesInRedis(dbMovieService::getAllMoviesFromDB, ALL_MOVIES_KEY);
             CompletableFuture<Void> topMoviesRedis = redisService
-                    .tryToUpdateMoviesInRedis(topMovies, TOP_RATING_KEY);
+                    .tryToUpdateMoviesInRedis(dbMovieService::getTop5RatingMoviesFromDB, TOP_RATING_KEY);
             CompletableFuture<Void> latestMoviesRedis = redisService
-                    .tryToUpdateMoviesInRedis(latestMovies, LATEST_MOVIES_KEY);
+                    .tryToUpdateMoviesInRedis(dbMovieService::get5LatestMoviesFromDB, LATEST_MOVIES_KEY);
 
             CompletableFuture.allOf(allMoviesRedis, topMoviesRedis, latestMoviesRedis).join();
             stompService.sendSTOMPToUpdateAllTables();
