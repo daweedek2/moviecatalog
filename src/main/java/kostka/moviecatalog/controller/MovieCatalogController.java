@@ -4,6 +4,7 @@ import kostka.moviecatalog.dto.MovieDto;
 import kostka.moviecatalog.dto.SearchCriteriaDto;
 import kostka.moviecatalog.entity.EsMovie;
 import kostka.moviecatalog.entity.Movie;
+import kostka.moviecatalog.exception.InvalidDtoException;
 import kostka.moviecatalog.service.DbMovieService;
 import kostka.moviecatalog.service.EsMovieService;
 import kostka.moviecatalog.service.MovieSpecificationService;
@@ -55,15 +56,12 @@ public class MovieCatalogController {
         Movie movie = null;
         try {
             movie = dbMovieService.createMovie(dto);
-        } catch (Exception e) {
+        } catch (InvalidDtoException e) {
             LOGGER.error("Creation of movie failed", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         rabbitMqSender.sendToElasticQueue(movie.getId().toString());
-//        rabbitMqSender.sendToLatestMoviesQueue();
-//        rabbitMqSender.sendToRatingQueue();
-//        rabbitMqSender.sendToAllMoviesQueue();
         rabbitMqSender.sendUpdateRequestToQueue();
         return new ResponseEntity<>(movie, HttpStatus.OK);
     }

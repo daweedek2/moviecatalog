@@ -15,39 +15,9 @@ public class ScheduledService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScheduledService.class);
 
-    public ScheduledService(RabbitMqSender rabbitMqSender) {
+    public ScheduledService(final RabbitMqSender rabbitMqSender) {
         this.rabbitMqSender = rabbitMqSender;
     }
-/*
-    @Scheduled(initialDelay = INIT_DELAY, fixedDelay = FIXED_DELAY)
-    public void refreshLatestMovies() {
-        LOGGER.info("[Scheduled task] Refreshing latest movies.");
-        try {
-            rabbitMqSender.sendToLatestMoviesQueue();
-        } catch (Exception e) {
-            LOGGER.error(SCHEDULED_TASK_NO_MOVIE_IN_DB, e);
-        }
-        }
-
-    @Scheduled(initialDelay = INIT_DELAY, fixedDelay = FIXED_DELAY)
-    public void refreshTopRatedMovies() {
-        LOGGER.info("[Scheduled task] Refreshing top rating movies.");
-        try {
-            rabbitMqSender.sendToRatingQueue();
-        } catch (Exception e) {
-            LOGGER.error(SCHEDULED_TASK_NO_MOVIE_IN_DB, e);
-        }
-    }
-
-    @Scheduled(initialDelay = INIT_DELAY, fixedDelay = FIXED_DELAY)
-    public void refreshAllMovies() {
-        LOGGER.info("[Scheduled task] Refreshing latest movies.");
-        try {
-            rabbitMqSender.sendToAllMoviesQueue();
-        } catch (Exception e) {
-            LOGGER.error(SCHEDULED_TASK_NO_MOVIE_IN_DB, e);
-        }
-    }*/
 
     @Scheduled(initialDelay = INIT_DELAY, fixedDelay = FIXED_DELAY)
     public void updateAllMoviesInRedisAndFE() {
