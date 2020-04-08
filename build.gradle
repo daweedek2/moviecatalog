@@ -36,7 +36,9 @@ dependencies {
     }
     testImplementation 'org.springframework.amqp:spring-rabbit-test'
     testImplementation 'junit:junit:4.13'
-    testRuntimeOnly 'com.h2database:h2'
+    testCompile group: 'com.h2database',
+            name: 'h2',
+            version: '1.4.200'
 
     compile group: 'org.springframework.boot',
             name: 'spring-boot-starter-data-redis',
