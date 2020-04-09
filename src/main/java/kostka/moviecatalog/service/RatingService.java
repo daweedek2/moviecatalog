@@ -3,6 +3,7 @@ package kostka.moviecatalog.service;
 import kostka.moviecatalog.dto.RatingDto;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.exception.InvalidDtoException;
+import kostka.moviecatalog.exception.MovieNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +25,13 @@ public class RatingService {
             LOGGER.error("Dto has no ID specified");
             throw new InvalidDtoException();
         }
-
-        Movie movie = dbMovieService.getMovie(movieId);
-        movie.setRating(dto.getRating());
-        return dbMovieService.saveMovie(movie);
+        try {
+            Movie movie = dbMovieService.getMovie(movieId);
+            movie.setRating(dto.getRating());
+            return dbMovieService.saveMovie(movie);
+        } catch (Exception e) {
+            LOGGER.error("Cannot create rating, movie with ID '{}' not found", movieId, e);
+            throw new MovieNotFoundException();
+        }
     }
 }

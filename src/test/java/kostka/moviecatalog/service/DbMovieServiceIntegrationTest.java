@@ -7,7 +7,6 @@ import kostka.moviecatalog.exception.InvalidDtoException;
 import kostka.moviecatalog.exception.MovieNotFoundException;
 import kostka.moviecatalog.repository.MovieElasticSearchRepository;
 import kostka.moviecatalog.repository.MovieRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,19 +14,23 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-@RunWith(SpringRunner.class)
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = MovieCatalogApplication.class)
 @Transactional
 public class DbMovieServiceIntegrationTest {
-    public static final String TEST_NAME = "testName";
+    private static final String TEST_NAME = "testName";
+    private static final String TEST_NAME_2 = "testName2";
     private static final String TEST_CAMERA = "testCamera";
     private static final String TEST_DESCRIPTION = "testDescription";
-    private static final String TEST_DIRECTOR = "test¨Director";
+    private static final String TEST_DIRECTOR = "testDirector";
     private static final String TEST_MUSIC = "testMusic";
-    public static final long NON_EXISTING_MOVIE_ID = 100L;
+    private static final long NON_EXISTING_MOVIE_ID = 0L;
 
     @Autowired
     private MovieRepository movieRepository;
@@ -53,11 +56,11 @@ public class DbMovieServiceIntegrationTest {
     public void createMovieIntegrationTest() {
         long countBefore = movieRepository.count();
         MovieDto dto = new MovieDto();
-        dto.setName(TEST_NAME);
+        dto.setName(TEST_NAME_2);
         dbMovieService.createMovie(dto);
 
         Assert.assertEquals(countBefore + 1, movieRepository.count());
-        Assertions.assertThat(movieRepository.count()).isEqualTo(countBefore + 1);
+        assertThat(movieRepository.count()).isEqualTo(countBefore + 1);
     }
 
     @Test
@@ -65,16 +68,15 @@ public class DbMovieServiceIntegrationTest {
         long countBefore = movieRepository.count();
         MovieDto dto = new MovieDto();
 
-        Assertions.assertThatThrownBy(() -> dbMovieService.createMovie(dto))
+        assertThatThrownBy(() -> dbMovieService.createMovie(dto))
                 .isInstanceOf(InvalidDtoException.class);
         Assert.assertEquals(countBefore, movieRepository.count());
     }
 
     @Test
     public void moviePopulatedFromDtoProperlyIntegrationTest() {
-        Movie movie = new Movie(1L, TEST_NAME, TEST_DIRECTOR, TEST_CAMERA, TEST_CAMERA, TEST_DESCRIPTION, 0);
         MovieDto dto = new MovieDto();
-        dto.setName(TEST_NAME);
+        dto.setName(TEST_NAME_2);
         dto.setCamera(TEST_CAMERA);
         dto.setDescription(TEST_DESCRIPTION);
         dto.setDirector(TEST_DIRECTOR);
@@ -82,20 +84,29 @@ public class DbMovieServiceIntegrationTest {
 
         Movie createdMovie = dbMovieService.createMovie(dto);
 
-        Assertions.assertThat(createdMovie).isEqualToComparingOnlyGivenFields(movie);
+        assertThat(createdMovie.getName()).isEqualTo(dto.getName());
+        assertThat(createdMovie.getDirector()).isEqualTo(dto.getDirector());
+        assertThat(createdMovie.getCamera()).isEqualTo(dto.getCamera());
+        assertThat(createdMovie.getMusic()).isEqualTo(dto.getMusic());
+        assertThat(createdMovie.getDescription()).isEqualTo(dto.getDescription());
+        assertThat(createdMovie.getRating()).isEqualTo(0);
     }
 
     @Test
     public void getExistingMovieIntegrationTest() {
-        Movie movie = new Movie(1L, TEST_NAME, TEST_DIRECTOR, TEST_CAMERA, TEST_CAMERA, TEST_DESCRIPTION, 0);
-        Movie returnedMovie = dbMovieService.getMovie(movie.getId());
+        Movie returnedMovie = dbMovieService.getMovie(1L);
 
-        Assertions.assertThat(returnedMovie).isEqualToComparingOnlyGivenFields(movie);
+        assertThat(returnedMovie.getName()).isEqualTo(TEST_NAME);
+        assertThat(returnedMovie.getDirector()).isEqualTo(TEST_DIRECTOR);
+        assertThat(returnedMovie.getCamera()).isEqualTo(TEST_CAMERA);
+        assertThat(returnedMovie.getMusic()).isEqualTo(TEST_MUSIC);
+        assertThat(returnedMovie.getDescription()).isEqualTo(TEST_DESCRIPTION);
+        assertThat(returnedMovie.getRating()).isEqualTo(0);
     }
 
     @Test
     public void getNonExistingMovieIntegrationTest() {
-        Assertions.assertThatThrownBy(() -> dbMovieService.getMovie(NON_EXISTING_MOVIE_ID))
+        assertThatThrownBy(() -> dbMovieService.getMovie(NON_EXISTING_MOVIE_ID))
         .isInstanceOf(MovieNotFoundException.class);
     }
 }

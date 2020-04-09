@@ -7,16 +7,18 @@ import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.exception.InvalidDtoException;
 import kostka.moviecatalog.exception.MovieNotFoundException;
 import kostka.moviecatalog.repository.MovieElasticSearchRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-@RunWith(SpringRunner.class)
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = MovieCatalogApplication.class)
 @Transactional
 public class RatingServiceIntegrationTest {
@@ -43,7 +45,7 @@ public class RatingServiceIntegrationTest {
 
         ratingService.createRating(ratingDto);
 
-        Assertions.assertThat(movie.getRating()).isEqualTo(10);
+        assertThat(movie.getRating()).isEqualTo(10);
     }
 
     @Test
@@ -52,7 +54,7 @@ public class RatingServiceIntegrationTest {
         ratingDto.setId(NON_EXISTING_MOVIE_ID);
         ratingDto.setRating(RATING);
 
-        Assertions.assertThatThrownBy(() -> ratingService.createRating(ratingDto))
+        assertThatThrownBy(() -> ratingService.createRating(ratingDto))
                 .isInstanceOf(MovieNotFoundException.class);
     }
 
@@ -63,8 +65,8 @@ public class RatingServiceIntegrationTest {
         Movie movie = dbMovieService.createMovie(movieDto);
         RatingDto ratingDto = new RatingDto();
 
-        Assertions.assertThatThrownBy(() -> ratingService.createRating(ratingDto))
+        assertThatThrownBy(() -> ratingService.createRating(ratingDto))
                 .isInstanceOf(InvalidDtoException.class);
-        Assertions.assertThat(movie.getRating()).isEqualTo(0);
+        assertThat(movie.getRating()).isEqualTo(0);
     }
 }
