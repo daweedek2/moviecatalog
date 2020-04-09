@@ -15,19 +15,20 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-@RunWith(SpringRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = MovieCatalogApplication.class)
 @Transactional
 public class DbMovieServiceIntegrationTest {
-    public static final String TEST_NAME = "testName";
+    private static final String TEST_NAME = "testName";
+    private static final String TEST_NAME_2 = "testName2";
     private static final String TEST_CAMERA = "testCamera";
     private static final String TEST_DESCRIPTION = "testDescription";
-    private static final String TEST_DIRECTOR = "test¨Director";
+    private static final String TEST_DIRECTOR = "testDirector";
     private static final String TEST_MUSIC = "testMusic";
-    public static final long NON_EXISTING_MOVIE_ID = 100L;
+    private static final long NON_EXISTING_MOVIE_ID = 0L;
 
     @Autowired
     private MovieRepository movieRepository;
@@ -53,7 +54,7 @@ public class DbMovieServiceIntegrationTest {
     public void createMovieIntegrationTest() {
         long countBefore = movieRepository.count();
         MovieDto dto = new MovieDto();
-        dto.setName(TEST_NAME);
+        dto.setName(TEST_NAME_2);
         dbMovieService.createMovie(dto);
 
         Assert.assertEquals(countBefore + 1, movieRepository.count());
@@ -72,9 +73,8 @@ public class DbMovieServiceIntegrationTest {
 
     @Test
     public void moviePopulatedFromDtoProperlyIntegrationTest() {
-        Movie movie = new Movie(1L, TEST_NAME, TEST_DIRECTOR, TEST_CAMERA, TEST_CAMERA, TEST_DESCRIPTION, 0);
         MovieDto dto = new MovieDto();
-        dto.setName(TEST_NAME);
+        dto.setName(TEST_NAME_2);
         dto.setCamera(TEST_CAMERA);
         dto.setDescription(TEST_DESCRIPTION);
         dto.setDirector(TEST_DIRECTOR);
@@ -82,15 +82,24 @@ public class DbMovieServiceIntegrationTest {
 
         Movie createdMovie = dbMovieService.createMovie(dto);
 
-        Assertions.assertThat(createdMovie).isEqualToComparingOnlyGivenFields(movie);
+        Assertions.assertThat(createdMovie.getName()).isEqualTo(dto.getName());
+        Assertions.assertThat(createdMovie.getDirector()).isEqualTo(dto.getDirector());
+        Assertions.assertThat(createdMovie.getCamera()).isEqualTo(dto.getCamera());
+        Assertions.assertThat(createdMovie.getMusic()).isEqualTo(dto.getMusic());
+        Assertions.assertThat(createdMovie.getDescription()).isEqualTo(dto.getDescription());
+        Assertions.assertThat(createdMovie.getRating()).isEqualTo(0);
     }
 
     @Test
     public void getExistingMovieIntegrationTest() {
-        Movie movie = new Movie(1L, TEST_NAME, TEST_DIRECTOR, TEST_CAMERA, TEST_CAMERA, TEST_DESCRIPTION, 0);
-        Movie returnedMovie = dbMovieService.getMovie(movie.getId());
+        Movie returnedMovie = dbMovieService.getMovie(1L);
 
-        Assertions.assertThat(returnedMovie).isEqualToComparingOnlyGivenFields(movie);
+        Assertions.assertThat(returnedMovie.getName()).isEqualTo(TEST_NAME);
+        Assertions.assertThat(returnedMovie.getDirector()).isEqualTo(TEST_DIRECTOR);
+        Assertions.assertThat(returnedMovie.getCamera()).isEqualTo(TEST_CAMERA);
+        Assertions.assertThat(returnedMovie.getMusic()).isEqualTo(TEST_MUSIC);
+        Assertions.assertThat(returnedMovie.getDescription()).isEqualTo(TEST_DESCRIPTION);
+        Assertions.assertThat(returnedMovie.getRating()).isEqualTo(0);
     }
 
     @Test
