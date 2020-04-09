@@ -10,6 +10,7 @@ import kostka.moviecatalog.service.redis.RedisService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -47,7 +48,7 @@ public class DbMovieService {
         return movieRepository.save(movie);
     }
 
-    public Movie saveMovie(final Movie movie) {
+    public Movie saveMovie(@NonNull final Movie movie) {
         return movieRepository.save(movie);
     }
 

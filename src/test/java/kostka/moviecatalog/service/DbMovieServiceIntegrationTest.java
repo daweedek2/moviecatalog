@@ -7,7 +7,6 @@ import kostka.moviecatalog.exception.InvalidDtoException;
 import kostka.moviecatalog.exception.MovieNotFoundException;
 import kostka.moviecatalog.repository.MovieElasticSearchRepository;
 import kostka.moviecatalog.repository.MovieRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +16,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = MovieCatalogApplication.class)
@@ -58,7 +60,7 @@ public class DbMovieServiceIntegrationTest {
         dbMovieService.createMovie(dto);
 
         Assert.assertEquals(countBefore + 1, movieRepository.count());
-        Assertions.assertThat(movieRepository.count()).isEqualTo(countBefore + 1);
+        assertThat(movieRepository.count()).isEqualTo(countBefore + 1);
     }
 
     @Test
@@ -66,7 +68,7 @@ public class DbMovieServiceIntegrationTest {
         long countBefore = movieRepository.count();
         MovieDto dto = new MovieDto();
 
-        Assertions.assertThatThrownBy(() -> dbMovieService.createMovie(dto))
+        assertThatThrownBy(() -> dbMovieService.createMovie(dto))
                 .isInstanceOf(InvalidDtoException.class);
         Assert.assertEquals(countBefore, movieRepository.count());
     }
@@ -82,29 +84,29 @@ public class DbMovieServiceIntegrationTest {
 
         Movie createdMovie = dbMovieService.createMovie(dto);
 
-        Assertions.assertThat(createdMovie.getName()).isEqualTo(dto.getName());
-        Assertions.assertThat(createdMovie.getDirector()).isEqualTo(dto.getDirector());
-        Assertions.assertThat(createdMovie.getCamera()).isEqualTo(dto.getCamera());
-        Assertions.assertThat(createdMovie.getMusic()).isEqualTo(dto.getMusic());
-        Assertions.assertThat(createdMovie.getDescription()).isEqualTo(dto.getDescription());
-        Assertions.assertThat(createdMovie.getRating()).isEqualTo(0);
+        assertThat(createdMovie.getName()).isEqualTo(dto.getName());
+        assertThat(createdMovie.getDirector()).isEqualTo(dto.getDirector());
+        assertThat(createdMovie.getCamera()).isEqualTo(dto.getCamera());
+        assertThat(createdMovie.getMusic()).isEqualTo(dto.getMusic());
+        assertThat(createdMovie.getDescription()).isEqualTo(dto.getDescription());
+        assertThat(createdMovie.getRating()).isEqualTo(0);
     }
 
     @Test
     public void getExistingMovieIntegrationTest() {
         Movie returnedMovie = dbMovieService.getMovie(1L);
 
-        Assertions.assertThat(returnedMovie.getName()).isEqualTo(TEST_NAME);
-        Assertions.assertThat(returnedMovie.getDirector()).isEqualTo(TEST_DIRECTOR);
-        Assertions.assertThat(returnedMovie.getCamera()).isEqualTo(TEST_CAMERA);
-        Assertions.assertThat(returnedMovie.getMusic()).isEqualTo(TEST_MUSIC);
-        Assertions.assertThat(returnedMovie.getDescription()).isEqualTo(TEST_DESCRIPTION);
-        Assertions.assertThat(returnedMovie.getRating()).isEqualTo(0);
+        assertThat(returnedMovie.getName()).isEqualTo(TEST_NAME);
+        assertThat(returnedMovie.getDirector()).isEqualTo(TEST_DIRECTOR);
+        assertThat(returnedMovie.getCamera()).isEqualTo(TEST_CAMERA);
+        assertThat(returnedMovie.getMusic()).isEqualTo(TEST_MUSIC);
+        assertThat(returnedMovie.getDescription()).isEqualTo(TEST_DESCRIPTION);
+        assertThat(returnedMovie.getRating()).isEqualTo(0);
     }
 
     @Test
     public void getNonExistingMovieIntegrationTest() {
-        Assertions.assertThatThrownBy(() -> dbMovieService.getMovie(NON_EXISTING_MOVIE_ID))
+        assertThatThrownBy(() -> dbMovieService.getMovie(NON_EXISTING_MOVIE_ID))
         .isInstanceOf(MovieNotFoundException.class);
     }
 }
