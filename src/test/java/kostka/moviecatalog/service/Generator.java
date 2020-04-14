@@ -2,6 +2,7 @@ package kostka.moviecatalog.service;
 
 import kostka.moviecatalog.dto.MovieDto;
 import kostka.moviecatalog.dto.RatingDto;
+import kostka.moviecatalog.entity.EsMovie;
 import kostka.moviecatalog.entity.Movie;
 import org.springframework.stereotype.Service;
 
@@ -27,5 +28,11 @@ public class Generator {
         dto.setId(id);
         dto.setRating(rating);
         return dto;
+    }
+
+    public EsMovie createEsMovieWithName(final String name) {
+        EsMovie esMovie = new EsMovie();
+        esMovie.setName(name);
+        return esMovie;
     }
 }

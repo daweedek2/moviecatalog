@@ -19,6 +19,7 @@ public class ScheduledService {
         this.rabbitMqSender = rabbitMqSender;
     }
 
+//    @Scheduled(initialDelayString = "${scheduled.init.delay}", fixedDelayString = "${scheduled.fixed.delay}")
     @Scheduled(initialDelay = INIT_DELAY, fixedDelay = FIXED_DELAY)
     public void updateAllMoviesInRedisAndFE() {
         LOGGER.info("[Scheduled task] Refreshing all movies stored in REDIS and then inform FE via stomp.");

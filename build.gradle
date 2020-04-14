@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.2.4.RELEASE'
+    id 'org.springframework.boot' version '2.2.6.RELEASE'
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id 'java'
 }
@@ -36,10 +36,18 @@ dependencies {
     }
     testImplementation 'org.springframework.amqp:spring-rabbit-test'
     testImplementation 'junit:junit:4.13'
+    compile group: 'org.projectlombok',
+            name: 'lombok',
+            version: '1.18.12'
     testCompile group: 'com.h2database',
             name: 'h2',
             version: '1.4.200'
-
+    testCompile group: 'org.awaitility',
+            name: 'awaitility',
+            version: '4.0.2'
+    testCompile group: 'org.testcontainers',
+            name: 'testcontainers',
+            version: '1.13.0'
     compile group: 'org.springframework.boot',
             name: 'spring-boot-starter-data-redis',
             version: '2.2.4.RELEASE'
@@ -61,7 +69,6 @@ dependencies {
     compile group: 'org.springframework.boot',
             name: 'spring-boot-starter-websocket',
             version: '2.2.6.RELEASE'
-
 
 }
 
