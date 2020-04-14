@@ -8,14 +8,13 @@ import org.springframework.stereotype.Service;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.ALL_MOVIES_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.LATEST_MOVIES_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.RECALCULATE_KEY;
+import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.TOPIC;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.TOP_RATING_KEY;
 
 
 @Service
 public class STOMPService {
     private SimpMessagingTemplate messagingTemplate;
-    private static final String TOPIC = "/topic/";
-
     private static final Logger LOGGER = LoggerFactory.getLogger(STOMPService.class);
 
     public STOMPService(final SimpMessagingTemplate messagingTemplate) {

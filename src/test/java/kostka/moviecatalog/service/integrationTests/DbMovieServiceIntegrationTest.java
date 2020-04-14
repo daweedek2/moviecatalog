@@ -1,4 +1,4 @@
-package kostka.moviecatalog.service;
+package kostka.moviecatalog.service.integrationTests;
 
 import kostka.moviecatalog.MovieCatalogApplication;
 import kostka.moviecatalog.dto.MovieDto;
@@ -7,6 +7,8 @@ import kostka.moviecatalog.exception.InvalidDtoException;
 import kostka.moviecatalog.exception.MovieNotFoundException;
 import kostka.moviecatalog.repository.MovieElasticSearchRepository;
 import kostka.moviecatalog.repository.MovieRepository;
+import kostka.moviecatalog.service.DbMovieService;
+import kostka.moviecatalog.service.EsMovieService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,13 +26,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest(classes = MovieCatalogApplication.class)
 @Transactional
 public class DbMovieServiceIntegrationTest {
-    private static final String TEST_NAME = "testName";
-    private static final String TEST_NAME_2 = "testName2";
-    private static final String TEST_CAMERA = "testCamera";
-    private static final String TEST_DESCRIPTION = "testDescription";
-    private static final String TEST_DIRECTOR = "testDirector";
-    private static final String TEST_MUSIC = "testMusic";
-    private static final long NON_EXISTING_MOVIE_ID = 0L;
+    public static final String TEST_NAME = "testName";
+    public static final String TEST_NAME_2 = "testName2";
+    public static final String TEST_CAMERA = "testCamera";
+    public static final String TEST_DESCRIPTION = "testDescription";
+    public static final String TEST_DIRECTOR = "testDirector";
+    public static final String TEST_MUSIC = "testMusic";
+    public static final long NON_EXISTING_MOVIE_ID = 0L;
 
     @Autowired
     private MovieRepository movieRepository;
@@ -94,7 +96,8 @@ public class DbMovieServiceIntegrationTest {
 
     @Test
     public void getExistingMovieIntegrationTest() {
-        Movie returnedMovie = dbMovieService.getMovie(1L);
+        Movie movie = dbMovieService.getAllMoviesFromDB().get(0);
+        Movie returnedMovie = dbMovieService.getMovie(movie.getId());
 
         assertThat(returnedMovie.getName()).isEqualTo(TEST_NAME);
         assertThat(returnedMovie.getDirector()).isEqualTo(TEST_DIRECTOR);
