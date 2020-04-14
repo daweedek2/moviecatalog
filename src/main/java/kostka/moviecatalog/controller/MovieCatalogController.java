@@ -4,9 +4,11 @@ import kostka.moviecatalog.dto.MovieDto;
 import kostka.moviecatalog.dto.SearchCriteriaDto;
 import kostka.moviecatalog.entity.EsMovie;
 import kostka.moviecatalog.entity.Movie;
+import kostka.moviecatalog.entity.MovieDetail;
 import kostka.moviecatalog.exception.InvalidDtoException;
 import kostka.moviecatalog.service.DbMovieService;
 import kostka.moviecatalog.service.EsMovieService;
+import kostka.moviecatalog.service.MovieDetailService;
 import kostka.moviecatalog.service.MovieSpecificationService;
 import kostka.moviecatalog.service.rabbitmq.RabbitMqSender;
 import org.slf4j.Logger;
@@ -32,16 +34,19 @@ public class MovieCatalogController {
     private EsMovieService esMovieService;
     private RabbitMqSender rabbitMqSender;
     private MovieSpecificationService specificationService;
+    private MovieDetailService movieDetailService;
     static final Logger LOGGER = LoggerFactory.getLogger(MovieCatalogController.class);
     @Autowired
     public MovieCatalogController(final DbMovieService dbMovieService,
                                   final EsMovieService esMovieService,
                                   final RabbitMqSender rabbitMqSender,
-                                  final MovieSpecificationService specificationService) {
+                                  final MovieSpecificationService specificationService,
+                                  final MovieDetailService movieDetailService) {
         this.dbMovieService = dbMovieService;
         this.esMovieService = esMovieService;
         this.rabbitMqSender = rabbitMqSender;
         this.specificationService = specificationService;
+        this.movieDetailService = movieDetailService;
     }
 
     @GetMapping("/all")
@@ -103,8 +108,9 @@ public class MovieCatalogController {
         return dbMovieService.getTop5RatingMoviesFromCache();
     }
 
-    public Movie getMovieDetail(final @PathVariable("id") Long movieId) {
+    @GetMapping("/{movieId}")
+    public MovieDetail getMovieDetail(final @PathVariable Long movieId) {
         LOGGER.info("get movie detail request");
-        return dbMovieService.getMovie(movieId);
+        return movieDetailService.getMovieDetail(movieId);
     }
 }

@@ -2,6 +2,7 @@ package kostka.commentservice.controller;
 
 import kostka.commentservice.dto.CommentDto;
 import kostka.commentservice.model.Comment;
+import kostka.commentservice.model.MovieComments;
 import kostka.commentservice.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,8 +30,10 @@ public class CommentController {
     }
 
     @GetMapping("/{movieId}")
-    public List<Comment> getCommentsForMovie(@PathVariable final Long movieId) {
-        return commentService.getAllCommentsForMovie(movieId);
+    public MovieComments getCommentsForMovie(@PathVariable final Long movieId) {
+        MovieComments movieComments = new MovieComments();
+        movieComments.setComments(commentService.getAllCommentsForMovie(movieId));
+        return movieComments;
     }
 
     @GetMapping("/all")
