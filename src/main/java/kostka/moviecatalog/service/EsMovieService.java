@@ -2,6 +2,7 @@ package kostka.moviecatalog.service;
 
 import kostka.moviecatalog.entity.EsMovie;
 import kostka.moviecatalog.entity.Movie;
+import kostka.moviecatalog.exception.MovieNotFoundException;
 import kostka.moviecatalog.repository.MovieElasticSearchRepository;
 import kostka.moviecatalog.repository.MovieRepository;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -36,7 +37,7 @@ public class EsMovieService {
         Optional<Movie> optionalMovie = movieRepository.findById(Long.valueOf(id));
         if (optionalMovie.isEmpty()) {
             LOGGER.info("Movie with Id '{}' not found in mysql DB.", id);
-            return null;
+            throw new MovieNotFoundException();
         }
         Movie dbMovie = optionalMovie.get();
         EsMovie esMovie = this.populateEsMovieFromDbMovie(dbMovie);
@@ -49,6 +50,22 @@ public class EsMovieService {
     }
 
     public List<EsMovie> fullTextSearch(final String term) {
+        QueryStringQueryBuilder builder = this.getQueryBuilderForESFullTextSearchTerm(term);
+        LOGGER.info("Searching in ElasticSearch for term '{}' in String fields of ElasticSearch Movie.", term);
+        Iterable<EsMovie> foundMovies = movieElasticSearchRepository.search(builder);
+        return StreamSupport.stream(foundMovies.spliterator(), false).collect(Collectors.toList());
+    }
+
+    public EsMovie populateEsMovieFromDbMovie(final Movie movie) {
+        EsMovie esMovie = new EsMovie();
+        esMovie.setId(movie.getId());
+        esMovie.setName(movie.getName());
+        esMovie.setDirector(movie.getDirector());
+        esMovie.setDescription(movie.getDescription());
+        return esMovie;
+    }
+
+    public QueryStringQueryBuilder getQueryBuilderForESFullTextSearchTerm(final String term) {
         QueryStringQueryBuilder builder = QueryBuilders
                 .queryStringQuery(term)
                 .autoGenerateSynonymsPhraseQuery(true);
@@ -57,17 +74,6 @@ public class EsMovieService {
                 .collect(Collectors.toSet());
         esMovieStringFields
                 .forEach(field -> builder.field(field.getName()));
-        LOGGER.info("Searching in ElasticSearch for term '{}' in String fields {}", term, esMovieStringFields);
-        Iterable<EsMovie> foundMovies = movieElasticSearchRepository.search(builder);
-        return StreamSupport.stream(foundMovies.spliterator(), false).collect(Collectors.toList());
-    }
-
-    private EsMovie populateEsMovieFromDbMovie(final Movie movie) {
-        EsMovie esMovie = new EsMovie();
-        esMovie.setId(movie.getId());
-        esMovie.setName(movie.getName());
-        esMovie.setDirector(movie.getDirector());
-        esMovie.setDescription(movie.getDescription());
-        return esMovie;
+        return builder;
     }
 }
