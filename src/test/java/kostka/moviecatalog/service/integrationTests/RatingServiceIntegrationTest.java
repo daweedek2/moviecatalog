@@ -1,4 +1,4 @@
-package kostka.moviecatalog.service;
+package kostka.moviecatalog.service.integrationTests;
 
 import kostka.moviecatalog.MovieCatalogApplication;
 import kostka.moviecatalog.dto.MovieDto;
@@ -7,6 +7,9 @@ import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.exception.InvalidDtoException;
 import kostka.moviecatalog.exception.MovieNotFoundException;
 import kostka.moviecatalog.repository.MovieElasticSearchRepository;
+import kostka.moviecatalog.service.DbMovieService;
+import kostka.moviecatalog.service.EsMovieService;
+import kostka.moviecatalog.service.RatingService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +38,7 @@ public class RatingServiceIntegrationTest {
     MovieElasticSearchRepository movieElasticSearchRepository;
 
     @Test
-    public void createRatingIntegrationTest() throws Exception {
+    public void createRatingIntegrationTest() {
         MovieDto movieDto = new MovieDto();
         movieDto.setName(TEST_NAME);
         Movie movie = dbMovieService.createMovie(movieDto);

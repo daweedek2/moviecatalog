@@ -31,6 +31,7 @@ public class RabbitMqReceiver {
     public static final String RECALCULATE_KEY = "recalculate";
     public static final String DEFAULT_KEY = "default";
     public static final String CANNOT_PARSE_JSON = "Cannot parse JSON";
+    public static final String TOPIC = "/topic/";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMqReceiver.class);
 
@@ -59,7 +60,11 @@ public class RabbitMqReceiver {
     )
     public void receiveMessageElasticQueue(final String id) {
         LOGGER.info("Received movie from rabbitMQ elastic-queue with id '{}'.", id);
-        esMovieService.createMovie(id);
+        try {
+            esMovieService.createMovie(id);
+        } catch (Exception e) {
+            LOGGER.error("Movie cannot be created in ES.", e);
+        }
     }
 
     @RabbitListener(
