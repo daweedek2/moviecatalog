@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie Detail</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+<h2 class="header-panel" th:text="${movieDetail.name}"></h2>
+    <p class="text">Movie Id: <span th:text="${movieDetail.movieId}"></span>
+    </p>
+    <p class="text">Director: <span th:text="${movieDetail.director}"></span>
+    </p>
+    <p class="text">Description: <span th:text="${movieDetail.description}"></span>
+    </p>
+    <p class="text">Rating: <span th:text="${movieDetail.rating}"></span>
+    </p>
+    <div class="container">
+        <table class="table">
+            <thead>
+            <tr>
+                <th> Comment Id </th>
+                <th> Movie Id </th>
+                <th> Author Id </th>
+                <th> Text </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${movieDetail.comments.empty}">
+                <td colspan="2"> No Comments Available </td>
+            </tr>
+            <tr th:each="comment : ${movieDetail.comments}">
+                <td><span th:text="${comment.commentId}"></span></td>
+                <td><span th:text="${comment.movieId}"> </span></td>
+                <td><span th:text="${comment.authorId}"> </span></td>
+                <td><span th:text="${comment.commentText}"> </span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

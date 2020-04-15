@@ -1,6 +1,5 @@
 package kostka.commentservice.model;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -12,11 +11,8 @@ public class Comment {
     @Id
     @GeneratedValue
     private Long commentId;
-    @Column
     private Long movieId;
-    @Column
     private Long authorId;
-    @Column
     private String commentText;
 
     public Comment() {

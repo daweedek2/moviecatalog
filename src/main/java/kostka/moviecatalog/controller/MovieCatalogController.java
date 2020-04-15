@@ -4,11 +4,9 @@ import kostka.moviecatalog.dto.MovieDto;
 import kostka.moviecatalog.dto.SearchCriteriaDto;
 import kostka.moviecatalog.entity.EsMovie;
 import kostka.moviecatalog.entity.Movie;
-import kostka.moviecatalog.entity.MovieDetail;
 import kostka.moviecatalog.exception.InvalidDtoException;
 import kostka.moviecatalog.service.DbMovieService;
 import kostka.moviecatalog.service.EsMovieService;
-import kostka.moviecatalog.service.MovieDetailService;
 import kostka.moviecatalog.service.MovieSpecificationService;
 import kostka.moviecatalog.service.rabbitmq.RabbitMqSender;
 import org.slf4j.Logger;
@@ -17,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,19 +31,16 @@ public class MovieCatalogController {
     private EsMovieService esMovieService;
     private RabbitMqSender rabbitMqSender;
     private MovieSpecificationService specificationService;
-    private MovieDetailService movieDetailService;
     static final Logger LOGGER = LoggerFactory.getLogger(MovieCatalogController.class);
     @Autowired
     public MovieCatalogController(final DbMovieService dbMovieService,
                                   final EsMovieService esMovieService,
                                   final RabbitMqSender rabbitMqSender,
-                                  final MovieSpecificationService specificationService,
-                                  final MovieDetailService movieDetailService) {
+                                  final MovieSpecificationService specificationService) {
         this.dbMovieService = dbMovieService;
         this.esMovieService = esMovieService;
         this.rabbitMqSender = rabbitMqSender;
         this.specificationService = specificationService;
-        this.movieDetailService = movieDetailService;
     }
 
     @GetMapping("/all")
@@ -106,11 +100,5 @@ public class MovieCatalogController {
     public String getTopRatingMovies() {
         LOGGER.info("get 5 top rating movies request");
         return dbMovieService.getTop5RatingMoviesFromCache();
-    }
-
-    @GetMapping("/{movieId}")
-    public MovieDetail getMovieDetail(final @PathVariable Long movieId) {
-        LOGGER.info("get movie detail request");
-        return movieDetailService.getMovieDetail(movieId);
     }
 }

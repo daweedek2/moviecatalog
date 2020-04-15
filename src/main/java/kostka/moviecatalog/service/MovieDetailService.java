@@ -18,7 +18,7 @@ import java.util.Objects;
 public class MovieDetailService {
     private DbMovieService movieService;
     private static final Logger LOGGER = LoggerFactory.getLogger(MovieDetailService.class);
-    private static final String commentUrl = "http://localhost:8082/comments/";
+    private static final String COMMENT_URL = "http://localhost:8082/comments/";
     private RestTemplate restTemplate = new RestTemplate();
 
     @Autowired
@@ -32,6 +32,8 @@ public class MovieDetailService {
             movie = movieService.getMovie(movieId);
         } catch (MovieNotFoundException e) {
             LOGGER.error("Movie not found", e);
+            movie = new Movie();
+            movie.setName("Movie does not exists  with this id: " + movieId);
         }
         List<Comment> comments = this.getCommentsFromCommentService(movieId);
 
@@ -56,7 +58,7 @@ public class MovieDetailService {
     private List<Comment> getCommentsFromCommentService(final Long movieId) {
         LOGGER.info("Getting comments from Comment service.");
         MovieComments commentsResponse = restTemplate.getForObject(
-                commentUrl + movieId,
+                COMMENT_URL + movieId,
                 MovieComments.class);
         return Objects.requireNonNull(commentsResponse).getComments();
     }

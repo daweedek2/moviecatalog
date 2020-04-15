@@ -59,7 +59,7 @@ public class MovieDetail {
         return rating;
     }
 
-    public void setRating(int rating) {
+    public void setRating(final int rating) {
         this.rating = rating;
     }
 
