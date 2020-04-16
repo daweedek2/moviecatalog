@@ -11,6 +11,9 @@ public class CommentDto {
         this.commentText = commentText;
     }
 
+    public CommentDto() {
+    }
+
     public Long getMovieId() {
         return movieId;
     }
