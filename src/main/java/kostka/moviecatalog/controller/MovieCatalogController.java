@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -101,10 +100,5 @@ public class MovieCatalogController {
     public String getTopRatingMovies() {
         LOGGER.info("get 5 top rating movies request");
         return dbMovieService.getTop5RatingMoviesFromCache();
-    }
-
-    public Movie getMovieDetail(final @PathVariable("id") Long movieId) {
-        LOGGER.info("get movie detail request");
-        return dbMovieService.getMovie(movieId);
     }
 }

@@ -5,8 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 @EnableElasticsearchRepositories
@@ -14,9 +16,14 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class MovieCatalogApplication {
     static final Logger LOGGER = LoggerFactory.getLogger(MovieCatalogApplication.class);
+
+    @Bean
+    public RestTemplate getRestTemplate() {
+        return new RestTemplate();
+    }
+
     public static void main(final String[] args) {
         SpringApplication.run(MovieCatalogApplication.class, args);
         LOGGER.info("moviecatalog is running :)");
     }
-
 }
