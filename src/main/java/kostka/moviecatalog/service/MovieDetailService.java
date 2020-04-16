@@ -17,13 +17,15 @@ import java.util.Objects;
 @Service
 public class MovieDetailService {
     private DbMovieService movieService;
+    private RestTemplate restTemplate;
     private static final Logger LOGGER = LoggerFactory.getLogger(MovieDetailService.class);
-    private static final String COMMENT_URL = "http://localhost:8082/comments/";
-    private RestTemplate restTemplate = new RestTemplate();
+    private static final String COMMENT_URL_SERVICE_DISCOVERY = "http://comment-service/comments/";
+    private static final String COMMENT_URL_HARDCODED = "http://localhost:8082/comments/";
 
     @Autowired
-    public MovieDetailService(final DbMovieService movieService) {
+    public MovieDetailService(final DbMovieService movieService, final RestTemplate restTemplate) {
         this.movieService = movieService;
+        this.restTemplate = restTemplate;
     }
 
     public MovieDetail getMovieDetail(final Long movieId) {
@@ -36,10 +38,6 @@ public class MovieDetailService {
             movie.setName("Movie does not exists  with this id: " + movieId);
         }
         List<Comment> comments = this.getCommentsFromCommentService(movieId);
-
-        if (movie == null || comments == null) {
-            throw new MovieNotFoundException();
-        }
         LOGGER.info("Movie data are prepared.");
         return populateMovieDetail(movie, comments);
     }
@@ -58,7 +56,7 @@ public class MovieDetailService {
     private List<Comment> getCommentsFromCommentService(final Long movieId) {
         LOGGER.info("Getting comments from Comment service.");
         MovieComments commentsResponse = restTemplate.getForObject(
-                COMMENT_URL + movieId,
+                COMMENT_URL_HARDCODED + movieId,
                 MovieComments.class);
         return Objects.requireNonNull(commentsResponse).getComments();
     }

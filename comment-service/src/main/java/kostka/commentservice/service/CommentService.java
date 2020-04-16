@@ -39,10 +39,7 @@ public class CommentService {
 
     public Comment getComment(final Long id) {
         Optional<Comment> optionalComment = commentRepository.findById(id);
-        if (optionalComment.isEmpty()) {
-            throw new CommentNotFoundException();
-        }
-        return optionalComment.get();
+        return optionalComment.orElseThrow(CommentNotFoundException::new);
     }
 
     public List<Comment> getAllCommentsForMovie(final Long id) {
