@@ -42,7 +42,7 @@ public class CommentServiceTest {
 
         Comment result = commentService.createComment(dto);
 
-        assertThat(result).isEqualTo(comment);
+        assertThat(result).isNotEqualTo(comment);
     }
 
     @Test
