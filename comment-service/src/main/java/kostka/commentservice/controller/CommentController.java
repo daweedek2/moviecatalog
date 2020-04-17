@@ -4,6 +4,8 @@ import kostka.commentservice.dto.CommentDto;
 import kostka.commentservice.model.Comment;
 import kostka.commentservice.model.MovieComments;
 import kostka.commentservice.service.CommentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +20,7 @@ import java.util.List;
 @RequestMapping("/comments")
 public class CommentController {
     private CommentService commentService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommentController.class);
 
     @Autowired
     public CommentController(final CommentService commentService) {
@@ -31,6 +34,7 @@ public class CommentController {
 
     @GetMapping("/{movieId}")
     public MovieComments getCommentsForMovie(@PathVariable final Long movieId) {
+        LOGGER.info("getting comments for movie with id {}", movieId);
         MovieComments movieComments = new MovieComments();
         movieComments.setComments(commentService.getAllCommentsForMovie(movieId));
         return movieComments;
