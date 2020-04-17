@@ -33,7 +33,7 @@ public class MovieDetailService {
         try {
             movie = movieService.getMovie(movieId);
         } catch (MovieNotFoundException e) {
-            LOGGER.error("Movie not found", e);
+            LOGGER.error("Movie not with id '{}' not found", movieId, e);
             movie = new Movie();
             movie.setName("Movie does not exists  with this id: " + movieId);
         }
