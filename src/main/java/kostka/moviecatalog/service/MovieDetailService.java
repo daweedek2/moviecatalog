@@ -56,7 +56,7 @@ public class MovieDetailService {
     private List<Comment> getCommentsFromCommentService(final Long movieId) {
         LOGGER.info("Getting comments from Comment service.");
         MovieComments commentsResponse = restTemplate.getForObject(
-                COMMENT_URL_HARDCODED + movieId,
+                COMMENT_URL_SERVICE_DISCOVERY + movieId,
                 MovieComments.class);
         return Objects.requireNonNull(commentsResponse).getComments();
     }
