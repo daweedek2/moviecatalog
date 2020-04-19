@@ -42,6 +42,9 @@ public class EsMovieServiceTest {
     @Mock
     MovieRepository movieRepository;
 
+    @Mock
+    private StatisticService statisticService;
+
     private Generator generator = new Generator();
 
     @Test

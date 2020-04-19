@@ -28,14 +28,17 @@ public class DbMovieService {
     private MovieRepository movieRepository;
     private EsMovieService esMovieService;
     private RedisService redisService;
+    private StatisticService statisticService;
 
     @Autowired
     public DbMovieService(final MovieRepository movieRepository,
                           final EsMovieService esMovieService,
-                          final RedisService redisService) {
+                          final RedisService redisService,
+                          final StatisticService statisticService) {
         this.movieRepository = movieRepository;
         this.esMovieService = esMovieService;
         this.redisService = redisService;
+        this.statisticService = statisticService;
     }
 
     public Movie createMovie(final MovieDto dto) {
@@ -49,11 +52,13 @@ public class DbMovieService {
     }
 
     public Movie saveMovie(@NonNull final Movie movie) {
+        statisticService.incrementSyncedDbCounter();
         return movieRepository.save(movie);
     }
 
     public Movie getMovie(final Long movieId) {
         Optional<Movie> movie = movieRepository.findById(movieId);
+        statisticService.incrementSyncedDbCounter();
         if (movie.isEmpty()) {
             throw new MovieNotFoundException();
         }
@@ -65,11 +70,13 @@ public class DbMovieService {
                 .stream()
                 .map(EsMovie::getId)
                 .collect(Collectors.toList());
+        statisticService.incrementSyncedDbCounter();
         return movieRepository.findByIdInOrderByIdDesc(ids);
     }
 
     public List<Movie> getAllMoviesFromDB() {
         LOGGER.info("get all from DB");
+        statisticService.incrementSyncedDbCounter();
         return movieRepository.findAll();
     }
 
@@ -80,11 +87,13 @@ public class DbMovieService {
         } catch (Exception e) {
             LOGGER.error("sleep error", e);
         }
+        statisticService.incrementSyncedDbCounter();
         return movieRepository.findTop5ByOrderByRatingDesc();
     }
 
     public List<Movie> get5LatestMoviesFromDB() {
         LOGGER.info("get latest 5 from DB");
+        statisticService.incrementSyncedDbCounter();
         return movieRepository.findTop5ByOrderByIdDesc();
     }
 

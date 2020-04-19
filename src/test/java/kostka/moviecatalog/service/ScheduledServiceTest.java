@@ -15,6 +15,8 @@ public class ScheduledServiceTest {
     private ScheduledService scheduledService;
     @Mock
     private RabbitMqSender rabbitMqSender;
+    @Mock
+    private StatisticService statisticService;
 
     @Test
     public void updateAllMoviesInRedisAndFETest() {

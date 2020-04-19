@@ -43,6 +43,10 @@ public class DbMovieServiceTest {
     @Mock
     RedisService redisService;
 
+    @Mock
+    private StatisticService statisticService;
+
+
     private Generator generator = new Generator();
 
     @Test

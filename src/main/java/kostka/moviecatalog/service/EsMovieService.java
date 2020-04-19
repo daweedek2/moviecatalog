@@ -25,16 +25,20 @@ public class EsMovieService {
     static final Logger LOGGER = LoggerFactory.getLogger(EsMovieService.class);
     private MovieElasticSearchRepository movieElasticSearchRepository;
     private MovieRepository movieRepository;
+    private StatisticService statisticService;
 
     @Autowired
     public EsMovieService(final MovieElasticSearchRepository movieElasticSearchRepository,
-                          final MovieRepository movieRepository) {
+                          final MovieRepository movieRepository,
+                          final StatisticService statisticService) {
         this.movieElasticSearchRepository = movieElasticSearchRepository;
         this.movieRepository = movieRepository;
+        this.statisticService = statisticService;
     }
 
     public EsMovie createMovie(final String id) {
         Optional<Movie> optionalMovie = movieRepository.findById(Long.valueOf(id));
+        statisticService.incrementSyncedElasticCounter();
         if (optionalMovie.isEmpty()) {
             LOGGER.info("Movie with Id '{}' not found in mysql DB.", id);
             throw new MovieNotFoundException();
@@ -50,6 +54,7 @@ public class EsMovieService {
     }
 
     public List<EsMovie> fullTextSearch(final String term) {
+        statisticService.incrementSyncedElasticCounter();
         QueryStringQueryBuilder builder = this.getQueryBuilderForESFullTextSearchTerm(term);
         LOGGER.info("Searching in ElasticSearch for term '{}' in String fields of ElasticSearch Movie.", term);
         Iterable<EsMovie> foundMovies = movieElasticSearchRepository.search(builder);
