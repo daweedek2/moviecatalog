@@ -20,6 +20,8 @@ public class RabbitMqSenderTest {
     private RabbitMqSender rabbitMqSender;
     @Mock
     private RabbitTemplate rabbitTemplate;
+    @Mock
+    private StatisticService statisticService;
 
     @Test
     public void sendToElasticQueueTest() {

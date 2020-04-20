@@ -3,6 +3,7 @@ package kostka.moviecatalog.service.rabbitmq;
 import kostka.moviecatalog.service.DbMovieService;
 import kostka.moviecatalog.service.EsMovieService;
 import kostka.moviecatalog.service.STOMPService;
+import kostka.moviecatalog.service.StatisticService;
 import kostka.moviecatalog.service.redis.RedisService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,16 +40,19 @@ public class RabbitMqReceiver {
     private DbMovieService dbMovieService;
     private RedisService redisService;
     private STOMPService stompService;
+    private StatisticService statisticService;
 
     @Autowired
     public RabbitMqReceiver(final EsMovieService esMovieService,
                             final DbMovieService dbmovieService,
                             final RedisService redisService,
-                            final STOMPService stompService) {
+                            final STOMPService stompService,
+                            final StatisticService statisticService) {
         this.esMovieService = esMovieService;
         this.dbMovieService = dbmovieService;
         this.redisService = redisService;
         this.stompService = stompService;
+        this.statisticService = statisticService;
     }
 
     @RabbitListener(
@@ -60,6 +64,7 @@ public class RabbitMqReceiver {
     )
     public void receiveMessageElasticQueue(final String id) {
         LOGGER.info("Received movie from rabbitMQ elastic-queue with id '{}'.", id);
+        statisticService.incrementSyncedRabbitMqCounter();
         try {
             esMovieService.createMovie(id);
         } catch (Exception e) {
@@ -76,6 +81,7 @@ public class RabbitMqReceiver {
     )
     public void receiveUpdateRequestRecalculateQueue() {
         LOGGER.info("Received message from RabbitMQ to recalculate all tables.");
+        statisticService.incrementSyncedRabbitMqCounter();
         try {
             CompletableFuture<Void> allMoviesRedis = redisService
                     .tryToUpdateMoviesInRedis(dbMovieService::getAllMoviesFromDB, ALL_MOVIES_KEY);

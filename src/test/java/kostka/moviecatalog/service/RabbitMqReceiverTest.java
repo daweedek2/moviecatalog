@@ -27,6 +27,8 @@ public class RabbitMqReceiverTest {
     private DbMovieService dbMovieService;
     @Mock
     private STOMPService stompService;
+    @Mock
+    private StatisticService statisticService;
 
     @Test
     public void receiveMessageElasticQueueTest() {

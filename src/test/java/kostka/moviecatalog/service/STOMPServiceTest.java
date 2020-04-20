@@ -18,6 +18,8 @@ public class STOMPServiceTest {
     private STOMPService stompService;
     @Mock
     SimpMessagingTemplate simpMessagingTemplate;
+    @Mock
+    private StatisticService statisticService;
 
     @Test
     public void sendSTOMPToUpdateAllTablesTest() {

@@ -25,6 +25,9 @@ public class RatingServiceTest {
     @Mock
     DbMovieService dbMovieService;
 
+    @Mock
+    private StatisticService statisticService;
+
     private Generator generator = new Generator();
 
     @Test
