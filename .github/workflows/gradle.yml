@@ -25,10 +25,12 @@ jobs:
           java-version: 1.11
 
       - name: Grant execute permission for CommentService gradlew
-        run: chmod +x ./comment-service/gradlew
+        run: chmod +x gradlew
+        working-directory: ./comment-service
 
       - name: Build CommentService with Gradle
-        run: ./comment-service/gradlew clean build
+        run: ./gradlew clean build
+        working-directory: ./comment-service
 
       - name: Grant execute permission for MovieCatalog gradlew
         run: chmod +x gradlew
