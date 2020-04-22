@@ -24,7 +24,7 @@ public class RatingService {
 
     public Movie createRating(final RatingDto dto) {
         Long movieId = dto.getMovieId();
-        int rating = dto.getRating();
+        int rating = dto.getRatingValue();
         if (!isValidDto(dto)) {
             LOGGER.error("Dto has no ID specified or rating is out of range");
             throw new InvalidDtoException();
@@ -41,7 +41,7 @@ public class RatingService {
 
     private boolean isValidDto(final RatingDto dto) {
         Long movieId = dto.getMovieId();
-        int rating = dto.getRating();
+        int rating = dto.getRatingValue();
         return rating >= MIN_RATING_VALUE && rating <= MAX_RATING_VALUE && movieId != null;
     }
 }

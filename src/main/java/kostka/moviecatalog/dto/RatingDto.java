@@ -12,7 +12,7 @@ public class RatingDto {
     private Long movieId;
     @NotNull(message = "Rating cannot be empty.")
     @Range(min = MIN_RATING_VALUE, max = MAX_RATING_VALUE)
-    private int rating;
+    private int ratingValue;
 
     public Long getMovieId() {
         return movieId;
@@ -22,11 +22,11 @@ public class RatingDto {
         this.movieId = movieId;
     }
 
-    public int getRating() {
-        return rating;
+    public int getRatingValue() {
+        return ratingValue;
     }
 
-    public void setRating(final int rating) {
-        this.rating = rating;
+    public void setRatingValue(final int ratingValue) {
+        this.ratingValue = ratingValue;
     }
 }

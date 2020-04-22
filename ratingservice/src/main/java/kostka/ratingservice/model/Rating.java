@@ -1,10 +1,22 @@
-package kostka.moviecatalog.entity;
+package kostka.ratingservice.model;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "rating")
 public class Rating {
+    @Id
+    @GeneratedValue
     private Long ratingId;
     private Long movieId;
     private Long userId;
     private int ratingValue;
+
+    public Rating(final Long ratingId, final Long movieId, final Long userId, final int ratingValue) {
+    }
 
     public Rating() {
     }

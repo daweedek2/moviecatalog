@@ -1,20 +1,17 @@
-package kostka.moviecatalog.entity;
+package kostka.ratingservice.dto;
 
-public class Rating {
-    private Long ratingId;
+public class RatingDto {
     private Long movieId;
     private Long userId;
     private int ratingValue;
 
-    public Rating() {
+    public RatingDto(final Long movieId, final Long userId, final int ratingValue) {
+        this.movieId = movieId;
+        this.userId = userId;
+        this.ratingValue = ratingValue;
     }
 
-    public Long getRatingId() {
-        return ratingId;
-    }
-
-    public void setRatingId(final Long ratingId) {
-        this.ratingId = ratingId;
+    public RatingDto() {
     }
 
     public Long getMovieId() {

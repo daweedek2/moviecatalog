@@ -46,3 +46,10 @@ jobs:
         run: ./gradlew clean build
         working-directory: ./servicediscovery
 
+      - name: Grant execute permission for RatingService gradlew
+        run: chmod +x gradlew
+        working-directory: ./ratingservice
+
+      - name: Build RatingService with Gradle
+        run: ./gradlew clean build
+        working-directory: ./ratingservice
