@@ -115,7 +115,7 @@ public class RabbitMqReceiver {
         LOGGER.info("Received message from RabbitMQ to get Ratings for all movies.");
         statisticService.incrementSyncedRabbitMqCounter();
         List<Movie> allMovies = dbMovieService.getAllMoviesFromDB();
-        allMovies.parallelStream().forEach(
+        allMovies.forEach(
                 movie -> {
                     LOGGER.info("Updating movie with id {} average rating.", movie.getId());
                     movie.setAverageRating(
