@@ -81,4 +81,8 @@ public class EsMovieService {
                 .forEach(field -> builder.field(field.getName()));
         return builder;
     }
+
+    public void deleteEsMovie(final String movieId) {
+        movieElasticSearchRepository.deleteById(Long.valueOf(movieId));
+    }
 }

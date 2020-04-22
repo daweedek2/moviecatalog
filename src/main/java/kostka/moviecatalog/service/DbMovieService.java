@@ -109,6 +109,10 @@ public class DbMovieService {
         return redisService.getMoviesWithKey(LATEST_MOVIES_KEY);
     }
 
+    public void deleteMovie(final Long movieId) {
+        movieRepository.deleteById(movieId);
+    }
+
     private Movie populateMovieFromDto(final MovieDto dto) {
         Movie movie = new Movie();
         movie.setName(dto.getName());

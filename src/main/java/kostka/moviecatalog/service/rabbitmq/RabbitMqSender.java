@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.CREATE_MOVIE_KEY;
+import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.DELETE_MOVIE_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.RATING_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.RECALCULATE_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.TOPIC_EXCHANGE;
@@ -24,11 +25,18 @@ public class RabbitMqSender {
         this.statisticService = statisticService;
     }
 
-    public void sendToElasticQueue(final String movieName) {
-        LOGGER.info("Starting sending of movie name '{}' to rabbitMQ elastic-queue.", movieName);
+    public void sendToCreateElasticQueue(final String movieName) {
+        LOGGER.info("Starting sending of movie name '{}' to rabbitMQ create elastic-queue.", movieName);
         rabbitTemplate.convertAndSend(TOPIC_EXCHANGE, CREATE_MOVIE_KEY, movieName);
         statisticService.incrementSyncedRabbitMqCounter();
-        LOGGER.info("Movie name '{}' is sent to rabbitMQ elastic-queue.", movieName);
+        LOGGER.info("Movie name '{}' is sent to rabbitMQ create elastic-queue.", movieName);
+    }
+
+    public void sendToDeleteElasticQueue(final String movieName) {
+        LOGGER.info("Starting sending of movie name '{}' to rabbitMQ delete elastic-queue.", movieName);
+        rabbitTemplate.convertAndSend(TOPIC_EXCHANGE, DELETE_MOVIE_KEY, movieName);
+        statisticService.incrementSyncedRabbitMqCounter();
+        LOGGER.info("Movie name '{}' is sent to rabbitMQ delete elastic-queue.", movieName);
     }
 
     public void sendUpdateRequestToQueue() {

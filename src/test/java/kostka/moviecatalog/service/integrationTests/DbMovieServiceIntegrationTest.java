@@ -16,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -111,5 +112,24 @@ public class DbMovieServiceIntegrationTest {
     public void getNonExistingMovieIntegrationTest() {
         assertThatThrownBy(() -> dbMovieService.getMovie(NON_EXISTING_MOVIE_ID))
         .isInstanceOf(MovieNotFoundException.class);
+    }
+
+    @Test
+    public void deleteExistingMovieTest() {
+        int before = movieRepository.findAll().size();
+        Movie movie = dbMovieService.getAllMoviesFromDB().get(0);
+
+        dbMovieService.deleteMovie(movie.getId());
+
+        assertThat(movieRepository.findAll().size()).isEqualTo(before - 1);
+    }
+
+    @Test
+    public void deleteNotExistingMovieTest() {
+        int before = movieRepository.findAll().size();
+
+        assertThatThrownBy(() -> dbMovieService.deleteMovie(NON_EXISTING_MOVIE_ID))
+                .isInstanceOf(EmptyResultDataAccessException.class);
+        assertThat(movieRepository.findAll().size()).isEqualTo(before);
     }
 }
