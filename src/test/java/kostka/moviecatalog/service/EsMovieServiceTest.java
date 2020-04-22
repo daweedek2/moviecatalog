@@ -33,6 +33,7 @@ public class EsMovieServiceTest {
     public static final String NAME_FIELD = "name";
     public static final String DIRECTOR_FIELD = "director";
     public static final String DESCRIPTION_FIELD = "description";
+    private static final String TEST_ID_STRING = "1";
     @InjectMocks
     EsMovieService esMovieService;
 
@@ -125,6 +126,11 @@ public class EsMovieServiceTest {
 
         QueryStringQueryBuilder result = esMovieService.getQueryBuilderForESFullTextSearchTerm(TEST_TERM);
         assertThat(result).isEqualTo(builder);
+    }
 
+    @Test
+    public void deleteExistingEsMovieTest() {
+        esMovieService.deleteEsMovie(TEST_ID_STRING);
+        verify(movieElasticSearchRepository).deleteById(eq(Long.valueOf(TEST_ID_STRING)));
     }
 }

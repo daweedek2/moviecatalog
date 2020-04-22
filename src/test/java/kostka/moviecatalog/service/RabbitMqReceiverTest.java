@@ -31,10 +31,17 @@ public class RabbitMqReceiverTest {
     private StatisticService statisticService;
 
     @Test
-    public void receiveMessageElasticQueueTest() {
+    public void receiveMessageCreateElasticQueueTest() {
         String id = "1";
-        rabbitMqReceiver.receiveMessageElasticQueue(id);
+        rabbitMqReceiver.receiveMessageCreateKeyElasticQueue(id);
         verify(esMovieService).createMovie(id);
+    }
+
+    @Test
+    public void receiveMessageDeleteElasticQueueTest() {
+        String id = "1";
+        rabbitMqReceiver.receiveMessageDeleteKeyElasticQueue(id);
+        verify(esMovieService).deleteEsMovie(id);
     }
 
     @Test

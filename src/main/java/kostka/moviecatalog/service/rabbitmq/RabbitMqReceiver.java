@@ -22,13 +22,15 @@ import java.util.concurrent.CompletableFuture;
 @Component
 public class RabbitMqReceiver {
     public static final String TOPIC_EXCHANGE = "movie-exchange";
-    public static final String ELASTIC_QUEUE = "elastic-queue";
+    public static final String CREATE_ELASTIC_QUEUE = "create-elastic-queue";
+    public static final String DELETE_ELASTIC_QUEUE = "delete-elastic-queue";
     public static final String LATEST_MOVIES_QUEUE = "latest-movies-queue";
     public static final String ALL_MOVIES_QUEUE = "all-movies-queue";
     public static final String RATING_QUEUE = "rating-queue";
     public static final String RECALCULATE_QUEUE = "recalculate-queue";
     public static final String DEFAULT_QUEUE = "default-queue";
     public static final String CREATE_MOVIE_KEY = "createMovie";
+    public static final String DELETE_MOVIE_KEY = "deleteMovie";
     public static final String LATEST_MOVIES_KEY = "latestMovies";
     public static final String TOP_RATING_KEY = "rating";
     public static final String ALL_MOVIES_KEY = "all-movies";
@@ -66,16 +68,33 @@ public class RabbitMqReceiver {
             bindings = @QueueBinding(
                     exchange = @Exchange(TOPIC_EXCHANGE),
                     key = CREATE_MOVIE_KEY,
-                    value = @Queue(ELASTIC_QUEUE)
+                    value = @Queue(CREATE_ELASTIC_QUEUE)
             )
     )
-    public void receiveMessageElasticQueue(final String id) {
+    public void receiveMessageCreateKeyElasticQueue(final String id) {
         LOGGER.info("Received movie from rabbitMQ elastic-queue with id '{}'.", id);
         statisticService.incrementSyncedRabbitMqCounter();
         try {
             esMovieService.createMovie(id);
         } catch (Exception e) {
             LOGGER.error("Movie cannot be created in ES.", e);
+        }
+    }
+
+    @RabbitListener(
+            bindings = @QueueBinding(
+                    exchange = @Exchange(TOPIC_EXCHANGE),
+                    key = DELETE_MOVIE_KEY,
+                    value = @Queue(DELETE_ELASTIC_QUEUE)
+            )
+    )
+    public void receiveMessageDeleteKeyElasticQueue(final String id) {
+        LOGGER.info("Received movie from rabbitMQ elastic-queue with id '{}'.", id);
+        statisticService.incrementSyncedRabbitMqCounter();
+        try {
+            esMovieService.deleteEsMovie(id);
+        } catch (Exception e) {
+            LOGGER.error("Movie with id '{}' cannot be deleted from ES.", id, e);
         }
     }
 

@@ -14,7 +14,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,7 +62,7 @@ public class MovieCatalogController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        rabbitMqSender.sendToElasticQueue(movie.getId().toString());
+        rabbitMqSender.sendToCreateElasticQueue(movie.getId().toString());
         rabbitMqSender.sendUpdateRequestToQueue();
         return new ResponseEntity<>(movie, HttpStatus.OK);
     }
@@ -100,5 +102,17 @@ public class MovieCatalogController {
     public String getTopRatingMovies() {
         LOGGER.info("get 5 top rating movies request");
         return dbMovieService.getTop5RatingMoviesFromCache();
+    }
+
+    @DeleteMapping("/delete/{movieId}")
+    public void deleteMovie(final @PathVariable Long movieId) {
+        LOGGER.info("delete movie with id '{}' request", movieId);
+        try {
+            dbMovieService.deleteMovie(movieId);
+            rabbitMqSender.sendToDeleteElasticQueue(movieId.toString());
+            rabbitMqSender.sendUpdateRequestToQueue();
+        } catch (Exception e) {
+            LOGGER.error("Movie with id '{}' cannot be deleted.", movieId, e);
+        }
     }
 }

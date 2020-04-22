@@ -22,9 +22,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DbMovieServiceTest {
+    private static final Long TEST_ID = 1L;
     private static final String TEST_NAME = "TestName";
     private static final String TEST_NAME_2 = "TestName2";
     public static final String ALL_MOVIES_KEY = "all-movies";
@@ -216,5 +219,11 @@ public class DbMovieServiceTest {
 
         assertThat(result).isEqualTo(movies.toString());
         assertThat(result).contains(TEST_NAME, TEST_NAME_2);
+    }
+
+    @Test
+    public void deleteExistingMovieTest() {
+        dbMovieService.deleteMovie(TEST_ID);
+        verify(movieRepository).deleteById(eq(TEST_ID));
     }
 }
