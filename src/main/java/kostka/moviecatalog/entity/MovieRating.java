@@ -1,4 +1,4 @@
-package kostka.ratingservice.model;
+package kostka.moviecatalog.entity;
 
 import java.util.List;
 
