@@ -25,7 +25,7 @@ public class Movie {
     @Column
     private String description;
     @Column
-    private int rating;
+    private double averageRating;
 
     public Movie(final Long id,
                  final String name,
@@ -33,14 +33,14 @@ public class Movie {
                  final String camera,
                  final String music,
                  final String description,
-                 final int rating) {
+                 final double averageRating) {
         this.id = id;
         this.name = name;
         this.director = director;
         this.camera = camera;
         this.music = music;
         this.description = description;
-        this.rating = rating;
+        this.averageRating = averageRating;
     }
 
     public Movie() {
@@ -94,12 +94,12 @@ public class Movie {
         this.description = description;
     }
 
-    public int getRating() {
-        return rating;
+    public double getAverageRating() {
+        return averageRating;
     }
 
-    public void setRating(final int rating) {
-        this.rating = rating;
+    public void setAverageRating(final double rating) {
+        this.averageRating = rating;
     }
 
     @Override
@@ -111,7 +111,7 @@ public class Movie {
                 ", camera='" + camera + '\'' +
                 ", music='" + music + '\'' +
                 ", description='" + description + '\'' +
-                ", rating=" + rating +
+                ", rating=" + averageRating +
                 '}';
     }
 }

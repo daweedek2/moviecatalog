@@ -37,7 +37,7 @@ public class RatingServiceIntegrationTest {
         Rating rating = ratingService.createRating(dto);
 
         assertThat(rating.getMovieId()).isEqualTo(TEST_ID_1);
-        assertThat(rating.getUserId()).isEqualTo(TEST_ID_2);
+        assertThat(rating.getAuthorId()).isEqualTo(TEST_ID_2);
         assertThat(rating.getRatingValue()).isEqualTo(TEST_VALID_RATING);
         assertThat(ratingRepository.findAll().size()).isEqualTo(before + 1);
     }

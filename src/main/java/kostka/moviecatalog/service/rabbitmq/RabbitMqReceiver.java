@@ -1,7 +1,9 @@
 package kostka.moviecatalog.service.rabbitmq;
 
+import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.service.DbMovieService;
 import kostka.moviecatalog.service.EsMovieService;
+import kostka.moviecatalog.service.ExternalRatingService;
 import kostka.moviecatalog.service.STOMPService;
 import kostka.moviecatalog.service.StatisticService;
 import kostka.moviecatalog.service.redis.RedisService;
@@ -14,6 +16,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Component
@@ -30,6 +33,7 @@ public class RabbitMqReceiver {
     public static final String TOP_RATING_KEY = "rating";
     public static final String ALL_MOVIES_KEY = "all-movies";
     public static final String RECALCULATE_KEY = "recalculate";
+    public static final String RATING_KEY = "rating";
     public static final String DEFAULT_KEY = "default";
     public static final String CANNOT_PARSE_JSON = "Cannot parse JSON";
     public static final String TOPIC = "/topic/";
@@ -41,18 +45,21 @@ public class RabbitMqReceiver {
     private RedisService redisService;
     private STOMPService stompService;
     private StatisticService statisticService;
+    private ExternalRatingService externalRatingService;
 
     @Autowired
     public RabbitMqReceiver(final EsMovieService esMovieService,
                             final DbMovieService dbmovieService,
                             final RedisService redisService,
                             final STOMPService stompService,
-                            final StatisticService statisticService) {
+                            final StatisticService statisticService,
+                            final ExternalRatingService externalRatingService) {
         this.esMovieService = esMovieService;
         this.dbMovieService = dbmovieService;
         this.redisService = redisService;
         this.stompService = stompService;
         this.statisticService = statisticService;
+        this.externalRatingService = externalRatingService;
     }
 
     @RabbitListener(
@@ -95,5 +102,27 @@ public class RabbitMqReceiver {
         } catch (Exception e) {
             LOGGER.error("Completable future error?", e);
         }
+    }
+
+    @RabbitListener(
+            bindings = @QueueBinding(
+                    exchange = @Exchange(TOPIC_EXCHANGE),
+                    key = RATING_KEY,
+                    value = @Queue(RATING_QUEUE)
+            )
+    )
+    public void receiveRecalculateAverageMovieRating() {
+        LOGGER.info("Received message from RabbitMQ to get Ratings for all movies.");
+        statisticService.incrementSyncedRabbitMqCounter();
+        List<Movie> allMovies = dbMovieService.getAllMoviesFromDB();
+        allMovies.forEach(
+                movie -> {
+                    LOGGER.info("Updating movie with id {} average rating.", movie.getId());
+                    movie.setAverageRating(
+                            externalRatingService.getAverageRatingFromRatingService(movie.getId())
+                    );
+                    dbMovieService.saveMovie(movie);
+                }
+                );
     }
 }

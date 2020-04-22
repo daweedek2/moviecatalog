@@ -91,7 +91,7 @@ public class DbMovieServiceIntegrationTest {
         assertThat(createdMovie.getCamera()).isEqualTo(dto.getCamera());
         assertThat(createdMovie.getMusic()).isEqualTo(dto.getMusic());
         assertThat(createdMovie.getDescription()).isEqualTo(dto.getDescription());
-        assertThat(createdMovie.getRating()).isEqualTo(0);
+        assertThat(createdMovie.getAverageRating()).isEqualTo(0);
     }
 
     @Test
@@ -104,7 +104,7 @@ public class DbMovieServiceIntegrationTest {
         assertThat(returnedMovie.getCamera()).isEqualTo(TEST_CAMERA);
         assertThat(returnedMovie.getMusic()).isEqualTo(TEST_MUSIC);
         assertThat(returnedMovie.getDescription()).isEqualTo(TEST_DESCRIPTION);
-        assertThat(returnedMovie.getRating()).isEqualTo(0);
+        assertThat(returnedMovie.getAverageRating()).isEqualTo(0);
     }
 
     @Test

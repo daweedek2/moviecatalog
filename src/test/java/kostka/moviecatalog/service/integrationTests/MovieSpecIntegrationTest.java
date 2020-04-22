@@ -20,11 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static kostka.moviecatalog.service.RatingServiceTest.TEST_NAME;
 import static kostka.moviecatalog.service.integrationTests.DbMovieServiceIntegrationTest.TEST_CAMERA;
 import static kostka.moviecatalog.service.integrationTests.DbMovieServiceIntegrationTest.TEST_DESCRIPTION;
 import static kostka.moviecatalog.service.integrationTests.DbMovieServiceIntegrationTest.TEST_DIRECTOR;
 import static kostka.moviecatalog.service.integrationTests.DbMovieServiceIntegrationTest.TEST_MUSIC;
+import static kostka.moviecatalog.service.integrationTests.DbMovieServiceIntegrationTest.TEST_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -92,7 +92,7 @@ public class MovieSpecIntegrationTest {
     @Test
     public void getMoviesGreaterRatingIntegrationTest() {
         Movie movie = movieRepository.findAll().get(0);
-        movie.setRating(5);
+        movie.setAverageRating(5);
         SearchCriteriaDto dto = new SearchCriteriaDto();
         dto.setValue(4);
         dto.setOperation(OPERATION_GREATER);
@@ -107,7 +107,7 @@ public class MovieSpecIntegrationTest {
     @Test
     public void getMoviesGreaterOrEqualRatingIntegrationTest() {
         Movie movie = movieRepository.findAll().get(0);
-        movie.setRating(5);
+        movie.setAverageRating(5);
         SearchCriteriaDto dto = new SearchCriteriaDto();
         dto.setValue(5);
         dto.setOperation(OPERATION_GREATER_OR_EQUAL);
@@ -122,7 +122,7 @@ public class MovieSpecIntegrationTest {
     @Test
     public void getMoviesLessRatingIntegrationTest() {
         Movie movie = movieRepository.findAll().get(0);
-        movie.setRating(5);
+        movie.setAverageRating(5);
         SearchCriteriaDto dto = new SearchCriteriaDto();
         dto.setValue(4);
         dto.setOperation(OPERATION_LESS);
@@ -137,7 +137,7 @@ public class MovieSpecIntegrationTest {
     @Test
     public void getMoviesLessOrEqualRatingIntegrationTest() {
         Movie movie = movieRepository.findAll().get(0);
-        movie.setRating(5);
+        movie.setAverageRating(5);
         SearchCriteriaDto dto = new SearchCriteriaDto();
         dto.setValue(4);
         dto.setOperation(OPERATION_LESS_OR_EQUAL);

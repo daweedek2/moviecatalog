@@ -2,6 +2,7 @@ package kostka.ratingservice.controller;
 
 import kostka.ratingservice.dto.RatingDto;
 import kostka.ratingservice.exception.InvalidDtoException;
+import kostka.ratingservice.model.AverageRating;
 import kostka.ratingservice.model.MovieRating;
 import kostka.ratingservice.model.Rating;
 import kostka.ratingservice.service.RatingService;
@@ -42,5 +43,11 @@ public class RatingController {
     public MovieRating getRatingForMovie(final @PathVariable Long movieId) {
         LOGGER.info("get rating for movie with id {}", movieId);
         return new MovieRating(ratingService.getRatingsForMovie(movieId));
+    }
+
+    @GetMapping("/average/{movieId}")
+    public AverageRating getAverageRatingForMovie(final @PathVariable Long movieId) {
+        LOGGER.info("get average rating for movie with id {}", movieId);
+        return ratingService.getAverageRatingForMovie(movieId);
     }
 }

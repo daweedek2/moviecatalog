@@ -88,7 +88,7 @@ public class DbMovieService {
             LOGGER.error("sleep error", e);
         }
         statisticService.incrementSyncedDbCounter();
-        return movieRepository.findTop5ByOrderByRatingDesc();
+        return movieRepository.findTop5ByOrderByAverageRatingDesc();
     }
 
     public List<Movie> get5LatestMoviesFromDB() {

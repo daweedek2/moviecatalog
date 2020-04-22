@@ -9,9 +9,7 @@ import java.util.List;
 
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, Long>, JpaSpecificationExecutor<Movie> {
-    List<Movie> findMovieByName(String name);
     List<Movie> findByIdInOrderByIdDesc(List<Long> ids);
-    List<Movie> findByIdInOrderByRatingDesc(List<Long> ids);
-    List<Movie> findTop5ByOrderByRatingDesc();
+    List<Movie> findTop5ByOrderByAverageRatingDesc();
     List<Movie> findTop5ByOrderByIdDesc();
 }

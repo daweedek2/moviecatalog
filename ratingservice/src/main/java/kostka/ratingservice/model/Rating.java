@@ -12,10 +12,10 @@ public class Rating {
     @GeneratedValue
     private Long ratingId;
     private Long movieId;
-    private Long userId;
+    private Long authorId;
     private int ratingValue;
 
-    public Rating(final Long ratingId, final Long movieId, final Long userId, final int ratingValue) {
+    public Rating(final Long ratingId, final Long movieId, final Long authorId, final int ratingValue) {
     }
 
     public Rating() {
@@ -37,12 +37,12 @@ public class Rating {
         this.movieId = movieId;
     }
 
-    public Long getUserId() {
-        return userId;
+    public Long getAuthorId() {
+        return authorId;
     }
 
-    public void setUserId(final Long userId) {
-        this.userId = userId;
+    public void setAuthorId(final Long userId) {
+        this.authorId = userId;
     }
 
     public int getRatingValue() {

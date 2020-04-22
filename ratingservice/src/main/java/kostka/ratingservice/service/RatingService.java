@@ -2,6 +2,7 @@ package kostka.ratingservice.service;
 
 import kostka.ratingservice.dto.RatingDto;
 import kostka.ratingservice.exception.InvalidDtoException;
+import kostka.ratingservice.model.AverageRating;
 import kostka.ratingservice.model.Rating;
 import kostka.ratingservice.repository.RatingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +29,22 @@ public class RatingService {
         }
         Rating rating = new Rating();
         rating.setMovieId(dto.getMovieId());
-        rating.setUserId(dto.getUserId());
+        rating.setAuthorId(dto.getUserId());
         rating.setRatingValue(dto.getRatingValue());
         return ratingRepository.save(rating);
     }
 
     public List<Rating> getRatingsForMovie(final Long movieId) {
         return ratingRepository.findAllByMovieId(movieId);
+    }
+
+    public AverageRating getAverageRatingForMovie(final Long movieId) {
+        AverageRating averageRating = new AverageRating();
+        averageRating.setAverageRatingValue(ratingRepository.findAllByMovieId(movieId)
+                .stream()
+                .mapToDouble(Rating::getRatingValue)
+                .average()
+                .orElse(0.0));
+        return averageRating;
     }
 }

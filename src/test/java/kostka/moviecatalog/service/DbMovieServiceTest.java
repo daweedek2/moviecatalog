@@ -154,7 +154,7 @@ public class DbMovieServiceTest {
         Movie movie2 = generator.createMovieWithName(TEST_NAME_2);
         List<Movie> movies = Arrays.asList(movie, movie2);
 
-        Mockito.when(movieRepository.findTop5ByOrderByRatingDesc()).thenReturn(movies);
+        Mockito.when(movieRepository.findTop5ByOrderByAverageRatingDesc()).thenReturn(movies);
 
         List<Movie> result = dbMovieService.getTop5RatingMoviesFromDB();
 

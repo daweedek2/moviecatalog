@@ -39,6 +39,29 @@
             </tbody>
         </table>
     </div>
+    <div class="container">
+        <table class="table">
+            <thead>
+            <tr>
+                <th> Rating Id </th>
+                <th> Movie Id </th>
+                <th> Author Id </th>
+                <th> Value </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${movieDetail.ratings.empty}">
+                <td colspan="2"> No Ratings Available </td>
+            </tr>
+            <tr th:each="rating : ${movieDetail.ratings}">
+                <td><span th:text="${rating.ratingId}"></span></td>
+                <td><span th:text="${rating.movieId}"> </span></td>
+                <td><span th:text="${rating.authorId}"> </span></td>
+                <td><span th:text="${rating.ratingValue}"> </span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 </body>
 </html>
