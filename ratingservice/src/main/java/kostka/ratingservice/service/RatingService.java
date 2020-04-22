@@ -21,6 +21,11 @@ public class RatingService {
         this.ratingRepository = ratingRepository;
     }
 
+    /***
+     * Method which creates new Rating in db based on the data in the dto.
+     * @param dto holds the data for the new Rating.
+     * @return newly created Rating.
+     */
     public Rating createRating(final RatingDto dto) {
         Long movieId = dto.getMovieId();
         int ratingValue = dto.getRatingValue();
@@ -34,10 +39,20 @@ public class RatingService {
         return ratingRepository.save(rating);
     }
 
+    /***
+     * Method which returns list of rating for one specific movie.
+     * @param movieId id of the desired movie.
+     * @return list of all ratings for desired movie.
+     */
     public List<Rating> getRatingsForMovie(final Long movieId) {
         return ratingRepository.findAllByMovieId(movieId);
     }
 
+    /***
+     * Method which gets average rating value for one specific movie.
+     * @param movieId id of the desired movie.
+     * @return AverageRating entity which holds the average rating value.
+     */
     public AverageRating getAverageRatingForMovie(final Long movieId) {
         AverageRating averageRating = new AverageRating();
         averageRating.setAverageRatingValue(ratingRepository.findAllByMovieId(movieId)

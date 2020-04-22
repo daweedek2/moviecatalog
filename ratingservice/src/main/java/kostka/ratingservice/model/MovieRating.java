@@ -2,6 +2,9 @@ package kostka.ratingservice.model;
 
 import java.util.List;
 
+/***
+ * Entity which holds the list of ratings of movie for transferring to external microservice (movie catalog).
+ */
 public class MovieRating {
     private List<Rating> movieRatings;
 
