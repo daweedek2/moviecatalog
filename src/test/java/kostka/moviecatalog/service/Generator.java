@@ -25,7 +25,7 @@ public class Generator {
 
     public RatingDto createValidRatingDto(final Long id, final int rating) {
         RatingDto dto = new RatingDto();
-        dto.setId(id);
+        dto.setMovieId(id);
         dto.setRating(rating);
         return dto;
     }

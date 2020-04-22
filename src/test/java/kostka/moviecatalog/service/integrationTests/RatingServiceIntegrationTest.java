@@ -43,7 +43,7 @@ public class RatingServiceIntegrationTest {
         movieDto.setName(TEST_NAME);
         Movie movie = dbMovieService.createMovie(movieDto);
         RatingDto ratingDto = new RatingDto();
-        ratingDto.setId(movie.getId());
+        ratingDto.setMovieId(movie.getId());
         ratingDto.setRating(RATING);
 
         ratingService.createRating(ratingDto);
@@ -54,7 +54,7 @@ public class RatingServiceIntegrationTest {
     @Test
     public void createRatingNonExistingMovieIntegrationTest() throws Exception {
         RatingDto ratingDto = new RatingDto();
-        ratingDto.setId(NON_EXISTING_MOVIE_ID);
+        ratingDto.setMovieId(NON_EXISTING_MOVIE_ID);
         ratingDto.setRating(RATING);
 
         assertThatThrownBy(() -> ratingService.createRating(ratingDto))
