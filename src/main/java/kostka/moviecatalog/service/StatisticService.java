@@ -18,14 +18,13 @@ public class StatisticService {
     public static final String ELASTIC_SYNCED_COUNTER = "elasticSyncedCounter";
     public static final String SCHEDULED_SYNCED_COUNTER = "scheduledSyncedCounter";
     public static final String DB_SYNCED_COUNTER = "dbSyncedCounter";
-    public static final int INITIAL_CAPACITY = 5;
     private SynchronizedCounter redisSyncedCounter = new SynchronizedCounter();
     private SynchronizedCounter rabbitMqSyncedCounter = new SynchronizedCounter();
     private SynchronizedCounter elasticSyncedCounter = new SynchronizedCounter();
     private SynchronizedCounter scheduledSyncedCounter = new SynchronizedCounter();
     private SynchronizedCounter dbSyncedCounter = new SynchronizedCounter();
 
-    private Map<String, AtomicInteger> concurrentMap = new ConcurrentHashMap<>(INITIAL_CAPACITY);
+    private Map<String, AtomicInteger> concurrentMap = new ConcurrentHashMap<>(5);
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StatisticService.class);
 
