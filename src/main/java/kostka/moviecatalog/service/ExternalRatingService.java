@@ -22,7 +22,7 @@ public class ExternalRatingService {
         this.restTemplate = restTemplate;
     }
 
-    public List<Rating> getRatingFromRatingService(final Long movieId) {
+    public List<Rating> getRatingsFromRatingService(final Long movieId) {
         LOGGER.info("Getting ratings from Rating service.");
         MovieRating ratingsResponse = restTemplate.getForObject(
                 RATING_URL_SERVICE_DISCOVERY + movieId,

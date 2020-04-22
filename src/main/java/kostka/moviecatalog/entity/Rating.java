@@ -3,11 +3,8 @@ package kostka.moviecatalog.entity;
 public class Rating {
     private Long ratingId;
     private Long movieId;
-    private Long userId;
+    private Long authorId;
     private int ratingValue;
-
-    public Rating() {
-    }
 
     public Long getRatingId() {
         return ratingId;
@@ -25,12 +22,12 @@ public class Rating {
         this.movieId = movieId;
     }
 
-    public Long getUserId() {
-        return userId;
+    public Long getAuthorId() {
+        return authorId;
     }
 
-    public void setUserId(final Long userId) {
-        this.userId = userId;
+    public void setAuthorId(final Long authorId) {
+        this.authorId = authorId;
     }
 
     public int getRatingValue() {

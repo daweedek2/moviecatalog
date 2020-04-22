@@ -28,7 +28,7 @@ public class RatingService {
         }
         Rating rating = new Rating();
         rating.setMovieId(dto.getMovieId());
-        rating.setUserId(dto.getUserId());
+        rating.setAuthorId(dto.getUserId());
         rating.setRatingValue(dto.getRatingValue());
         return ratingRepository.save(rating);
     }

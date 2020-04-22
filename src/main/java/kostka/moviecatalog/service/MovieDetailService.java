@@ -3,6 +3,7 @@ package kostka.moviecatalog.service;
 import kostka.moviecatalog.entity.Comment;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.entity.MovieDetail;
+import kostka.moviecatalog.entity.Rating;
 import kostka.moviecatalog.exception.MovieNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,22 +40,23 @@ public class MovieDetailService {
         }
 
         List<Comment> comments = externalCommentService.getCommentsFromCommentService(movieId);
-        double averageRating = externalRatingService.getAverageRatingFromRatingService(movieId);
+        List<Rating> ratings = externalRatingService.getRatingsFromRatingService(movieId);
         LOGGER.info("Movie data are prepared.");
 
-        return populateMovieDetail(movie, comments, averageRating);
+        return populateMovieDetail(movie, comments, ratings);
     }
 
     private MovieDetail populateMovieDetail(final Movie movie,
                                             final List<Comment> comments,
-                                            final double averageRating) {
+                                            final List<Rating> ratings) {
         MovieDetail movieDetail = new MovieDetail();
         movieDetail.setMovieId(movie.getId());
         movieDetail.setName(movie.getName());
         movieDetail.setDirector(movie.getDirector());
         movieDetail.setDescription(movie.getDescription());
-        movieDetail.setAverageRating(averageRating);
+        movieDetail.setAverageRating(movie.getAverageRating());
         movieDetail.setComments(comments);
+        movieDetail.setRatings(ratings);
         return movieDetail;
     }
 }
