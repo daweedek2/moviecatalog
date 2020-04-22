@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Transactional
 public class RatingServiceIntegrationTest {
     private static final long NON_EXISTING_MOVIE_ID = 100L;
-    private static final int RATING = 10;
+    private static final int RATING_VALUE = 10;
     private static final String TEST_NAME = "test_name";
     @Autowired
     private DbMovieService dbMovieService;
@@ -44,7 +44,7 @@ public class RatingServiceIntegrationTest {
         Movie movie = dbMovieService.createMovie(movieDto);
         RatingDto ratingDto = new RatingDto();
         ratingDto.setMovieId(movie.getId());
-        ratingDto.setRating(RATING);
+        ratingDto.setRatingValue(RATING_VALUE);
 
         ratingService.createRating(ratingDto);
 
@@ -55,7 +55,7 @@ public class RatingServiceIntegrationTest {
     public void createRatingNonExistingMovieIntegrationTest() throws Exception {
         RatingDto ratingDto = new RatingDto();
         ratingDto.setMovieId(NON_EXISTING_MOVIE_ID);
-        ratingDto.setRating(RATING);
+        ratingDto.setRatingValue(RATING_VALUE);
 
         assertThatThrownBy(() -> ratingService.createRating(ratingDto))
                 .isInstanceOf(MovieNotFoundException.class);

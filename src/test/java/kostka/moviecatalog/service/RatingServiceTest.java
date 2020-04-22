@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 public class RatingServiceTest {
     public static final String TEST_NAME = "TestName";
     public static final long TEST_ID = 1L;
-    public static final int TEST_RATING = 1;
+    public static final int TEST_RATING_VALUE = 1;
     @InjectMocks
     RatingService ratingService;
 
@@ -34,14 +34,14 @@ public class RatingServiceTest {
     public void createRatingValidDtoExistingMovieTest() {
         Movie movie = generator.createMovieWithName(TEST_NAME);
         movie.setId(TEST_ID);
-        RatingDto dto = generator.createValidRatingDto(TEST_ID, TEST_RATING);
+        RatingDto dto = generator.createValidRatingDto(TEST_ID, TEST_RATING_VALUE);
 
         Mockito.when(dbMovieService.getMovie(TEST_ID)).thenReturn(movie);
         Mockito.when(dbMovieService.saveMovie(movie)).thenReturn(movie);
 
         Movie result = ratingService.createRating(dto);
 
-        assertThat(result.getRating()).isEqualTo(TEST_RATING);
+        assertThat(result.getRating()).isEqualTo(TEST_RATING_VALUE);
         assertThat(result.getId()).isEqualTo(TEST_ID);
     }
 
@@ -50,7 +50,7 @@ public class RatingServiceTest {
         Movie movie = generator.createMovieWithName(TEST_NAME);
         movie.setId(TEST_ID);
         RatingDto dto = new RatingDto();
-        dto.setRating(TEST_RATING);
+        dto.setRatingValue(TEST_RATING_VALUE);
 
         assertThatThrownBy(() -> ratingService.createRating(dto))
                 .isInstanceOf(InvalidDtoException.class);
@@ -58,7 +58,7 @@ public class RatingServiceTest {
 
     @Test
     public void createRatingValidDtoNonExistingMovieTest() {
-        RatingDto dto = generator.createValidRatingDto(TEST_ID, TEST_RATING);
+        RatingDto dto = generator.createValidRatingDto(TEST_ID, TEST_RATING_VALUE);
 
         Mockito.when(dbMovieService.getMovie(TEST_ID)).thenThrow(MovieNotFoundException.class);
 
