@@ -27,11 +27,21 @@ public class CommentController {
         this.commentService = commentService;
     }
 
+    /***
+     * Controller method for creating of the new comment.
+     * @param dto parameter which contains data of the comment.
+     * @return newly created comment.
+     */
     @PostMapping("/create")
     public Comment createComment(@RequestBody final CommentDto dto) {
         return commentService.createComment(dto);
     }
 
+    /***
+     * Controller method for getting all available comments for the one specific movie.
+     * @param movieId parameter of the movie for which we are getting the comments.
+     * @return MovieComments entity which contains list of all comments for the movie.
+     */
     @GetMapping("/{movieId}")
     public MovieComments getCommentsForMovie(@PathVariable final Long movieId) {
         LOGGER.info("getting comments for movie with id {}", movieId);
@@ -40,6 +50,10 @@ public class CommentController {
         return movieComments;
     }
 
+    /***
+     * Controller method for getting all comments in db.
+     * @return list of comments.
+     */
     @GetMapping("/all")
     public List<Comment> getAllComments() {
         return commentService.getAllComments();
