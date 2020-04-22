@@ -7,19 +7,19 @@ public class MovieDetail {
     private String name;
     private String director;
     private String description;
-    private int rating;
+    private double averageRating;
     private List<Comment> comments;
 
     public MovieDetail() {
     }
 
     public MovieDetail(final Long movieId, final String name, final String director,
-                       final String description, final int rating, final List<Comment> comments) {
+                       final String description, final double averageRating, final List<Comment> comments) {
         this.movieId = movieId;
         this.name = name;
         this.director = director;
         this.description = description;
-        this.rating = rating;
+        this.averageRating = averageRating;
         this.comments = comments;
     }
 
@@ -55,12 +55,12 @@ public class MovieDetail {
         this.description = description;
     }
 
-    public int getRating() {
-        return rating;
+    public double getAverageRating() {
+        return averageRating;
     }
 
-    public void setRating(final int rating) {
-        this.rating = rating;
+    public void setAverageRating(final double averageRating) {
+        this.averageRating = averageRating;
     }
 
     public List<Comment> getComments() {
