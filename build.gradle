@@ -75,6 +75,10 @@ dependencies {
     compile group: 'org.springframework.boot',
             name: 'spring-boot-starter-websocket',
             version: '2.2.6.RELEASE'
+    compile group: 'org.springframework.cloud',
+            name: 'spring-cloud-starter-hystrix',
+            version: '1.4.7.RELEASE'
+
 }
 
 dependencyManagement {
