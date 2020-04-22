@@ -1,7 +1,6 @@
 package kostka.ratingservice;
 
 import kostka.ratingservice.dto.RatingDto;
-import kostka.ratingservice.exception.InvalidDtoException;
 import kostka.ratingservice.model.Rating;
 import kostka.ratingservice.repository.RatingRepository;
 import kostka.ratingservice.service.RatingService;
@@ -15,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = RatingServiceApplication.class)
@@ -42,33 +40,6 @@ public class RatingServiceIntegrationTest {
         assertThat(rating.getUserId()).isEqualTo(TEST_ID_2);
         assertThat(rating.getRatingValue()).isEqualTo(TEST_VALID_RATING);
         assertThat(ratingRepository.findAll().size()).isEqualTo(before + 1);
-    }
-
-    @Test
-    public void createRatingInValidDtoEmptyMovieIdIntegrationTest() {
-        RatingDto dto = new RatingDto();
-        dto.setUserId(TEST_ID_2);
-        dto.setRatingValue(TEST_VALID_RATING);
-
-        assertThatThrownBy(() -> ratingService.createRating(dto)).isInstanceOf(InvalidDtoException.class);
-    }
-
-    @Test
-    public void createRatingInValidDtoUnderTheRangeIntegrationTest() {
-        RatingDto dto = new RatingDto();
-        dto.setUserId(TEST_ID_2);
-        dto.setRatingValue(TEST_LESS_RATING);
-
-        assertThatThrownBy(() -> ratingService.createRating(dto)).isInstanceOf(InvalidDtoException.class);
-    }
-
-    @Test
-    public void createRatingInValidDtoAboveTheRangeIntegrationTest() {
-        RatingDto dto = new RatingDto();
-        dto.setUserId(TEST_ID_2);
-        dto.setRatingValue(TEST_GREATER_RATING);
-
-        assertThatThrownBy(() -> ratingService.createRating(dto)).isInstanceOf(InvalidDtoException.class);
     }
 
     @Test
