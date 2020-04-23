@@ -64,6 +64,10 @@ public class RabbitMqReceiver {
         this.externalRatingService = externalRatingService;
     }
 
+    /**
+     * Method which takes care of getting message from RabbitMQ elastic-queue for creating movie in elasticsearch.
+     * @param id id of the movie which will be created in elasticsearch.
+     */
     @RabbitListener(
             bindings = @QueueBinding(
                     exchange = @Exchange(TOPIC_EXCHANGE),
@@ -81,6 +85,10 @@ public class RabbitMqReceiver {
         }
     }
 
+    /**
+     * Method which takes care of getting message from RabbitMQ elastic-queue for deleting movie from elasticsearch.
+     * @param id id of the movie which will be deleted from elasticsearch.
+     */
     @RabbitListener(
             bindings = @QueueBinding(
                     exchange = @Exchange(TOPIC_EXCHANGE),
@@ -98,6 +106,10 @@ public class RabbitMqReceiver {
         }
     }
 
+    /**
+     * Method which takes care of getting message from RabbitMQ recalculate-queue for updating
+     * all tables in Redis cache and then inform FE via STOMP message.
+     */
     @RabbitListener(
             bindings = @QueueBinding(
                     exchange = @Exchange(TOPIC_EXCHANGE),
@@ -123,6 +135,10 @@ public class RabbitMqReceiver {
         }
     }
 
+    /**
+     * Method which takes care of getting message from RabbitMQ rating-queue for updating
+     * the average rating of all movies in db.
+     */
     @RabbitListener(
             bindings = @QueueBinding(
                     exchange = @Exchange(TOPIC_EXCHANGE),

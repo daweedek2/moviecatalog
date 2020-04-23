@@ -1,5 +1,8 @@
 package kostka.moviecatalog.entity;
 
+/**
+ * Stands for transferring statistics data from BE to FE.
+ */
 public class StatisticDetail {
     private int redisCounter;
     private int rabbitCounter;

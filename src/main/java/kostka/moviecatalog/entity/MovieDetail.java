@@ -2,6 +2,9 @@ package kostka.moviecatalog.entity;
 
 import java.util.List;
 
+/**
+ * Stands for transferring data from BE to FE.
+ */
 public class MovieDetail {
     private Long movieId;
     private String name;

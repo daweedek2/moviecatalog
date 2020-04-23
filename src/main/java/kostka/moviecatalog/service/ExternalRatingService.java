@@ -14,6 +14,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Service which communicates with external microservice (RatingService) via rest template.
+ */
 @Service
 public class ExternalRatingService {
     private RestTemplate restTemplate;
@@ -26,6 +29,11 @@ public class ExternalRatingService {
         this.restTemplate = restTemplate;
     }
 
+    /**
+     * Gets all ratings for specific movie from the microservice Rating Service.
+     * @param movieId id of the movie.
+     * @return List of ratings.
+     */
     @HystrixCommand(fallbackMethod = "getRatingsFromRatingServiceFallback")
     public List<Rating> getRatingsFromRatingService(final Long movieId) {
         LOGGER.info("Getting ratings from Rating service.");
@@ -36,6 +44,11 @@ public class ExternalRatingService {
         return Objects.requireNonNull(ratingsResponse).getMovieRatings();
     }
 
+    /**
+     * Gets average rating for specific movie from the microservice Rating Service.
+     * @param movieId id of the movie.
+     * @return value of the average rating.
+     */
     @HystrixCommand(fallbackMethod = "getAverageRatingFromRatingServiceFallback")
     public double getAverageRatingFromRatingService(final Long movieId) {
         LOGGER.info("Getting average rating from Rating service.");
@@ -46,6 +59,11 @@ public class ExternalRatingService {
         return Objects.requireNonNull(ratingsResponse).getAverageRatingValue();
     }
 
+    /**
+     * Fallback method which returns list of default rating when microservice Rating Service is not available.
+     * @param movieId id of the movie.
+     * @return default list of one rating with default values.
+     */
     public List<Rating> getRatingsFromRatingServiceFallback(final Long movieId) {
         LOGGER.info("Rating Service is down - return default rating List.");
         Rating randomRating = new Rating();
@@ -56,6 +74,11 @@ public class ExternalRatingService {
         return Collections.singletonList(randomRating);
     }
 
+    /**
+     * Fallback method which returns average rating when microservice Rating Service is not available.
+     * @param movieId id of the movie.
+     * @return default value of the average rating.
+     */
     public double getAverageRatingFromRatingServiceFallback(final Long movieId) {
         LOGGER.info("Rating Service is down - return default average Rating.");
         return movieId;

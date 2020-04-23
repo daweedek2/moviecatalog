@@ -1,5 +1,8 @@
 package kostka.moviecatalog.entity;
 
+/**
+ * Stands for transferring data from external microservice (RatingService).
+ */
 public class AverageRating {
     private double averageRatingValue;
 

@@ -2,6 +2,9 @@ package kostka.moviecatalog.entity;
 
 import java.util.List;
 
+/**
+ * Stands for transferring data from external microservice (RatingService).
+ */
 public class MovieRating {
     private List<Rating> movieRatings;
 

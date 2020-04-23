@@ -21,6 +21,11 @@ public class MovieSpecificationService {
         this.statisticService = statisticService;
     }
 
+    /**
+     * Gets list of movies which match the provided search criteria.
+     * @param criteria search criteria of the jpa specifications.
+     * @return list of movies.
+     */
     public List<Movie> getMoviesWithCriteria(final SearchCriteriaDto criteria) {
         MovieSpecification spec = new MovieSpecification(criteria);
         statisticService.incrementSyncedDbCounter();

@@ -13,6 +13,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Service which communicates with external microservice (CommentService) via rest template.
+ */
 @Service
 public class ExternalCommentService {
     private RestTemplate restTemplate;

@@ -1,5 +1,8 @@
 package kostka.moviecatalog.dto;
 
+/**
+ * Used for transferring data from FE to BE during searching movie via JPA specifications.
+ */
 public class SearchCriteriaDto {
     private String field;
     private String operation;

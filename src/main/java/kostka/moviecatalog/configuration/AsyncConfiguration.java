@@ -4,13 +4,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
 
+/**
+ * Configuration for enabling concurrency in the project. Thread pool is specified.
+ */
 @Configuration
-@EnableAsync
 public class AsyncConfiguration {
     private static final Logger LOGGER = LoggerFactory.getLogger(AsyncConfiguration.class);
     public static final int CORE_POOL_SIZE = 3;
