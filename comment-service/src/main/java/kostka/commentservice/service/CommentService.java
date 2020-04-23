@@ -21,6 +21,11 @@ public class CommentService {
         this.commentRepository = commentRepository;
     }
 
+    /***
+     * Method which creates new comment and saves it to db via comment repository.
+     * @param dto parameter with data of the new comment.
+     * @return newly created comment.
+     */
     public Comment createComment(final CommentDto dto) {
         if (dto.getMovieId() == null) {
             throw new InvalidDtoException();
@@ -29,6 +34,11 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
+    /***
+     * Method which takes dto and sets properties of the comment entity.
+     * @param dto parameter with data of the new comment.
+     * @return comment with data from dto.
+     */
     private Comment populateCommentFromDto(final CommentDto dto) {
         Comment comment = new Comment();
         comment.setMovieId(dto.getMovieId());
@@ -37,15 +47,29 @@ public class CommentService {
         return comment;
     }
 
+    /***
+     * Method which gets comment based on the id.
+     * @param id of the desired comment.
+     * @return comment with the id from the db.
+     */
     public Comment getComment(final Long id) {
         Optional<Comment> optionalComment = commentRepository.findById(id);
         return optionalComment.orElseThrow(CommentNotFoundException::new);
     }
 
+    /***
+     * Method which gets all comments for the specific movie based on movie id.
+     * @param id movie id of the movie for which we get the comments.
+     * @return list of comments from the db.
+     */
     public List<Comment> getAllCommentsForMovie(final Long id) {
         return commentRepository.findAllByMovieId(id);
     }
 
+    /***
+     * Method which gets all comments stored in db.
+     * @return list of all comments in db.
+     */
     public List<Comment> getAllComments() {
         return commentRepository.findAll();
     }

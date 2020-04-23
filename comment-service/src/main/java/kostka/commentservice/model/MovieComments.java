@@ -3,6 +3,9 @@ package kostka.commentservice.model;
 import java.util.ArrayList;
 import java.util.List;
 
+/***
+ * Entity which is used for transferring list of comments to another microservice (moviecatalog).
+ */
 public class MovieComments {
     private List<Comment> comments = new ArrayList<>();
 
