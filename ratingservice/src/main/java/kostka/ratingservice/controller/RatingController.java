@@ -27,6 +27,11 @@ public class RatingController {
         this.ratingService = ratingService;
     }
 
+    /***
+     * Controller method for creating of the new rating.
+     * @param dto parameter which contains data of the rating.
+     * @return newly created rating.
+     */
     @PostMapping("/create")
     public Rating createRating(final @Valid @RequestBody RatingDto dto) {
         LOGGER.info("create rating request");
@@ -39,12 +44,22 @@ public class RatingController {
         return rating;
     }
 
+    /***
+     * Controller method for getting all available ratings for the one specific movie.
+     * @param movieId parameter of the movie for which we are getting the ratings.
+     * @return MovieRating entity which contains list of all ratings for the movie.
+     */
     @GetMapping("/{movieId}")
     public MovieRating getRatingForMovie(final @PathVariable Long movieId) {
         LOGGER.info("get rating for movie with id {}", movieId);
         return new MovieRating(ratingService.getRatingsForMovie(movieId));
     }
 
+    /***
+     * Controller method for getting average rating for one specific movie.
+     * @param movieId parameter of the desired movie.
+     * @return AverageRating entity which holds the average rating value.
+     */
     @GetMapping("/average/{movieId}")
     public AverageRating getAverageRatingForMovie(final @PathVariable Long movieId) {
         LOGGER.info("get average rating for movie with id {}", movieId);
