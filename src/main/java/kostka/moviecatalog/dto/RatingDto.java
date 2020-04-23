@@ -4,6 +4,9 @@ import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotNull;
 
+/**
+ * Used for transferring data from FE to BE during creation of new rating.
+ */
 public class RatingDto {
     public static final int MIN_RATING_VALUE = 0;
     public static final int MAX_RATING_VALUE = 10;

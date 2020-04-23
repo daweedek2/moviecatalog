@@ -1,5 +1,8 @@
 package kostka.moviecatalog.entity.counters;
 
+/**
+ * Thread safe counter which uses synchronized methods.
+ */
 public class SynchronizedCounter {
     private volatile int counterValue;
 

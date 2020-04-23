@@ -2,6 +2,9 @@ package kostka.moviecatalog.dto;
 
 import javax.validation.constraints.NotEmpty;
 
+/**
+ * Used for transferring data from FE to BE during creation of new movie.
+ */
 public class MovieDto {
     @NotEmpty(message = "Name cannot be empty.")
     private String name;

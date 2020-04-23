@@ -29,6 +29,12 @@ public class MovieDetailService {
         this.externalRatingService = externalRatingService;
     }
 
+    /**
+     * Gets detail of the movie with specific id. MovieDetail contains all movie data from db,
+     * all comments from microservice Comment Service and all ratings from microservice Rating Service.
+     * @param movieId id of the movie.
+     * @return MovieDetail with all data.
+     */
     public MovieDetail getMovieDetail(final Long movieId) {
         Movie movie = null;
         try {
@@ -46,6 +52,13 @@ public class MovieDetailService {
         return populateMovieDetail(movie, comments, ratings);
     }
 
+    /**
+     * Collects data from the method parameters to MovieDetail entity.
+     * @param movie movie data.
+     * @param comments list of comments.
+     * @param ratings list of ratings.
+     * @return MovieDetail with all data from the method parameters.
+     */
     private MovieDetail populateMovieDetail(final Movie movie,
                                             final List<Comment> comments,
                                             final List<Rating> ratings) {

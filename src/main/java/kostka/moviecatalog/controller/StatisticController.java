@@ -23,12 +23,20 @@ public class StatisticController {
         this.statisticService = statisticService;
     }
 
+    /**
+     * Method for getting all statistics.
+     * @return list of statistics.
+     */
     @GetMapping()
     public StatisticDetail getAllStatistics() {
         LOGGER.info("get all counters values");
         return statisticService.getAllStatistics();
     }
 
+    /**
+     * Method for getting all statistics stored in map.
+     * @return map of the statistics.
+     */
     @GetMapping("/map")
     public Map<String, AtomicInteger> getAllStatisticsMap() {
         LOGGER.info("get all counters values in map");

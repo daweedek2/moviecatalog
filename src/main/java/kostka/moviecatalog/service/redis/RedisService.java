@@ -31,6 +31,12 @@ public class RedisService {
         this.statisticService = statisticService;
     }
 
+    /**
+     * Updates list of movies in Redis cache.
+     * @param movies list of movies which needs to be updated.
+     * @param key Redis key which is used to map the proper list of movies.
+     * @throws JsonProcessingException
+     */
     public void updateMoviesInRedis(final List<Movie> movies, final String key) throws JsonProcessingException {
         String json = getJsonStringFromList(movies);
         LOGGER.info("Adding movies '{}' to the redis cache with key: '{}'", json, key);
@@ -38,6 +44,11 @@ public class RedisService {
         statisticService.incrementSyncedRedisCounter();
     }
 
+    /**
+     * Gets data from the Redis cache with the Redis key.
+     * @param key key of the data in Redis cache.
+     * @return data from Redis cache.
+     */
     public String getMoviesWithKey(final String key) {
         LOGGER.info("Getting movies from Redis cache with key '{}'.", key);
         statisticService.incrementSyncedRedisCounter();
@@ -49,6 +60,12 @@ public class RedisService {
         return mapper.writeValueAsString(movies);
     }
 
+    /**
+     * Waits until data are loaded from DB and then updated in Redis.
+     * @param moviesSupplier method for fetching movies from db.
+     * @param key key of the data in Redis cache.
+     * @return
+     */
     @Async
     public CompletableFuture<Void> tryToUpdateMoviesInRedis(
             final Supplier<List<Movie>> moviesSupplier,

@@ -19,6 +19,12 @@ public class MovieDetailController {
         this.movieDetailService = movieDetailService;
     }
 
+    /**
+     * Method for displaying movie detail page.
+     * @param movieId id of the movie.
+     * @param model MVC model.
+     * @return name of the html file (detail.html).
+     */
     @GetMapping("/detail/{movieId}")
     public String getMovieDetail(final @PathVariable Long movieId, final Model model) {
         MovieDetail movieDetail = movieDetailService.getMovieDetail(movieId);

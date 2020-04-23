@@ -2,11 +2,9 @@ package kostka.moviecatalog.controller;
 
 import kostka.moviecatalog.dto.MovieDto;
 import kostka.moviecatalog.dto.SearchCriteriaDto;
-import kostka.moviecatalog.entity.EsMovie;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.exception.InvalidDtoException;
 import kostka.moviecatalog.service.DbMovieService;
-import kostka.moviecatalog.service.EsMovieService;
 import kostka.moviecatalog.service.MovieSpecificationService;
 import kostka.moviecatalog.service.rabbitmq.RabbitMqSender;
 import org.slf4j.Logger;
@@ -30,17 +28,14 @@ import java.util.List;
 @RequestMapping(value = "/movies")
 public class MovieCatalogController {
     private DbMovieService dbMovieService;
-    private EsMovieService esMovieService;
     private RabbitMqSender rabbitMqSender;
     private MovieSpecificationService specificationService;
     static final Logger LOGGER = LoggerFactory.getLogger(MovieCatalogController.class);
     @Autowired
     public MovieCatalogController(final DbMovieService dbMovieService,
-                                  final EsMovieService esMovieService,
                                   final RabbitMqSender rabbitMqSender,
                                   final MovieSpecificationService specificationService) {
         this.dbMovieService = dbMovieService;
-        this.esMovieService = esMovieService;
         this.rabbitMqSender = rabbitMqSender;
         this.specificationService = specificationService;
     }
@@ -51,6 +46,11 @@ public class MovieCatalogController {
         return dbMovieService.getAllMoviesFromCache();
     }
 
+    /**
+     * Controller method for creating new movie in db and in elasticsearch.
+     * @param dto which holds the new movie data.
+     * @return response entity with the newly created movie.
+     */
     @PostMapping("/create")
     public ResponseEntity<Movie> createMovie(final @Valid @RequestBody MovieDto dto) {
         LOGGER.info("create movie request");
@@ -67,6 +67,13 @@ public class MovieCatalogController {
         return new ResponseEntity<>(movie, HttpStatus.OK);
     }
 
+    /**
+     * Used for searching movies via JPA specifications.
+     * @param field stands for field which is analyzed.
+     * @param operation stands for operation which is applied (equals, greater,...).
+     * @param value actual value which is search for.
+     * @return list of all movies which match the jpa specification query.
+     */
     @GetMapping("/spec")
     public List<Movie> getMoviesBySpec(final @RequestParam("field") String field,
                                        final @RequestParam("operation") String operation,
@@ -80,30 +87,41 @@ public class MovieCatalogController {
         return specificationService.getMoviesWithCriteria(dto);
     }
 
+    /**
+     * Method for search for movies in elasticsearch.
+     * @param searchTerm string of the desired search term.
+     * @return list of all movies which match the search term.
+     */
     @GetMapping("/search")
     public List<Movie> fullTextSearchMovie(final @RequestParam("term") String searchTerm) {
         LOGGER.info("fulltext search request Movie");
         return dbMovieService.fullTextSearch(searchTerm);
     }
 
-    @GetMapping("/EsSearch")
-    public List<EsMovie> fullTextSearchEsMovie(final @RequestParam("term") String searchTerm) {
-        LOGGER.info("fulltext search request EsMovie");
-        return esMovieService.fullTextSearch(searchTerm);
-    }
-
+    /**
+     * Method which returns 5 latest movies which are stored in Redis cache.
+     * @return 5 latest movies in json format.
+     */
     @GetMapping("/latest5")
     public String get5LatestMovies() {
         LOGGER.info("get 5 latest movies request");
         return dbMovieService.get5LatestMoviesFromCache();
     }
 
+    /**
+     * Method which returns 5 movies with highest rating which are stored in Redis cache.
+     * @return 5 top rated movies in json format.
+     */
     @GetMapping("/top5")
     public String getTopRatingMovies() {
         LOGGER.info("get 5 top rating movies request");
         return dbMovieService.getTop5RatingMoviesFromCache();
     }
 
+    /**
+     * Method for deleting existing movie from db and from elasticsearch.
+     * @param movieId id of the deleted movie.
+     */
     @DeleteMapping("/delete/{movieId}")
     public void deleteMovie(final @PathVariable Long movieId) {
         LOGGER.info("delete movie with id '{}' request", movieId);

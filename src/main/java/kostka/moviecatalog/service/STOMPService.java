@@ -11,7 +11,9 @@ import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.RECALCULATE_
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.TOPIC;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.TOP_RATING_KEY;
 
-
+/**
+ * Service which sends STOMP messages to the FE.
+ */
 @Service
 public class STOMPService {
     private SimpMessagingTemplate messagingTemplate;

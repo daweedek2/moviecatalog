@@ -11,6 +11,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Service for getting statistics (for concurrency and multi-threading education purposes).
+ */
 @Service
 public class StatisticService {
     public static final String REDIS_SYNCED_COUNTER = "redisSyncedCounter";

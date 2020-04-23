@@ -16,6 +16,10 @@ public class IndexController {
         this.rabbitMqSender = rabbitMqSender;
     }
 
+    /**
+     * Controller method for displaying index page.
+     * @return name of the html file (index.html).
+     */
     @GetMapping
     public String index() {
         rabbitMqSender.sendUpdateRequestToQueue();
