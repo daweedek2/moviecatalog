@@ -20,13 +20,15 @@ import java.util.Objects;
 @Service
 public class ExternalRatingService {
     private RestTemplate restTemplate;
+    private DbMovieService dbMovieService;
     private static final Logger LOGGER = LoggerFactory.getLogger(ExternalRatingService.class);
     private static final String RATING_URL_SERVICE_DISCOVERY = "http://rating-service/rating/";
     private static final String AVERAGE_RATING_URL_SERVICE_DISCOVERY = "http://rating-service/rating/average/";
 
     @Autowired
-    public ExternalRatingService(final RestTemplate restTemplate) {
+    public ExternalRatingService(final RestTemplate restTemplate, final DbMovieService dbMovieService) {
         this.restTemplate = restTemplate;
+        this.dbMovieService = dbMovieService;
     }
 
     /**
@@ -80,7 +82,7 @@ public class ExternalRatingService {
      * @return default value of the average rating.
      */
     public double getAverageRatingFromRatingServiceFallback(final Long movieId) {
-        LOGGER.info("Rating Service is down - return default average Rating.");
-        return movieId;
+        LOGGER.info("Rating Service is down - return the stored value in DB for average Rating.");
+        return dbMovieService.getMovie(movieId).getAverageRating();
     }
 }
