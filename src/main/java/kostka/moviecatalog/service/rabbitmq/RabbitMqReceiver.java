@@ -33,7 +33,7 @@ public class RabbitMqReceiver {
     public static final String DELETE_MOVIE_KEY = "deleteMovie";
     public static final String LATEST_MOVIES_KEY = "latestMovies";
     public static final String TOP_RATING_KEY = "rating";
-    public static final String ALL_MOVIES_KEY = "all-movies";
+    public static final String ALL_MOVIES_KEY = "allMovies";
     public static final String RECALCULATE_KEY = "recalculate";
     public static final String RATING_KEY = "rating";
     public static final String MOVIE_DETAIL_KEY = "movieDetail";
