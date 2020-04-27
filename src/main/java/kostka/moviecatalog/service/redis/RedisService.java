@@ -21,6 +21,7 @@ import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.CANNOT_PARSE
 public class RedisService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisService.class);
+    private static final String GENERAL_COUNTER = "general-counter";
 
     private RedisTemplate<String, String> redisTemplate;
     private StatisticService statisticService;
@@ -81,5 +82,22 @@ public class RedisService {
             LOGGER.error(CANNOT_PARSE_JSON, e);
             return CompletableFuture.failedFuture(e);
         }
+    }
+
+    public void incrementGeneralCounter() {
+        int oldValue;
+        int newValue;
+        String stringValue = redisTemplate.opsForValue().get(GENERAL_COUNTER);
+        if (stringValue == null) {
+            //if the counter is null, initialize it with 0
+            LOGGER.info("Initialize general counter with value 0.");
+            oldValue = 0;
+        } else {
+            oldValue = Integer.parseInt(stringValue);
+        }
+
+        newValue = oldValue + 1;
+        redisTemplate.opsForValue().set(GENERAL_COUNTER, String.valueOf(newValue));
+        LOGGER.info("MovieCatalog - General counter is incremented from '{}' to '{}'.", oldValue, newValue);
     }
 }

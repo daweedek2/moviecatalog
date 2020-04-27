@@ -34,6 +34,12 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation 'junit:junit:4.13'
+    compile group: 'org.springframework.boot',
+            name: 'spring-boot-starter-data-redis',
+            version: '2.2.4.RELEASE'
+    compile group: 'redis.clients',
+            name: 'jedis',
+            version: '3.2.0'
 }
 
 dependencyManagement {
