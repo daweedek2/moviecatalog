@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.ALL_MOVIES_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.LATEST_MOVIES_KEY;
+import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.MOVIE_DETAIL_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.RECALCULATE_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.TOPIC;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.TOP_RATING_KEY;
@@ -41,5 +42,10 @@ public class STOMPService {
     public void sendSTOMPToUpdateAllTables() {
         LOGGER.info("Sending STOMP to refresh all tables");
         messagingTemplate.convertAndSend(TOPIC + RECALCULATE_KEY, RECALCULATE_KEY);
+    }
+
+    public void sendSTOMPToRefreshMovieDetail() {
+        LOGGER.info("Sending STOMP to refresh movie detail page");
+        messagingTemplate.convertAndSend(TOPIC + MOVIE_DETAIL_KEY, MOVIE_DETAIL_KEY);
     }
 }

@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
+import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.MOVIE_DETAIL_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.RECALCULATE_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.TOPIC;
 import static org.mockito.ArgumentMatchers.eq;
@@ -25,5 +26,11 @@ public class STOMPServiceTest {
     public void sendSTOMPToUpdateAllTablesTest() {
         stompService.sendSTOMPToUpdateAllTables();
         verify(simpMessagingTemplate).convertAndSend(eq(TOPIC + RECALCULATE_KEY),eq(RECALCULATE_KEY));
+    }
+
+    @Test
+    public void sendSTOMPToRefreshMovieDetailTest() {
+        stompService.sendSTOMPToRefreshMovieDetail();
+        verify(simpMessagingTemplate).convertAndSend(eq(TOPIC + MOVIE_DETAIL_KEY),eq(MOVIE_DETAIL_KEY));
     }
 }

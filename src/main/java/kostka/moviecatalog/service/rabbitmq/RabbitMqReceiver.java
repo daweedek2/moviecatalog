@@ -36,6 +36,7 @@ public class RabbitMqReceiver {
     public static final String ALL_MOVIES_KEY = "all-movies";
     public static final String RECALCULATE_KEY = "recalculate";
     public static final String RATING_KEY = "rating";
+    public static final String MOVIE_DETAIL_KEY = "movieDetail";
     public static final String DEFAULT_KEY = "default";
     public static final String CANNOT_PARSE_JSON = "Cannot parse JSON";
     public static final String TOPIC = "/topic/";
@@ -159,5 +160,6 @@ public class RabbitMqReceiver {
                     dbMovieService.saveMovie(movie);
                 }
                 );
+        stompService.sendSTOMPToRefreshMovieDetail();
     }
 }
