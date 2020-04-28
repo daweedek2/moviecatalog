@@ -1,5 +1,7 @@
 package kostka.moviecatalog.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import kostka.moviecatalog.dto.MovieDto;
 import kostka.moviecatalog.entity.EsMovie;
 import kostka.moviecatalog.entity.Movie;
@@ -13,13 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.ALL_MOVIES_KEY;
-import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.LATEST_MOVIES_KEY;
-import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.TOP_RATING_KEY;
 
 @Service
 public class DbMovieService {
@@ -29,6 +29,8 @@ public class DbMovieService {
     private EsMovieService esMovieService;
     private RedisService redisService;
     private StatisticService statisticService;
+
+    private ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
     public DbMovieService(final MovieRepository movieRepository,
@@ -97,16 +99,15 @@ public class DbMovieService {
         return movieRepository.findTop5ByOrderByIdDesc();
     }
 
-    public String getTop5RatingMoviesFromCache() {
-        return redisService.getMoviesWithKey(TOP_RATING_KEY);
-    }
-
-    public String getAllMoviesFromCache() {
-        return redisService.getMoviesWithKey(ALL_MOVIES_KEY);
-    }
-
-    public String get5LatestMoviesFromCache() {
-        return redisService.getMoviesWithKey(LATEST_MOVIES_KEY);
+    public List<Movie> getMoviesFromCacheWithKey(final String key) {
+        LOGGER.info("get movies from redis cache with key '{}'", key);
+        String json = redisService.getMoviesWithKey(key);
+        try {
+           return Arrays.asList(mapper.readValue(json, Movie[].class));
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Cannot get movies from json.", e);
+        }
+        return Collections.emptyList();
     }
 
     public void deleteMovie(final Long movieId) {

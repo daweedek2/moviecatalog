@@ -40,12 +40,6 @@ public class MovieCatalogController {
         this.specificationService = specificationService;
     }
 
-    @GetMapping("/all")
-    public String getAllMovies() {
-        LOGGER.info("get all movies request");
-        return dbMovieService.getAllMoviesFromCache();
-    }
-
     /**
      * Controller method for creating new movie in db and in elasticsearch.
      * @param dto which holds the new movie data.
@@ -96,26 +90,6 @@ public class MovieCatalogController {
     public List<Movie> fullTextSearchMovie(final @RequestParam("term") String searchTerm) {
         LOGGER.info("fulltext search request Movie");
         return dbMovieService.fullTextSearch(searchTerm);
-    }
-
-    /**
-     * Method which returns 5 latest movies which are stored in Redis cache.
-     * @return 5 latest movies in json format.
-     */
-    @GetMapping("/latest5")
-    public String get5LatestMovies() {
-        LOGGER.info("get 5 latest movies request");
-        return dbMovieService.get5LatestMoviesFromCache();
-    }
-
-    /**
-     * Method which returns 5 movies with highest rating which are stored in Redis cache.
-     * @return 5 top rated movies in json format.
-     */
-    @GetMapping("/top5")
-    public String getTopRatingMovies() {
-        LOGGER.info("get 5 top rating movies request");
-        return dbMovieService.getTop5RatingMoviesFromCache();
     }
 
     /**

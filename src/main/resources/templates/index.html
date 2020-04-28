@@ -37,15 +37,109 @@
     <br>
     <p id="searchMovies"></p>
     <br>
-    <h4>All movies</h4>
-    <p id="allMovies"></p>
+    <div class="container">
+        <div class="row">
+            <h4>All movies</h4>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th> Movie Id </th>
+                    <th> Movie name </th>
+                    <th> Director </th>
+                    <th> Camera </th>
+                    <th> Music </th>
+                    <th> Description </th>
+                    <th> Average rating </th>
+                    <th> Action </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${allMovies.empty}">
+                    <td colspan="2"> No Movies Available </td>
+                </tr>
+                <tr th:each="movie : ${allMovies}">
+                    <td><span th:text="${movie.id}"></span></td>
+                    <td><span th:text="${movie.name}"></span></td>
+                    <td><span th:text="${movie.director}"></span></td>
+                    <td><span th:text="${movie.camera}"></span></td>
+                    <td><span th:text="${movie.music}"></span></td>
+                    <td><span th:text="${movie.description}"></span></td>
+                    <td><span th:text="${movie.averageRating}"></span></td>
+                    <td><a href="#" class="button" th:href="@{/movies/detail/{movieId}(movieId=${movie.id})}">Detail</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
     <br>
-    <h4>5 latest movies</h4>
-    <p id="latestMovies"></p>
-    <br>
-    <h4>TOP 5 movies by rating</h4>
-    <p id="topMovies"></p>
 </div>
-
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <h4>5 Latest movies</h4>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th> Movie Id </th>
+                    <th> Movie name </th>
+                    <th> Director </th>
+                    <th> Camera </th>
+                    <th> Music </th>
+                    <th> Description </th>
+                    <th> Average rating </th>
+                    <th> Action </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${latestMovies.empty}">
+                    <td colspan="2"> No Movies Available </td>
+                </tr>
+                <tr th:each="movie : ${latestMovies}">
+                    <td><span th:text="${movie.id}"></span></td>
+                    <td><span th:text="${movie.name}"></span></td>
+                    <td><span th:text="${movie.director}"></span></td>
+                    <td><span th:text="${movie.camera}"></span></td>
+                    <td><span th:text="${movie.music}"></span></td>
+                    <td><span th:text="${movie.description}"></span></td>
+                    <td><span th:text="${movie.averageRating}"></span></td>
+                    <td><a href="#" class="button" th:href="@{/movies/detail/{movieId}(movieId=${movie.id})}">Detail</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-sm">
+            <h4>Top 5 movies</h4>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th> Movie Id </th>
+                    <th> Movie name </th>
+                    <th> Director </th>
+                    <th> Camera </th>
+                    <th> Music </th>
+                    <th> Description </th>
+                    <th> Average rating </th>
+                    <th> Action </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${rating.empty}">
+                    <td colspan="2"> No Movies Available </td>
+                </tr>
+                <tr th:each="movie : ${rating}">
+                    <td><span th:text="${movie.id}"></span></td>
+                    <td><span th:text="${movie.name}"></span></td>
+                    <td><span th:text="${movie.director}"></span></td>
+                    <td><span th:text="${movie.camera}"></span></td>
+                    <td><span th:text="${movie.music}"></span></td>
+                    <td><span th:text="${movie.description}"></span></td>
+                    <td><span th:text="${movie.averageRating}"></span></td>
+                    <td><a href="#" class="button" th:href="@{/movies/detail/{movieId}(movieId=${movie.id})}">Detail</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 </body>
 </html>

@@ -1,11 +1,5 @@
 var stompClient = null;
-var allMovies = 'allMovies';
-var topMovies = 'topMovies';
-var latestMovies = 'latestMovies';
 var searchedMovies = 'searchMovies';
-var topMoviesUrl = '/movies/top5';
-var latestMoviesUrl = '/movies/latest5';
-var allMoviesUrl = '/movies/all';
 var searchMoviesUrl = '/movies/search?term=';
 var specMoviesUrl = '/movies/spec'
 var specFieldParam = '?field=';
@@ -37,25 +31,15 @@ function connect() {
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function(frame) {
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/rating', function(topRatedMoviesMessage) {
-            getDataFromUrlToTable(topMoviesUrl, topMovies);
-            console.log(topRatedMoviesMessage);
-        });
-        stompClient.subscribe('/topic/latestMovies', function(latestMoviesMessage) {
-            getDataFromUrlToTable(latestMoviesUrl, latestMovies);
-            console.log(latestMoviesMessage);
-        });
-        stompClient.subscribe('/topic/all-movies', function(allMoviesMessage) {
-            getDataFromUrlToTable(allMoviesUrl, allMovies);
-            console.log(allMoviesMessage);
-        });
         stompClient.subscribe('/topic/recalculate', function(recalculateMessage) {
-            getDataFromUrlToTable(allMoviesUrl, allMovies);
-            getDataFromUrlToTable(topMoviesUrl, topMovies);
-            getDataFromUrlToTable(latestMoviesUrl, latestMovies);
+            this.refreshPage();
             console.log(recalculateMessage);
         });
     });
+}
+
+function refreshPage() {
+    location.reload();
 }
 
 function searchMovies() {
