@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie Detail</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container" th:if="${status} != ''">
+    <div class="alert-danger">
+        <p th:utext="${status}"></p>
+    </div>
+</div>
+
+<div class="container" th:if="${success} != ''">
+    <div class="alert-info">
+        <p th:utext="${success}"></p>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <h4 class="header-panel" style="text-align: center">New Movie</h4>
+            <br>
+            <form class="container" action="#" th:action="@{/admin/movie/create}" th:object="${movieDto}" method="post">
+                <p class="text-input" style="text-align: right">Movie Name * : <input type="text" th:field="*{name}" /></p>
+                <p class="text-input" style="text-align: right">Director: <input type="text" th:field="*{director}" /></p>
+                <p class="text-input" style="text-align: right">Camera:   <input type="text" th:field="*{camera}" /></p>
+                <p class="text-input" style="text-align: right">Music:   <input type="text" th:field="*{music}" /></p>
+                <p class="text-input" style="text-align: right">Description:   <input type="text" th:field="*{description}" /></p>
+                <p style="text-align: center">
+                    <input class="arrow-button" type="submit" value="Create" />
+                    <input type="reset" value="Reset" />
+                </p>
+            </form>
+        </div>
+        <div class="col-sm">
+            <h4 class="header-panel" style="text-align: center">New Comment</h4>
+            <br>
+            <form class="container" action="#" th:action="@{/admin/comment/create}" th:object="${commentDto}" method="post">
+                <p class="text-field" style="text-align: right">Movie Id * :  <input type="text" th:field="*{movieId}" /></p>
+                <p class="error" th:if="${#fields.hasErrors('movieId')}" th:errors="*{movieId}">Movie ID error.</p>
+                <p class="text-field" style="text-align: right">Author Id: <input type="text" th:field="*{authorId}" /></p>
+                <p class="text-field" style="text-align: right">Comment Text * :   <input type="text" th:field="*{commentText}" /></p>
+                <p class="error" th:if="${#fields.hasErrors('commentText')}" th:errors="*{commentText}">Text error.</p>
+                <p style="text-align: center"><input class="arrow-button" type="submit" value="Create" /> <input type="reset" value="Reset" /></p>
+            </form>
+        </div>
+        <div class="col-sm">
+            <h4 class="header-panel" style="text-align: center">New Rating</h4>
+            <br>
+            <form class="container" action="#" th:action="@{/admin/rating/create}" th:object="${ratingDto}" method="post">
+                <p class="text-input" style="text-align: right">Movie Id * :  <input type="text" th:field="*{movieId}" /></p>
+                <p class="error" th:if="${#fields.hasErrors('movieId')}" th:errors="*{movieId}">Movie ID error.</p>
+                <p class="text-input" style="text-align: right">Author Id: <input type="text" th:field="*{authorId}" /></p>
+                <p class="text-input" style="text-align: right">Rating Value * :   <input type="number" th:field="*{ratingValue}" /></p>
+                <p class="error" th:if="${#fields.hasErrors('ratingValue')}" th:errors="*{ratingValue}">Rating value error.</p>
+                <p style="text-align: center"><input class="arrow-button" type="submit" value="Create" /> <input type="reset" value="Reset" /></p>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
