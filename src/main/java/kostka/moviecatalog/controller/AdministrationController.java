@@ -99,7 +99,6 @@ public class AdministrationController {
             addModelAttributes(model, "Comment is not created. CommentService is down.");
             return ADMIN_VIEW;
         }
-        rabbitMqSender.sendUpdateRequestToQueue();
         rabbitMqSender.sendRefreshMovieDetailRequestQueue();
 
         redirectAttributes.addFlashAttribute(SUCCESS, "Comment is successfully created.");
@@ -111,7 +110,7 @@ public class AdministrationController {
                                final BindingResult bindingResult,
                                final RedirectAttributes redirectAttributes,
                                final Model model) {
-        LOGGER.info("create movie request");
+        LOGGER.info("create rating request");
         if (bindingResult.hasErrors()) {
             addModelAttributes(model, INVALID_DTO);
             return ADMIN_VIEW;
@@ -123,8 +122,7 @@ public class AdministrationController {
             addModelAttributes(model, "Rating is not created. RatingService is down.");
             return ADMIN_VIEW;
         }
-        rabbitMqSender.sendUpdateRequestToQueue();
-        rabbitMqSender.sendRefreshMovieDetailRequestQueue();
+        rabbitMqSender.sendToSetAverageRatingForSingleMovie(dto.getMovieId().toString());
 
         redirectAttributes.addFlashAttribute(SUCCESS, "Rating is successfully created.");
         return REDIRECT_ADMIN_VIEW;
