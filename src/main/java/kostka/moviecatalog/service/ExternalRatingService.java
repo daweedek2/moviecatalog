@@ -1,6 +1,7 @@
 package kostka.moviecatalog.service;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import kostka.moviecatalog.dto.RatingDto;
 import kostka.moviecatalog.entity.AverageRating;
 import kostka.moviecatalog.entity.MovieRating;
 import kostka.moviecatalog.entity.Rating;
@@ -14,6 +15,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import static kostka.moviecatalog.service.ExternalCommentService.DEFAULT_ID;
+
 /**
  * Service which communicates with external microservice (RatingService) via rest template.
  */
@@ -24,6 +27,7 @@ public class ExternalRatingService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExternalRatingService.class);
     private static final String RATING_URL_SERVICE_DISCOVERY = "http://rating-service/rating/";
     private static final String AVERAGE_RATING_URL_SERVICE_DISCOVERY = "http://rating-service/rating/average/";
+    private static final String CREATE_RATING_URL_SERVICE_DISCOVERY = "http://rating-service/rating/create";
 
     @Autowired
     public ExternalRatingService(final RestTemplate restTemplate, final DbMovieService dbMovieService) {
@@ -70,9 +74,9 @@ public class ExternalRatingService {
         LOGGER.info("Rating Service is down - return default rating List.");
         Rating randomRating = new Rating();
         randomRating.setMovieId(movieId);
-        randomRating.setRatingId(999L);
+        randomRating.setRatingId(DEFAULT_ID);
         randomRating.setRatingValue(0);
-        randomRating.setAuthorId(999L);
+        randomRating.setAuthorId(DEFAULT_ID);
         return Collections.singletonList(randomRating);
     }
 
@@ -82,7 +86,18 @@ public class ExternalRatingService {
      * @return default value of the average rating.
      */
     public double getAverageRatingFromRatingServiceFallback(final Long movieId) {
-        LOGGER.info("Rating Service is down - return the stored value in DB for average Rating.");
+        LOGGER.warn("Rating Service is down - return the stored value in DB for average Rating.");
         return dbMovieService.getMovie(movieId).getAverageRating();
+    }
+
+    @HystrixCommand(fallbackMethod = "createRatingInRatingServiceFallback")
+    public Rating createRatingInRatingService(final RatingDto dto) {
+        LOGGER.info("Create new rating request for RatingService.");
+        return restTemplate.postForObject(CREATE_RATING_URL_SERVICE_DISCOVERY, dto, Rating.class);
+    }
+
+    public Rating createRatingInRatingServiceFallback(final RatingDto dto) {
+        LOGGER.warn("RatingService is down, default rating is returned.");
+        return new Rating();
     }
 }

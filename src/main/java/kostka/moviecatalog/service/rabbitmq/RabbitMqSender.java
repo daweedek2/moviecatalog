@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.CREATE_MOVIE_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.DELETE_MOVIE_KEY;
+import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.MOVIE_DETAIL_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.RATING_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.RECALCULATE_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.TOPIC_EXCHANGE;
@@ -63,5 +64,11 @@ public class RabbitMqSender {
         LOGGER.info("Sending recalculate all movies average rating request to rabbitMQ rating-queue.");
         statisticService.incrementSyncedRabbitMqCounter();
         rabbitTemplate.convertAndSend(TOPIC_EXCHANGE, RATING_KEY, RATING_KEY);
+    }
+
+    public void sendRefreshMovieDetailRequestQueue() {
+        LOGGER.info("Sending refresh movie detail request to movie-detail queue.");
+        statisticService.incrementSyncedRabbitMqCounter();
+        rabbitTemplate.convertAndSend(TOPIC_EXCHANGE, MOVIE_DETAIL_KEY, MOVIE_DETAIL_KEY);
     }
 }

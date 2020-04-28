@@ -1,6 +1,7 @@
 package kostka.moviecatalog.service;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import kostka.moviecatalog.dto.CommentDto;
 import kostka.moviecatalog.entity.Comment;
 import kostka.moviecatalog.entity.MovieComments;
 import org.slf4j.Logger;
@@ -18,9 +19,11 @@ import java.util.Objects;
  */
 @Service
 public class ExternalCommentService {
+    public static final long DEFAULT_ID = 999L;
     private RestTemplate restTemplate;
     private static final Logger LOGGER = LoggerFactory.getLogger(ExternalCommentService.class);
     private static final String COMMENT_URL_SERVICE_DISCOVERY = "http://comment-service/comments/";
+    private static final String CREATE_COMMENT_URL_SERVICE_DISCOVERY = "http://comment-service/comments/create";
 
     @Autowired
     public ExternalCommentService(final RestTemplate restTemplate) {
@@ -37,12 +40,23 @@ public class ExternalCommentService {
     }
 
     public List<Comment> getCommentsFromCommentServiceFallback(final Long movieId) {
-        LOGGER.info("Comment service is down - return default list of comments.");
+        LOGGER.warn("Comment service is down - return default list of comments.");
         Comment defaultComment = new Comment();
-        defaultComment.setAuthorId(999L);
-        defaultComment.setCommentId(999L);
+        defaultComment.setAuthorId(DEFAULT_ID);
+        defaultComment.setCommentId(DEFAULT_ID);
         defaultComment.setMovieId(movieId);
         defaultComment.setCommentText("Comment Service is down.");
         return Collections.singletonList(defaultComment);
+    }
+
+    @HystrixCommand(fallbackMethod = "createCommentInCommentServiceFallback")
+    public Comment createCommentInCommentService(final CommentDto dto) {
+        LOGGER.info("Create new comment request for CommentService.");
+        return restTemplate.postForObject(CREATE_COMMENT_URL_SERVICE_DISCOVERY, dto, Comment.class);
+    }
+
+    public Comment createCommentInCommentServiceFallback(final CommentDto dto) {
+        LOGGER.warn("CommentService is down, default comment is returned.");
+        return new Comment();
     }
 }

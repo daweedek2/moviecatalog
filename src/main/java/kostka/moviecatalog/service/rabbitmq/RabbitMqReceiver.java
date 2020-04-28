@@ -162,4 +162,17 @@ public class RabbitMqReceiver {
                 );
         stompService.sendSTOMPToRefreshMovieDetail();
     }
+
+    @RabbitListener(
+            bindings = @QueueBinding(
+                    exchange = @Exchange(TOPIC_EXCHANGE),
+                    key = RATING_KEY,
+                    value = @Queue(RATING_QUEUE)
+            )
+    )
+    public void receiveRefreshMovieDetailRequest() {
+        LOGGER.info("Received message from RabbitMQ to refresh movie detail.");
+        statisticService.incrementSyncedRabbitMqCounter();
+        stompService.sendSTOMPToRefreshMovieDetail();
+    }
 }
