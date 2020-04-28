@@ -19,11 +19,14 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+
+import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.ALL_MOVIES_KEY;
 
 @Controller
 @RequestMapping(value = "/admin")
@@ -82,6 +85,23 @@ public class AdministrationController {
         return REDIRECT_ADMIN_VIEW;
     }
 
+    /**
+     * Method for deleting existing movie from db and from elasticsearch.
+     * @param movieId id of the deleted movie.
+     */
+    @GetMapping("/movies/delete/{movieId}")
+    public String deleteMovie(final @PathVariable Long movieId) {
+        LOGGER.info("delete movie with id '{}' request", movieId);
+        try {
+            dbMovieService.deleteMovie(movieId);
+            rabbitMqSender.sendToDeleteElasticQueue(movieId.toString());
+            rabbitMqSender.sendUpdateRequestToQueue();
+        } catch (Exception e) {
+            LOGGER.error("Movie with id '{}' cannot be deleted.", movieId, e);
+        }
+        return REDIRECT_ADMIN_VIEW;
+    }
+
     @PostMapping("/comment/create")
     public String createComment(final @Valid @ModelAttribute CommentDto dto,
                                 final BindingResult bindingResult,
@@ -134,6 +154,7 @@ public class AdministrationController {
         model.addAttribute("movieDto", new MovieDto());
         model.addAttribute("commentDto", new CommentDto());
         model.addAttribute("ratingDto", new RatingDto());
+        model.addAttribute(ALL_MOVIES_KEY, dbMovieService.getMoviesFromCacheWithKey(ALL_MOVIES_KEY));
         model.addAttribute(ERROR, message);
     }
 }
