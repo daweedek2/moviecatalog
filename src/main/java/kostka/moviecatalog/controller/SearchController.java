@@ -1,62 +1,30 @@
 package kostka.moviecatalog.controller;
 
-import kostka.moviecatalog.dto.MovieDto;
 import kostka.moviecatalog.dto.SearchCriteriaDto;
 import kostka.moviecatalog.entity.Movie;
-import kostka.moviecatalog.exception.InvalidDtoException;
 import kostka.moviecatalog.service.DbMovieService;
 import kostka.moviecatalog.service.MovieSpecificationService;
-import kostka.moviecatalog.service.rabbitmq.RabbitMqSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping(value = "/movies")
-public class MovieCatalogController {
+public class SearchController {
     private DbMovieService dbMovieService;
-    private RabbitMqSender rabbitMqSender;
     private MovieSpecificationService specificationService;
-    static final Logger LOGGER = LoggerFactory.getLogger(MovieCatalogController.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(SearchController.class);
     @Autowired
-    public MovieCatalogController(final DbMovieService dbMovieService,
-                                  final RabbitMqSender rabbitMqSender,
-                                  final MovieSpecificationService specificationService) {
+    public SearchController(final DbMovieService dbMovieService,
+                            final MovieSpecificationService specificationService) {
         this.dbMovieService = dbMovieService;
-        this.rabbitMqSender = rabbitMqSender;
         this.specificationService = specificationService;
-    }
-
-    /**
-     * Controller method for creating new movie in db and in elasticsearch.
-     * @param dto which holds the new movie data.
-     * @return response entity with the newly created movie.
-     */
-    @PostMapping("/create")
-    public ResponseEntity<Movie> createMovie(final @Valid @RequestBody MovieDto dto) {
-        LOGGER.info("create movie request");
-        Movie movie = null;
-        try {
-            movie = dbMovieService.createMovie(dto);
-        } catch (InvalidDtoException e) {
-            LOGGER.error("Creation of movie failed", e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        rabbitMqSender.sendToCreateElasticQueue(movie.getId().toString());
-        rabbitMqSender.sendUpdateRequestToQueue();
-        return new ResponseEntity<>(movie, HttpStatus.OK);
     }
 
     /**

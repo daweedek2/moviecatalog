@@ -59,6 +59,11 @@ public class AdministrationController {
         return ADMIN_VIEW;
     }
 
+    /**
+     * Controller method for creating new movie in db and in elasticsearch.
+     * @param dto which holds the new movie data.
+     * @return admin page.
+     */
     @PostMapping("/movie/create")
     public String createMovie(final @Valid @ModelAttribute MovieDto dto,
                               final BindingResult bindingResult,
