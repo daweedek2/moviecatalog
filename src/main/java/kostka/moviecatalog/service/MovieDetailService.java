@@ -52,6 +52,12 @@ public class MovieDetailService {
         return populateMovieDetail(movie, comments, ratings);
     }
 
+    public void setAverageRatingForMovie(final Long movieId) {
+        Movie movie = movieService.getMovie(movieId);
+        movie.setAverageRating(externalRatingService.getAverageRatingFromRatingService(movieId));
+        movieService.saveMovie(movie);
+    }
+
     /**
      * Collects data from the method parameters to MovieDetail entity.
      * @param movie movie data.

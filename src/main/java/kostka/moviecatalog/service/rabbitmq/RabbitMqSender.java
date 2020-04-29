@@ -12,6 +12,7 @@ import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.DELETE_MOVIE
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.MOVIE_DETAIL_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.RATING_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.RECALCULATE_KEY;
+import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.SINGLE_RATING_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.TOPIC_EXCHANGE;
 
 @Service
@@ -64,6 +65,15 @@ public class RabbitMqSender {
         LOGGER.info("Sending recalculate all movies average rating request to rabbitMQ rating-queue.");
         statisticService.incrementSyncedRabbitMqCounter();
         rabbitTemplate.convertAndSend(TOPIC_EXCHANGE, RATING_KEY, RATING_KEY);
+    }
+
+    /**
+     * Sends message to rabbitMQ which then updates average rating of single movie.
+     */
+    public void sendToSetAverageRatingForSingleMovie(final String movieId) {
+        LOGGER.info("Sending recalculate single movies average rating request to rabbitMQ rating-queue.");
+        statisticService.incrementSyncedRabbitMqCounter();
+        rabbitTemplate.convertAndSend(TOPIC_EXCHANGE, SINGLE_RATING_KEY, movieId);
     }
 
     public void sendRefreshMovieDetailRequestQueue() {

@@ -3,7 +3,7 @@ package kostka.moviecatalog.service.rabbitmq;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.service.DbMovieService;
 import kostka.moviecatalog.service.EsMovieService;
-import kostka.moviecatalog.service.ExternalRatingService;
+import kostka.moviecatalog.service.MovieDetailService;
 import kostka.moviecatalog.service.STOMPService;
 import kostka.moviecatalog.service.StatisticService;
 import kostka.moviecatalog.service.redis.RedisService;
@@ -27,7 +27,9 @@ public class RabbitMqReceiver {
     public static final String LATEST_MOVIES_QUEUE = "latest-movies-queue";
     public static final String ALL_MOVIES_QUEUE = "all-movies-queue";
     public static final String RATING_QUEUE = "rating-queue";
+    public static final String SINGLE_RATING_QUEUE = "single-rating-queue";
     public static final String RECALCULATE_QUEUE = "recalculate-queue";
+    public static final String MOVIE_DETAIL_QUEUE = "movieDetail-queue";
     public static final String DEFAULT_QUEUE = "default-queue";
     public static final String CREATE_MOVIE_KEY = "createMovie";
     public static final String DELETE_MOVIE_KEY = "deleteMovie";
@@ -36,6 +38,7 @@ public class RabbitMqReceiver {
     public static final String ALL_MOVIES_KEY = "allMovies";
     public static final String RECALCULATE_KEY = "recalculate";
     public static final String RATING_KEY = "rating";
+    public static final String SINGLE_RATING_KEY = "single-rating";
     public static final String MOVIE_DETAIL_KEY = "movieDetail";
     public static final String DEFAULT_KEY = "default";
     public static final String CANNOT_PARSE_JSON = "Cannot parse JSON";
@@ -48,7 +51,7 @@ public class RabbitMqReceiver {
     private RedisService redisService;
     private STOMPService stompService;
     private StatisticService statisticService;
-    private ExternalRatingService externalRatingService;
+    private MovieDetailService movieDetailService;
 
     @Autowired
     public RabbitMqReceiver(final EsMovieService esMovieService,
@@ -56,13 +59,13 @@ public class RabbitMqReceiver {
                             final RedisService redisService,
                             final STOMPService stompService,
                             final StatisticService statisticService,
-                            final ExternalRatingService externalRatingService) {
+                            final MovieDetailService movieDetailService) {
         this.esMovieService = esMovieService;
         this.dbMovieService = dbmovieService;
         this.redisService = redisService;
         this.stompService = stompService;
         this.statisticService = statisticService;
-        this.externalRatingService = externalRatingService;
+        this.movieDetailService = movieDetailService;
     }
 
     /**
@@ -154,20 +157,37 @@ public class RabbitMqReceiver {
         allMovies.forEach(
                 movie -> {
                     LOGGER.info("Updating movie with id {} average rating.", movie.getId());
-                    movie.setAverageRating(
-                            externalRatingService.getAverageRatingFromRatingService(movie.getId())
-                    );
-                    dbMovieService.saveMovie(movie);
+                    movieDetailService.setAverageRatingForMovie(movie.getId());
                 }
                 );
+    }
+
+    /**
+     * Method which takes care of getting message from RabbitMQ rating-queue for updating
+     * the average rating of all movies in db.
+     */
+    @RabbitListener(
+            bindings = @QueueBinding(
+                    exchange = @Exchange(TOPIC_EXCHANGE),
+                    key = SINGLE_RATING_KEY,
+                    value = @Queue(SINGLE_RATING_QUEUE)
+            )
+    )
+    public void receiveRecalculateAverageRatingSingleMovie(final String id) {
+        LOGGER.info("Received message from RabbitMQ to get average Rating for single movie.");
+        statisticService.incrementSyncedRabbitMqCounter();
+        LOGGER.info("Updating movie with id {} average rating.", id);
+        movieDetailService.setAverageRatingForMovie(Long.valueOf(id));
+
         stompService.sendSTOMPToRefreshMovieDetail();
+        stompService.sendSTOMPToUpdateAllTables();
     }
 
     @RabbitListener(
             bindings = @QueueBinding(
                     exchange = @Exchange(TOPIC_EXCHANGE),
-                    key = RATING_KEY,
-                    value = @Queue(RATING_QUEUE)
+                    key = MOVIE_DETAIL_KEY,
+                    value = @Queue(MOVIE_DETAIL_QUEUE)
             )
     )
     public void receiveRefreshMovieDetailRequest() {
