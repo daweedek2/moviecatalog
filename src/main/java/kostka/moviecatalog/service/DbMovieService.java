@@ -102,6 +102,9 @@ public class DbMovieService {
     public List<Movie> getMoviesFromCacheWithKey(final String key) {
         LOGGER.info("get movies from redis cache with key '{}'", key);
         String json = redisService.getMoviesWithKey(key);
+        if (json == null) {
+            return Collections.emptyList();
+        }
         try {
            return Arrays.asList(mapper.readValue(json, Movie[].class));
         } catch (JsonProcessingException e) {
