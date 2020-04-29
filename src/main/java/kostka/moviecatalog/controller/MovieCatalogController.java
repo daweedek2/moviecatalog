@@ -12,9 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -90,21 +88,5 @@ public class MovieCatalogController {
     public List<Movie> fullTextSearchMovie(final @RequestParam("term") String searchTerm) {
         LOGGER.info("fulltext search request Movie");
         return dbMovieService.fullTextSearch(searchTerm);
-    }
-
-    /**
-     * Method for deleting existing movie from db and from elasticsearch.
-     * @param movieId id of the deleted movie.
-     */
-    @DeleteMapping("/delete/{movieId}")
-    public void deleteMovie(final @PathVariable Long movieId) {
-        LOGGER.info("delete movie with id '{}' request", movieId);
-        try {
-            dbMovieService.deleteMovie(movieId);
-            rabbitMqSender.sendToDeleteElasticQueue(movieId.toString());
-            rabbitMqSender.sendUpdateRequestToQueue();
-        } catch (Exception e) {
-            LOGGER.error("Movie with id '{}' cannot be deleted.", movieId, e);
-        }
     }
 }
