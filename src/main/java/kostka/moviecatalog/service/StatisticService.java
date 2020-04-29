@@ -41,44 +41,44 @@ public class StatisticService {
 
     @Async
     public void incrementSyncedRedisCounter() {
-        LOGGER.info("incrementing sync redis counter started, old value = {}.", getSyncedRedisCounterValue());
+        LOGGER.debug("incrementing sync redis counter started, old value = {}.", getSyncedRedisCounterValue());
         redisSyncedCounter.syncedIncrement();
         incrementMapWithKey(REDIS_SYNCED_COUNTER);
-        LOGGER.info("incrementing sync redis counter finished, new value = {}.", getSyncedRedisCounterValue());
+        LOGGER.debug("incrementing sync redis counter finished, new value = {}.", getSyncedRedisCounterValue());
     }
 
 
 
     @Async
     public void incrementSyncedRabbitMqCounter() {
-        LOGGER.info("incrementing sync rabbitMQ counter started, old value = {}.", getSyncedRabbitMqCounterValue());
+        LOGGER.debug("incrementing sync rabbitMQ counter started, old value = {}.", getSyncedRabbitMqCounterValue());
         rabbitMqSyncedCounter.syncedIncrement();
         incrementMapWithKey(RABBIT_MQ_SYNCED_COUNTER);
-        LOGGER.info("incrementing sync rabbitMQ counter finished, new value = {}.", getSyncedRabbitMqCounterValue());
+        LOGGER.debug("incrementing sync rabbitMQ counter finished, new value = {}.", getSyncedRabbitMqCounterValue());
     }
 
     @Async
     public void incrementSyncedElasticCounter() {
-        LOGGER.info("incrementing sync elastic counter started, old value = {}.", getSyncedElasticCounterValue());
+        LOGGER.debug("incrementing sync elastic counter started, old value = {}.", getSyncedElasticCounterValue());
         elasticSyncedCounter.syncedIncrement();
         incrementMapWithKey(ELASTIC_SYNCED_COUNTER);
-        LOGGER.info("incrementing sync elastic counter finished, new value = {}.", getSyncedElasticCounterValue());
+        LOGGER.debug("incrementing sync elastic counter finished, new value = {}.", getSyncedElasticCounterValue());
     }
 
     @Async
     public void incrementSyncedScheduledCounter() {
-        LOGGER.info("incrementing sync scheduled counter started, old value = {}.", getSyncedScheduledCounterValue());
+        LOGGER.debug("incrementing sync scheduled counter started, old value = {}.", getSyncedScheduledCounterValue());
         scheduledSyncedCounter.syncedIncrement();
         incrementMapWithKey(SCHEDULED_SYNCED_COUNTER);
-        LOGGER.info("incrementing sync scheduled counter finished, new value = {}.", getSyncedScheduledCounterValue());
+        LOGGER.debug("incrementing sync scheduled counter finished, new value = {}.", getSyncedScheduledCounterValue());
     }
 
     @Async
     public void incrementSyncedDbCounter() {
-        LOGGER.info("incrementing sync scheduled counter started, old value = {}.", getSyncedDbCounterValue());
+        LOGGER.debug("incrementing sync scheduled counter started, old value = {}.", getSyncedDbCounterValue());
         dbSyncedCounter.syncedIncrement();
         incrementMapWithKey(DB_SYNCED_COUNTER);
-        LOGGER.info("incrementing sync scheduled counter finished, new value = {}.", getSyncedDbCounterValue());
+        LOGGER.debug("incrementing sync scheduled counter finished, new value = {}.", getSyncedDbCounterValue());
     }
 
     public int getSyncedRedisCounterValue() {
