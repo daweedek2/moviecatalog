@@ -16,6 +16,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Service
 public class StatisticService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(StatisticService.class);
+
     public static final String REDIS_SYNCED_COUNTER = "redisSyncedCounter";
     public static final String RABBIT_MQ_SYNCED_COUNTER = "rabbitMqSyncedCounter";
     public static final String ELASTIC_SYNCED_COUNTER = "elasticSyncedCounter";
@@ -29,7 +31,6 @@ public class StatisticService {
 
     private Map<String, AtomicInteger> concurrentMap = new ConcurrentHashMap<>(5);
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(StatisticService.class);
 
     public StatisticService() {
         concurrentMap.put(REDIS_SYNCED_COUNTER, new AtomicInteger(0));
@@ -46,8 +47,6 @@ public class StatisticService {
         incrementMapWithKey(REDIS_SYNCED_COUNTER);
         LOGGER.debug("incrementing sync redis counter finished, new value = {}.", getSyncedRedisCounterValue());
     }
-
-
 
     @Async
     public void incrementSyncedRabbitMqCounter() {

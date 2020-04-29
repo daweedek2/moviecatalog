@@ -2,6 +2,7 @@ package kostka.moviecatalog.service.redis;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kostka.moviecatalog.configuration.RedisLockConfiguration;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.service.StatisticService;
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import redis.clients.jedis.Jedis;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -21,9 +23,13 @@ import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.CANNOT_PARSE
 public class RedisService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisService.class);
+    public static final String GENERAL_COUNTER = "general-counter";
 
     private RedisTemplate<String, String> redisTemplate;
     private StatisticService statisticService;
+
+    private Jedis jedis = new Jedis("localhost", 6379);
+    private RedisLockConfiguration redisLock = new RedisLockConfiguration(jedis, "lock", 8000, 3000);
 
     @Autowired
     public RedisService(final RedisTemplate<String, String> redisTemplate, final StatisticService statisticService) {
@@ -81,5 +87,45 @@ public class RedisService {
             LOGGER.error(CANNOT_PARSE_JSON, e);
             return CompletableFuture.failedFuture(e);
         }
+    }
+
+    /**
+     * Increments general counter, which holds number of created objects (movie, rating, comment)
+     * General counter is secured by distributed lock.
+     */
+    public void incrementGeneralCounterWithLockCheck() {
+        try {
+            if (redisLock.lock()) {
+                LOGGER.info("Got lock and incrementing general counter");
+                this.incrementGeneralCounterInRedis();
+            }
+
+            if (!redisLock.checkTimeOut()) {
+                LOGGER.info("Incrementing general counter TIMEOUT!");
+            }
+        } catch (Exception e) {
+            LOGGER.error("Cannot get lock.", e);
+        } finally {
+            LOGGER.info("Releasing lock ");
+            redisLock.release();
+            jedis.close();
+        }
+    }
+
+    private void incrementGeneralCounterInRedis() {
+        int oldValue;
+        int newValue;
+        String stringValue = redisTemplate.opsForValue().get(GENERAL_COUNTER);
+        if (stringValue == null) {
+            //if the counter is null, initialize it with 0
+            LOGGER.info("Initialize general counter with value 0.");
+            oldValue = 0;
+        } else {
+            oldValue = Integer.parseInt(stringValue);
+        }
+
+        newValue = oldValue + 1;
+        redisTemplate.opsForValue().set(GENERAL_COUNTER, String.valueOf(newValue));
+        LOGGER.info("MovieCatalog - General counter is incremented from '{}' to '{}'.", oldValue, newValue);
     }
 }

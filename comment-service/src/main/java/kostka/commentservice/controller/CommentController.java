@@ -4,6 +4,7 @@ import kostka.commentservice.dto.CommentDto;
 import kostka.commentservice.model.Comment;
 import kostka.commentservice.model.MovieComments;
 import kostka.commentservice.service.CommentService;
+import kostka.commentservice.service.RedisService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +20,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/comments")
 public class CommentController {
-    private CommentService commentService;
     private static final Logger LOGGER = LoggerFactory.getLogger(CommentController.class);
+    private CommentService commentService;
+    private RedisService redisService;
 
     @Autowired
-    public CommentController(final CommentService commentService) {
+    public CommentController(final CommentService commentService, final RedisService redisService) {
         this.commentService = commentService;
+        this.redisService = redisService;
     }
 
     /***
@@ -34,6 +37,8 @@ public class CommentController {
      */
     @PostMapping("/create")
     public Comment createComment(@RequestBody final CommentDto dto) {
+        LOGGER.info("create comment request");
+        redisService.incrementGeneralCounterWithLockCheck();
         return commentService.createComment(dto);
     }
 

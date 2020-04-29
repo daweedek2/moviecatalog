@@ -11,6 +11,7 @@ import kostka.moviecatalog.service.DbMovieService;
 import kostka.moviecatalog.service.ExternalCommentService;
 import kostka.moviecatalog.service.ExternalRatingService;
 import kostka.moviecatalog.service.rabbitmq.RabbitMqSender;
+import kostka.moviecatalog.service.redis.RedisService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,16 +42,19 @@ public class AdministrationController {
     private RabbitMqSender rabbitMqSender;
     private ExternalCommentService externalCommentService;
     private ExternalRatingService externalRatingService;
+    private RedisService redisService;
 
     @Autowired
     public AdministrationController(final DbMovieService dbMovieService,
                                     final RabbitMqSender rabbitMqSender,
                                     final ExternalCommentService externalCommentService,
-                                    final ExternalRatingService externalRatingService) {
+                                    final ExternalRatingService externalRatingService,
+                                    final RedisService redisService) {
         this.dbMovieService = dbMovieService;
         this.rabbitMqSender = rabbitMqSender;
         this.externalCommentService = externalCommentService;
         this.externalRatingService = externalRatingService;
+        this.redisService = redisService;
     }
 
     @GetMapping()
@@ -70,6 +74,7 @@ public class AdministrationController {
                               final RedirectAttributes redirectAttributes,
                               final Model model) {
         LOGGER.info("create movie request");
+        redisService.incrementGeneralCounterWithLockCheck();
 
         if (bindingResult.hasErrors()) {
             addModelAttributes(model, INVALID_DTO);
@@ -97,6 +102,7 @@ public class AdministrationController {
     @GetMapping("/movies/delete/{movieId}")
     public String deleteMovie(final @PathVariable Long movieId) {
         LOGGER.info("delete movie with id '{}' request", movieId);
+
         try {
             dbMovieService.deleteMovie(movieId);
             rabbitMqSender.sendToDeleteElasticQueue(movieId.toString());
@@ -113,6 +119,7 @@ public class AdministrationController {
                                 final RedirectAttributes redirectAttributes,
                                 final Model model) {
         LOGGER.info("create comment request");
+
         if (bindingResult.hasErrors()) {
             addModelAttributes(model, INVALID_DTO);
             return ADMIN_VIEW;
@@ -136,6 +143,7 @@ public class AdministrationController {
                                final RedirectAttributes redirectAttributes,
                                final Model model) {
         LOGGER.info("create rating request");
+
         if (bindingResult.hasErrors()) {
             addModelAttributes(model, INVALID_DTO);
             return ADMIN_VIEW;
