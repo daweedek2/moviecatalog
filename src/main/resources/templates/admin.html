@@ -22,44 +22,76 @@
         <div class="col-sm">
             <h4 class="header-panel" style="text-align: center">New Movie</h4>
             <br>
-            <form class="container" action="#" th:action="@{/admin/movie/create}" th:object="${movieDto}" method="post">
-                <p class="text-input" style="text-align: right">Movie Name * : <input type="text" th:field="*{name}" /></p>
-                <p class="text-input" style="text-align: right">Director: <input type="text" th:field="*{director}" /></p>
-                <p class="text-input" style="text-align: right">Camera:   <input type="text" th:field="*{camera}" /></p>
-                <p class="text-input" style="text-align: right">Music:   <input type="text" th:field="*{music}" /></p>
-                <p class="text-input" style="text-align: right">Description:   <input type="text" th:field="*{description}" /></p>
-                <p style="text-align: center">
-                    <input class="arrow-button" type="submit" value="Create" />
-                    <input type="reset" value="Reset" />
-                </p>
+            <form action="#" th:action="@{/admin/movie/create}" th:object="${movieDto}" method="post">
+                <div class="form-group">
+                    <label for="name"> Name * : </label>
+                    <input id="name" th:field="*{name}" />
+                    <p class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color: red">Movie name error.</p>
+                </div>
+                <div class="form-group">
+                    <label for="director"> Director : </label>
+                    <input id="director" th:field="*{director}" />
+                </div>
+                <div class="form-group">
+                    <label for="camera"> Camera : </label>
+                    <input id="camera" th:field="*{camera}" />
+                </div>
+                <div class="form-group">
+                    <label for="music"> Music : </label>
+                    <input id="music" th:field="*{music}" />
+                </div>
+                <div class="form-group">
+                    <label for="description"> Description : </label>
+                    <input id="description" th:field="*{description}" />
+                </div>
+                <button class="arrow-button" type="submit">Create</button>
             </form>
         </div>
         <div class="col-sm">
             <h4 class="header-panel" style="text-align: center">New Comment</h4>
             <br>
-            <form class="container" action="#" th:action="@{/admin/comment/create}" th:object="${commentDto}" method="post">
-                <p class="text-field" style="text-align: right">Movie Id * :  <input type="text" th:field="*{movieId}" /></p>
-                <p class="error" th:if="${#fields.hasErrors('movieId')}" th:errors="*{movieId}">Movie ID error.</p>
-                <p class="text-field" style="text-align: right">Author Id: <input type="text" th:field="*{authorId}" /></p>
-                <p class="text-field" style="text-align: right">Comment Text * :   <input type="text" th:field="*{commentText}" /></p>
-                <p class="error" th:if="${#fields.hasErrors('commentText')}" th:errors="*{commentText}">Text error.</p>
-                <p style="text-align: center"><input class="arrow-button" type="submit" value="Create" /> <input type="reset" value="Reset" /></p>
+            <form action="#" th:action="@{/admin/comment/create}" th:object="${commentDto}" method="post">
+                <div class="form-group">
+                    <label for="movieId"> Movie Id * : </label>
+                    <input id="movieId" th:field="*{movieId}" />
+                    <p class="error" th:if="${#fields.hasErrors('movieId')}" th:errors="*{movieId}" style="color: red">Movie ID error.</p>
+                </div>
+                <div class="form-group">
+                    <label for="commentAuthorId"> Author Id : </label>
+                    <input id="commentAuthorId" th:field="*{authorId}" />
+                </div>
+                <div class="form-group">
+                    <label for="commentText"> Comment Text * : </label>
+                    <input id="commentText" th:field="*{commentText}" />
+                    <p class="error" th:if="${#fields.hasErrors('commentText')}" th:errors="*{commentText}" style="color: red">Comment text error.</p>
+                </div>
+                <button class="arrow-button" type="submit">Create</button>
             </form>
         </div>
         <div class="col-sm">
             <h4 class="header-panel" style="text-align: center">New Rating</h4>
             <br>
-            <form class="container" action="#" th:action="@{/admin/rating/create}" th:object="${ratingDto}" method="post">
-                <p class="text-input" style="text-align: right">Movie Id * :  <input type="text" th:field="*{movieId}" /></p>
-                <p class="error" th:if="${#fields.hasErrors('movieId')}" th:errors="*{movieId}">Movie ID error.</p>
-                <p class="text-input" style="text-align: right">Author Id: <input type="text" th:field="*{authorId}" /></p>
-                <p class="text-input" style="text-align: right">Rating Value * :   <input type="number" th:field="*{ratingValue}" /></p>
-                <p class="error" th:if="${#fields.hasErrors('ratingValue')}" th:errors="*{ratingValue}">Rating value error.</p>
-                <p style="text-align: center"><input class="arrow-button" type="submit" value="Create" /> <input type="reset" value="Reset" /></p>
+            <form action="#" th:action="@{/admin/rating/create}" th:object="${ratingDto}" method="post">
+                <div class="form-group">
+                    <label for="id"> Movie Id * : </label>
+                    <input id="id" th:field="*{id}" />
+                    <p class="error" th:if="${#fields.hasErrors('id')}" th:errors="*{id}" style="color: red">Movie ID error.</p>
+                </div>
+                <div class="form-group">
+                    <label for="authorId"> Author Id : </label>
+                    <input id="authorId" th:field="*{authorId}" />
+                </div>
+                <div class="form-group">
+                    <label for="ratingValue"> Rating Value * : </label>
+                    <input id="ratingValue" th:field="*{ratingValue}" />
+                    <p class="error" th:if="${#fields.hasErrors('ratingValue')}" th:errors="*{ratingValue}" style="color: red">Rating value error.</p>
+                </div>
+                <button class="arrow-button" type="submit">Create</button>
             </form>
         </div>
     </div>
 </div>
+<br>
 <div class="container">
     <div class="row">
         <h4>All movies</h4>

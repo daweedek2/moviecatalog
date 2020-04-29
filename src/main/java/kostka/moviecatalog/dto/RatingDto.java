@@ -12,18 +12,18 @@ public class RatingDto {
     public static final int MAX_RATING_VALUE = 10;
 
     @NotNull(message = "Id cannot be empty.")
-    private Long movieId;
+    private Long id;
     @NotNull(message = "Rating cannot be empty.")
     @Range(min = MIN_RATING_VALUE, max = MAX_RATING_VALUE)
     private int ratingValue;
     private Long authorId;
 
-    public Long getMovieId() {
-        return movieId;
+    public Long getId() {
+        return id;
     }
 
-    public void setMovieId(final Long movieId) {
-        this.movieId = movieId;
+    public void setId(final Long id) {
+        this.id = id;
     }
 
     public int getRatingValue() {

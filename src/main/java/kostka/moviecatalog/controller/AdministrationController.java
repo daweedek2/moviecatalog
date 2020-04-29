@@ -147,7 +147,7 @@ public class AdministrationController {
             addModelAttributes(model, "Rating is not created. RatingService is down.");
             return ADMIN_VIEW;
         }
-        rabbitMqSender.sendToSetAverageRatingForSingleMovie(dto.getMovieId().toString());
+        rabbitMqSender.sendToSetAverageRatingForSingleMovie(dto.getId().toString());
 
         redirectAttributes.addFlashAttribute(SUCCESS, "Rating is successfully created.");
         return REDIRECT_ADMIN_VIEW;
