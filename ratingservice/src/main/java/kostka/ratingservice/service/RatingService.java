@@ -27,14 +27,14 @@ public class RatingService {
      * @return newly created Rating.
      */
     public Rating createRating(final RatingDto dto) {
-        Long movieId = dto.getMovieId();
+        Long movieId = dto.getId();
         int ratingValue = dto.getRatingValue();
         if (movieId == null || ratingValue < MIN_RATING_VALUE || ratingValue > MAX_RATING_VALUE) {
             throw new InvalidDtoException();
         }
         Rating rating = new Rating();
-        rating.setMovieId(dto.getMovieId());
-        rating.setAuthorId(dto.getUserId());
+        rating.setMovieId(dto.getId());
+        rating.setAuthorId(dto.getAuthorId());
         rating.setRatingValue(dto.getRatingValue());
         return ratingRepository.save(rating);
     }

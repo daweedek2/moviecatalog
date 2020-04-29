@@ -43,7 +43,7 @@ public class RatingServiceTest {
     @Test
     public void creatRatingInvalidEmptyMovieIdDtoTest() {
         RatingDto dto = new RatingDto();
-        dto.setUserId(TEST_ID_1);
+        dto.setAuthorId(TEST_ID_1);
         dto.setRatingValue(TEST_VALID_RATING);
 
         assertThatThrownBy(() -> ratingService.createRating(dto)).isInstanceOf(InvalidDtoException.class);

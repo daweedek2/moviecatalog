@@ -6,8 +6,10 @@ import kostka.ratingservice.model.AverageRating;
 import kostka.ratingservice.model.MovieRating;
 import kostka.ratingservice.model.Rating;
 import kostka.ratingservice.service.RatingService;
+import kostka.ratingservice.service.RedisService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,9 +24,12 @@ import javax.validation.Valid;
 public class RatingController {
     private static final Logger LOGGER = LoggerFactory.getLogger(RatingController.class);
     private RatingService ratingService;
+    private RedisService redisService;
 
-    public RatingController(final RatingService ratingService) {
+    @Autowired
+    public RatingController(final RatingService ratingService, final RedisService redisService) {
         this.ratingService = ratingService;
+        this.redisService = redisService;
     }
 
     /***
@@ -35,6 +40,7 @@ public class RatingController {
     @PostMapping("/create")
     public Rating createRating(final @Valid @RequestBody RatingDto dto) {
         LOGGER.info("create rating request");
+        redisService.incrementGeneralCounterWithLockCheck();
         Rating rating = null;
         try {
             rating = ratingService.createRating(dto);

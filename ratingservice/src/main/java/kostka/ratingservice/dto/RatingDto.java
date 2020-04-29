@@ -1,33 +1,44 @@
 package kostka.ratingservice.dto;
 
-public class RatingDto {
-    private Long movieId;
-    private Long userId;
-    private int ratingValue;
+import org.hibernate.validator.constraints.Range;
 
-    public RatingDto(final Long movieId, final Long userId, final int ratingValue) {
-        this.movieId = movieId;
-        this.userId = userId;
+import javax.validation.constraints.NotNull;
+
+public class RatingDto {
+    public static final int MIN_RATING_VALUE = 0;
+    public static final int MAX_RATING_VALUE = 10;
+
+    @NotNull(message = "Id cannot be empty.")
+    private Long id;
+    @NotNull(message = "Rating cannot be empty.")
+    @Range(min = MIN_RATING_VALUE, max = MAX_RATING_VALUE)
+    private int ratingValue;
+    private Long authorId;
+
+
+    public RatingDto(final Long id, final Long authorId, final int ratingValue) {
+        this.id = id;
+        this.authorId = authorId;
         this.ratingValue = ratingValue;
     }
 
     public RatingDto() {
     }
 
-    public Long getMovieId() {
-        return movieId;
+    public Long getId() {
+        return id;
     }
 
-    public void setMovieId(final Long movieId) {
-        this.movieId = movieId;
+    public void setId(final Long id) {
+        this.id = id;
     }
 
-    public Long getUserId() {
-        return userId;
+    public Long getAuthorId() {
+        return authorId;
     }
 
-    public void setUserId(final Long userId) {
-        this.userId = userId;
+    public void setAuthorId(final Long authorId) {
+        this.authorId = authorId;
     }
 
     public int getRatingValue() {
