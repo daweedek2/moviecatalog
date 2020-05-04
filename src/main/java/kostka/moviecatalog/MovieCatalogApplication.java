@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 
@@ -26,6 +27,7 @@ import java.time.Duration;
 @EnableScheduling
 @EnableEurekaClient
 @EnableCircuitBreaker
+@EnableWebSecurity
 public class MovieCatalogApplication {
     static final Logger LOGGER = LoggerFactory.getLogger(MovieCatalogApplication.class);
 

@@ -78,6 +78,7 @@ dependencies {
     compile group: 'org.springframework.cloud',
             name: 'spring-cloud-starter-hystrix',
             version: '1.4.7.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-security'
 
 }
 
