@@ -11,6 +11,8 @@ import java.io.Serializable;
 @Table(name = "role")
 public class Role implements Serializable {
 
+    private static final long serialVersionUID = 29891651684135123L;
+
     @Id
     @GeneratedValue
     @Column(name = "role_id")
