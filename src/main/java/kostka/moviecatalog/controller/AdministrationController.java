@@ -137,6 +137,7 @@ public class AdministrationController {
             return ADMIN_VIEW;
         }
         rabbitMqSender.sendRefreshMovieDetailRequestQueue();
+        rabbitMqSender.sendUpdateRequestToQueue();
 
         redirectAttributes.addFlashAttribute(SUCCESS, "Comment is successfully created.");
         return REDIRECT_ADMIN_VIEW;

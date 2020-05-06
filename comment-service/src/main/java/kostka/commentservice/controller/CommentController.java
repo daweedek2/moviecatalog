@@ -63,4 +63,13 @@ public class CommentController {
     public List<Comment> getAllComments() {
         return commentService.getAllComments();
     }
+
+    /***
+     * Controller method for getting 5 latest comments in db.
+     * @return list of 5 latest comments.
+     */
+    @GetMapping("/latest5")
+    public List<Comment> getLatestComments() {
+        return commentService.getLatest5Comments();
+    }
 }

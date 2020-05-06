@@ -73,4 +73,12 @@ public class CommentService {
     public List<Comment> getAllComments() {
         return commentRepository.findAll();
     }
+
+    /***
+     * Method which gets 5 latest comments stored in db.
+     * @return list of 5 latest comments in db.
+     */
+    public List<Comment> getLatest5Comments() {
+        return commentRepository.findTop5ByOrderByCommentIdDesc();
+    }
 }
