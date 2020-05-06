@@ -1,8 +1,8 @@
 package kostka.moviecatalog.entity;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
@@ -17,12 +17,17 @@ public class User implements Serializable {
     @Column(name = "user_id")
     private Long userId;
 
-    @NotEmpty(message = "Name cannot be empty")
-    @Column(name = "username", nullable = false)
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    @Column(name = "birthdate", nullable = false)
+    private LocalDate birthDate;
+
+    private String firstName;
+    private String lastName;
 
     @ManyToMany(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
     @JoinTable(name = "user_role",
@@ -60,5 +65,29 @@ public class User implements Serializable {
 
     public String getPassword() {
         return password;
+    }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(final LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(final String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(final String lastName) {
+        this.lastName = lastName;
     }
 }
