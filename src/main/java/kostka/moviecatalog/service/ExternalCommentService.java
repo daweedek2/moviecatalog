@@ -23,7 +23,6 @@ public class ExternalCommentService {
     private RestTemplate restTemplate;
     private static final Logger LOGGER = LoggerFactory.getLogger(ExternalCommentService.class);
     private static final String COMMENT_URL_SERVICE_DISCOVERY = "http://comment-service/comments/";
-    private static final String LATEST_COMMENTS_URL_SERVICE_DISCOVERY = "http://comment-service/comments/latest5";
     private static final String CREATE_COMMENT_URL_SERVICE_DISCOVERY = "http://comment-service/comments/create";
 
     @Autowired
@@ -42,7 +41,11 @@ public class ExternalCommentService {
 
     public List<Comment> getCommentsFromCommentServiceFallback(final Long movieId) {
         LOGGER.warn("Comment service is down - return default list of comments.");
-        Comment defaultComment = getDefaultComment(movieId);
+        Comment defaultComment = new Comment();
+        defaultComment.setAuthorId(DEFAULT_ID);
+        defaultComment.setCommentId(DEFAULT_ID);
+        defaultComment.setMovieId(movieId);
+        defaultComment.setCommentText("Comment Service is down.");
         return Collections.singletonList(defaultComment);
     }
 
@@ -55,28 +58,5 @@ public class ExternalCommentService {
     public Comment createCommentInCommentServiceFallback(final CommentDto dto) {
         LOGGER.warn("CommentService is down, default comment is returned.");
         return new Comment();
-    }
-
-    @HystrixCommand(fallbackMethod = "getLatest5CommentsFallback")
-    public List<Comment> getLatest5Comments() {
-        LOGGER.info("Getting latest comments from Comment service.");
-        MovieComments commentsResponse = restTemplate.getForObject(
-                LATEST_COMMENTS_URL_SERVICE_DISCOVERY, MovieComments.class);
-
-        return Objects.requireNonNull(commentsResponse).getComments();
-    }
-
-    public List<Comment> getLatest5CommentsFallback() {
-        LOGGER.warn("CommentService is down, default comment is returned.");
-        return Collections.singletonList(getDefaultComment(DEFAULT_ID));
-    }
-
-    private Comment getDefaultComment(final Long movieId) {
-        Comment defaultComment = new Comment();
-        defaultComment.setAuthorId(DEFAULT_ID);
-        defaultComment.setCommentId(DEFAULT_ID);
-        defaultComment.setMovieId(movieId);
-        defaultComment.setCommentText("Comment Service is down.");
-        return defaultComment;
     }
 }

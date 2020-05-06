@@ -9,5 +9,4 @@ import java.util.List;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findAllByMovieId(Long id);
-    List<Comment> findTop5ByOrderByCommentIdDesc();
 }
