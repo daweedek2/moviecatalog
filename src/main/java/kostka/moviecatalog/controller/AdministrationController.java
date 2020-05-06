@@ -3,6 +3,7 @@ package kostka.moviecatalog.controller;
 import kostka.moviecatalog.dto.CommentDto;
 import kostka.moviecatalog.dto.MovieDto;
 import kostka.moviecatalog.dto.RatingDto;
+import kostka.moviecatalog.dto.UserDto;
 import kostka.moviecatalog.entity.Comment;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.entity.Rating;
@@ -10,6 +11,7 @@ import kostka.moviecatalog.exception.InvalidDtoException;
 import kostka.moviecatalog.service.DbMovieService;
 import kostka.moviecatalog.service.ExternalCommentService;
 import kostka.moviecatalog.service.ExternalRatingService;
+import kostka.moviecatalog.service.UserService;
 import kostka.moviecatalog.service.rabbitmq.RabbitMqSender;
 import kostka.moviecatalog.service.redis.RedisService;
 import org.slf4j.Logger;
@@ -43,18 +45,21 @@ public class AdministrationController {
     private ExternalCommentService externalCommentService;
     private ExternalRatingService externalRatingService;
     private RedisService redisService;
+    private UserService userService;
 
     @Autowired
     public AdministrationController(final DbMovieService dbMovieService,
                                     final RabbitMqSender rabbitMqSender,
                                     final ExternalCommentService externalCommentService,
                                     final ExternalRatingService externalRatingService,
-                                    final RedisService redisService) {
+                                    final RedisService redisService,
+                                    final UserService userService) {
         this.dbMovieService = dbMovieService;
         this.rabbitMqSender = rabbitMqSender;
         this.externalCommentService = externalCommentService;
         this.externalRatingService = externalRatingService;
         this.redisService = redisService;
+        this.userService = userService;
     }
 
     @GetMapping()
@@ -161,10 +166,33 @@ public class AdministrationController {
         return REDIRECT_ADMIN_VIEW;
     }
 
+    @PostMapping("user/create")
+    public String createUser(final @Valid UserDto dto,
+                             final BindingResult bindingResult,
+                             final RedirectAttributes redirectAttributes,
+                             final Model model) {
+        LOGGER.info("create user request");
+
+        if (bindingResult.hasErrors()) {
+            addModelAttributes(model, INVALID_DTO);
+            return ADMIN_VIEW;
+        }
+
+        try {
+            userService.createUser(dto);
+            redirectAttributes.addFlashAttribute(SUCCESS, "User is successfully created.");
+            return REDIRECT_ADMIN_VIEW;
+        } catch (Exception e) {
+            LOGGER.error("Creation of user failed.", e);
+            return ADMIN_VIEW;
+        }
+    }
+
     private void addModelAttributes(final Model model, final String message) {
         model.addAttribute("movieDto", new MovieDto());
         model.addAttribute("commentDto", new CommentDto());
         model.addAttribute("ratingDto", new RatingDto());
+        model.addAttribute("userDto", new UserDto());
         model.addAttribute(ALL_MOVIES_KEY, dbMovieService.getMoviesFromCacheWithKey(ALL_MOVIES_KEY));
         model.addAttribute(ERROR, message);
     }
