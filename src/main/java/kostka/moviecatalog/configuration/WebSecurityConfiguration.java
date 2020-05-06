@@ -12,6 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+    public static final String USER_ROLE = "USER";
+    public static final String ADMIN_ROLE = "ADMIN";
 
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
@@ -35,9 +37,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 .authorizeRequests().antMatchers("/h2-console/**").permitAll()
                 .and()
-                .authorizeRequests().antMatchers("/admin**").hasRole("ADMIN")
+                .authorizeRequests().antMatchers("/admin/**").hasRole(ADMIN_ROLE)
                 .and()
-                .authorizeRequests().antMatchers("/**").hasRole("USER")
+                .authorizeRequests().antMatchers("/**").hasRole(USER_ROLE)
                 .and()
                 .formLogin().permitAll()
                 .and()
