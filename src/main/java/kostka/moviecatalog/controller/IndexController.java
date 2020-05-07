@@ -1,6 +1,7 @@
 package kostka.moviecatalog.controller;
 
 import kostka.moviecatalog.service.DbMovieService;
+import kostka.moviecatalog.service.ExternalCommentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +18,15 @@ import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.TOP_RATING_K
 @RequestMapping(value = "/")
 public class IndexController {
     static final Logger LOGGER = LoggerFactory.getLogger(IndexController.class);
+    private static final String LATEST_COMMENTS_KEY = "latestComments";
     private DbMovieService dbMovieService;
+    private ExternalCommentService externalCommentService;
 
     @Autowired
-    public IndexController(final DbMovieService dbMovieService) {
+    public IndexController(final DbMovieService dbMovieService,
+                           final ExternalCommentService externalCommentService) {
         this.dbMovieService = dbMovieService;
+        this.externalCommentService = externalCommentService;
     }
 
     /**
@@ -34,6 +39,7 @@ public class IndexController {
         model.addAttribute(TOP_RATING_KEY, dbMovieService.getMoviesFromCacheWithKey(TOP_RATING_KEY));
         model.addAttribute(LATEST_MOVIES_KEY, dbMovieService.getMoviesFromCacheWithKey(LATEST_MOVIES_KEY));
         model.addAttribute(ALL_MOVIES_KEY, dbMovieService.getMoviesFromCacheWithKey(ALL_MOVIES_KEY));
+        model.addAttribute(LATEST_COMMENTS_KEY, externalCommentService.getLatest5Comments());
         return "index";
     }
 }

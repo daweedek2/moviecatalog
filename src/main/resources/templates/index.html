@@ -139,6 +139,30 @@
                 </tbody>
             </table>
         </div>
+        <div class="col-sm">
+            <h4>Latest 5 comments</h4>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th> Comment Id </th>
+                    <th> Movie Id </th>
+                    <th> Author Id </th>
+                    <th> Comment Text </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${latestComments.empty}">
+                    <td colspan="2"> No Comments Available </td>
+                </tr>
+                <tr th:each="comment : ${latestComments}">
+                    <td><span th:text="${comment.commentId}"></span></td>
+                    <td><span th:text="${comment.movieId}"></span></td>
+                    <td><span th:text="${comment.authorId}"></span></td>
+                    <td><span th:text="${comment.commentText}"></span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 </body>
