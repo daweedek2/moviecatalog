@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Collections;
 
+import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.ALL_MOVIES_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.LATEST_MOVIES_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.TOP_RATING_KEY;
 
@@ -44,5 +45,12 @@ public class UserController {
         model.addAttribute(MY_MOVIES_KEY, Collections.emptyList());
         model.addAttribute(LATEST_COMMENTS_KEY, externalCommentService.getLatest5Comments());
         return "index";
+    }
+
+    @GetMapping("allMovies")
+    public String getAllMoviesPage(final Model model) {
+        LOGGER.info("rendering all movies page");
+        model.addAttribute(ALL_MOVIES_KEY, dbMovieService.getMoviesFromCacheWithKey(ALL_MOVIES_KEY));
+        return "allMovies";
     }
 }
