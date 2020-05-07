@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>MovieCatalog</title>
+    <title>MovieCatalog-homepage</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="/webjars/jquery/jquery.min.js"></script>
@@ -17,29 +17,10 @@
 
 <div class="container">
     <h2>MovieCatalog</h2>
-    <form action="#" id="searchForm">
-        <div class="form-group">
-            <input type="text" class="form-control" id="searchText" aria-describedby="searchHelp" placeholder="Enter search string...">
-            <small id="searchHelp" class="form-text text-muted">Search is supported for fields Name, Director and Description.</small>
-        </div>
-        <button type="submit" class="btn btn-primary" onclick="searchMovies()">Search</button>
-    </form>
-    <br>
-    <form action="#" id="specForm">
-        <div class="form-group">
-            <input type="text" class="text-center" id="specField" placeholder="Enter field"/>
-            <input type="text" class="text-center" id="specOperation" placeholder="<, >, <=, >=, ==, !="/>
-            <input type="text" class="text-center" id="specValue" aria-describedby="specHelp" placeholder="Enter value"/>
-            <small id="specHelp" class="form-text text-muted">Search is supported for fields name, director, music, description and rating. Allowed operations are as usual equal not equal, greater, lower..</small>
-        </div>
-        <button type="submit" class="btn btn-primary" onclick="specSearchMovies()">Spec search</button>
-    </form>
-    <br>
-    <p id="searchMovies"></p>
-    <br>
+
     <div class="container">
         <div class="row">
-            <h4>All movies</h4>
+            <h4>My movies</h4>
             <table class="table">
                 <thead>
                 <tr>
@@ -54,10 +35,10 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:if="${allMovies.empty}">
-                    <td colspan="2"> No Movies Available </td>
+                <tr th:if="${myMovies.empty}">
+                    <td colspan="2"> You have no movies :P </td>
                 </tr>
-                <tr th:each="movie : ${allMovies}">
+                <tr th:each="movie : ${myMovies}">
                     <td><span th:text="${movie.id}"></span></td>
                     <td><span th:text="${movie.name}"></span></td>
                     <td><span th:text="${movie.director}"></span></td>
