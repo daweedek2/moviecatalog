@@ -8,6 +8,7 @@ import kostka.moviecatalog.entity.Comment;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.entity.Rating;
 import kostka.moviecatalog.exception.InvalidDtoException;
+import kostka.moviecatalog.service.CacheService;
 import kostka.moviecatalog.service.DbMovieService;
 import kostka.moviecatalog.service.ExternalCommentService;
 import kostka.moviecatalog.service.ExternalRatingService;
@@ -46,6 +47,7 @@ public class AdministrationController {
     private ExternalRatingService externalRatingService;
     private RedisService redisService;
     private UserService userService;
+    private CacheService cacheService;
 
     @Autowired
     public AdministrationController(final DbMovieService dbMovieService,
@@ -53,13 +55,15 @@ public class AdministrationController {
                                     final ExternalCommentService externalCommentService,
                                     final ExternalRatingService externalRatingService,
                                     final RedisService redisService,
-                                    final UserService userService) {
+                                    final UserService userService,
+                                    final CacheService cacheService) {
         this.dbMovieService = dbMovieService;
         this.rabbitMqSender = rabbitMqSender;
         this.externalCommentService = externalCommentService;
         this.externalRatingService = externalRatingService;
         this.redisService = redisService;
         this.userService = userService;
+        this.cacheService = cacheService;
     }
 
     @GetMapping()
@@ -194,7 +198,7 @@ public class AdministrationController {
         model.addAttribute("commentDto", new CommentDto());
         model.addAttribute("ratingDto", new RatingDto());
         model.addAttribute("userDto", new UserDto());
-        model.addAttribute(ALL_MOVIES_KEY, dbMovieService.getMoviesFromCacheWithKey(ALL_MOVIES_KEY));
+        model.addAttribute(ALL_MOVIES_KEY, cacheService.getMoviesFromCacheWithKey(ALL_MOVIES_KEY));
         model.addAttribute(ERROR, message);
     }
 }
