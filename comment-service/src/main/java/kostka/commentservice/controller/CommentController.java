@@ -69,7 +69,9 @@ public class CommentController {
      * @return list of 5 latest comments.
      */
     @GetMapping("/latest5")
-    public List<Comment> getLatestComments() {
-        return commentService.getLatest5Comments();
+    public MovieComments getLatestComments() {
+        MovieComments movieComments = new MovieComments();
+        movieComments.setComments(commentService.getLatest5Comments());
+        return movieComments;
     }
 }
