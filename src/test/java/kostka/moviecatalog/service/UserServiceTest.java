@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -19,6 +20,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 
@@ -37,6 +39,9 @@ public class UserServiceTest {
     @Mock
     private RoleRepository roleRepository;
 
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @InjectMocks
     private UserService userService;
 
@@ -54,13 +59,14 @@ public class UserServiceTest {
         when(userRepository.findByUsername(any())).thenReturn(Optional.empty());
         when(userRepository.save(any())).thenReturn(user);
         when(roleRepository.findByName(any())).thenReturn(new Role());
+        when(passwordEncoder.encode(any())).thenReturn(anyString());
 
         User result = userService.createUser(dto);
 
         assertThat(result).isEqualTo(user);
         assertThat(result.getBirthDate()).isEqualTo(TEST_BIRTH_DATE);
-        assertThat(result.getPassword()).isEqualTo(TEST_USERNAME);
-        assertThat(result.getUsername()).isEqualTo(TEST_PASSWORD);
+        assertThat(result.getPassword()).isEqualTo(TEST_PASSWORD);
+        assertThat(result.getUsername()).isEqualTo(TEST_USERNAME);
     }
 
     @Test

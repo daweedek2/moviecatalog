@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class MovieSpecIntegrationTest {
 
     public static final String OPERATION_LESS = "<";
-    public static final String RATING_FIELD = "rating";
+    public static final String RATING_FIELD = "averageRating";
     public static final String OPERATION_LESS_OR_EQUAL = "<=";
     public static final String OPERATION_GREATER_OR_EQUAL = ">=";
     public static final String OPERATION_GREATER = ">";
