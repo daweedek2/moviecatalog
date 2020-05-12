@@ -29,6 +29,7 @@ services:
       - ./commentservice.log:/commentservice.log
       - ./ratingservice.log:/ratingservice.log
       - ./servicediscovery.log:/servicediscovery.log
+      - ./shopservice.log:/shopservice.log
     command: logstash -f /logstash.conf
   db:
     image: mysql:8.0.19
