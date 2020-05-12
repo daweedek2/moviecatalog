@@ -1,22 +1,17 @@
 package kostka.moviecatalog.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import kostka.moviecatalog.dto.MovieDto;
 import kostka.moviecatalog.entity.EsMovie;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.exception.InvalidDtoException;
 import kostka.moviecatalog.exception.MovieNotFoundException;
 import kostka.moviecatalog.repository.MovieRepository;
-import kostka.moviecatalog.service.redis.RedisService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,19 +22,14 @@ public class DbMovieService {
     public static final long SLEEP_TIME = 5000L;
     private MovieRepository movieRepository;
     private EsMovieService esMovieService;
-    private RedisService redisService;
     private StatisticService statisticService;
-
-    private ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
     public DbMovieService(final MovieRepository movieRepository,
                           final EsMovieService esMovieService,
-                          final RedisService redisService,
                           final StatisticService statisticService) {
         this.movieRepository = movieRepository;
         this.esMovieService = esMovieService;
-        this.redisService = redisService;
         this.statisticService = statisticService;
     }
 
@@ -97,20 +87,6 @@ public class DbMovieService {
         LOGGER.info("get latest 5 from DB");
         statisticService.incrementSyncedDbCounter();
         return movieRepository.findTop5ByOrderByIdDesc();
-    }
-
-    public List<Movie> getMoviesFromCacheWithKey(final String key) {
-        LOGGER.info("get movies from redis cache with key '{}'", key);
-        String json = redisService.getMoviesWithKey(key);
-        if (json == null) {
-            return Collections.emptyList();
-        }
-        try {
-           return Arrays.asList(mapper.readValue(json, Movie[].class));
-        } catch (JsonProcessingException e) {
-            LOGGER.error("Cannot get movies from json.", e);
-        }
-        return Collections.emptyList();
     }
 
     public void deleteMovie(final Long movieId) {
