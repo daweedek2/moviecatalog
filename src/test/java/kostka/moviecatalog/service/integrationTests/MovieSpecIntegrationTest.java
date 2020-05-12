@@ -1,7 +1,7 @@
 package kostka.moviecatalog.service.integrationTests;
 
 import kostka.moviecatalog.MovieCatalogApplication;
-import kostka.moviecatalog.dto.MovieDto;
+import kostka.moviecatalog.dto.MovieFormDto;
 import kostka.moviecatalog.dto.SearchCriteriaDto;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.repository.MovieElasticSearchRepository;
@@ -53,7 +53,7 @@ public class MovieSpecIntegrationTest {
 
     @Before
     public void createTestMovie() {
-        MovieDto dto = new MovieDto();
+        MovieFormDto dto = new MovieFormDto();
         dto.setName(TEST_NAME);
         dto.setCamera(TEST_CAMERA);
         dto.setDescription(TEST_DESCRIPTION);

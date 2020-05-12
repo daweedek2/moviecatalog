@@ -1,7 +1,7 @@
 package kostka.moviecatalog.controller;
 
 import kostka.moviecatalog.dto.CommentDto;
-import kostka.moviecatalog.dto.MovieDto;
+import kostka.moviecatalog.dto.MovieFormDto;
 import kostka.moviecatalog.dto.RatingDto;
 import kostka.moviecatalog.dto.UserDto;
 import kostka.moviecatalog.entity.Comment;
@@ -78,7 +78,7 @@ public class AdministrationController {
      * @return admin page.
      */
     @PostMapping("/movie/create")
-    public String createMovie(final @Valid @ModelAttribute MovieDto dto,
+    public String createMovie(final @Valid @ModelAttribute MovieFormDto dto,
                               final BindingResult bindingResult,
                               final RedirectAttributes redirectAttributes,
                               final Model model) {
@@ -194,7 +194,7 @@ public class AdministrationController {
     }
 
     private void addModelAttributes(final Model model, final String message) {
-        model.addAttribute("movieDto", new MovieDto());
+        model.addAttribute("movieDto", new MovieFormDto());
         model.addAttribute("commentDto", new CommentDto());
         model.addAttribute("ratingDto", new RatingDto());
         model.addAttribute("userDto", new UserDto());

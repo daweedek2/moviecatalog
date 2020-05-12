@@ -34,7 +34,7 @@ public class UserController {
 
     /**
      * Controller method for displaying index page with the lists of the movies.
-     * @return name of the html file (index.html).
+     * @return name of the html file (user.html).
      */
     @GetMapping
     public String getUserHomePage(final Model model) {
@@ -44,7 +44,7 @@ public class UserController {
         //TODO: adapt my movies when my movies feature is implemented
         model.addAttribute(MY_MOVIES_KEY, Collections.emptyList());
         model.addAttribute(LATEST_COMMENTS_KEY, externalCommentService.getLatest5Comments());
-        return "index";
+        return "user";
     }
 
     @GetMapping("allMovies")

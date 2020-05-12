@@ -5,7 +5,7 @@ import javax.validation.constraints.NotEmpty;
 /**
  * Used for transferring data from FE to BE during creation of new movie.
  */
-public class MovieDto {
+public class MovieFormDto {
     @NotEmpty(message = "Name cannot be empty.")
     private String name;
     private String director;

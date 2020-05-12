@@ -126,11 +126,11 @@ public class RabbitMqReceiver {
         statisticService.incrementSyncedRabbitMqCounter();
         try {
             CompletableFuture<Void> allMoviesRedis = redisService
-                    .tryToUpdateMoviesInRedis(dbMovieService::getAllMoviesFromDB, ALL_MOVIES_KEY);
+                    .tryToUpdateMoviesInRedis(dbMovieService::getAllMoviesForCaching, ALL_MOVIES_KEY);
             CompletableFuture<Void> topMoviesRedis = redisService
-                    .tryToUpdateMoviesInRedis(dbMovieService::getTop5RatingMoviesFromDB, TOP_RATING_KEY);
+                    .tryToUpdateMoviesInRedis(dbMovieService::getTop5RatingMoviesForCaching, TOP_RATING_KEY);
             CompletableFuture<Void> latestMoviesRedis = redisService
-                    .tryToUpdateMoviesInRedis(dbMovieService::get5LatestMoviesFromDB, LATEST_MOVIES_KEY);
+                    .tryToUpdateMoviesInRedis(dbMovieService::get5LatestMoviesForCaching, LATEST_MOVIES_KEY);
 
             CompletableFuture.allOf(allMoviesRedis, topMoviesRedis, latestMoviesRedis).join();
             stompService.sendSTOMPToUpdateAllTables();

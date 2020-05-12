@@ -2,7 +2,7 @@ package kostka.moviecatalog.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kostka.moviecatalog.entity.Movie;
+import kostka.moviecatalog.dto.MovieListDto;
 import kostka.moviecatalog.service.redis.RedisService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,14 +24,14 @@ public class CacheService {
         this.redisService = redisService;
     }
 
-    public List<Movie> getMoviesFromCacheWithKey(final String key) {
+    public List<MovieListDto> getMoviesFromCacheWithKey(final String key) {
         LOGGER.info("get movies from redis cache with key '{}'", key);
         String json = redisService.getMoviesWithKey(key);
         if (json == null) {
             return Collections.emptyList();
         }
         try {
-            return Arrays.asList(mapper.readValue(json, Movie[].class));
+            return Arrays.asList(mapper.readValue(json, MovieListDto[].class));
         } catch (JsonProcessingException e) {
             LOGGER.error("Cannot get movies from json.", e);
         }

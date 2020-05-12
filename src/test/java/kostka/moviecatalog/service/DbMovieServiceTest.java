@@ -1,6 +1,6 @@
 package kostka.moviecatalog.service;
 
-import kostka.moviecatalog.dto.MovieDto;
+import kostka.moviecatalog.dto.MovieFormDto;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.exception.InvalidDtoException;
 import kostka.moviecatalog.exception.MovieNotFoundException;
@@ -48,7 +48,7 @@ public class DbMovieServiceTest {
     @Test
     public void createMovieValidDtoTest() {
         Movie movie = generator.createMovieWithName(TEST_NAME);
-        MovieDto dto = generator.createValidMovieDto(TEST_NAME);
+        MovieFormDto dto = generator.createValidMovieFormDto(TEST_NAME);
         Mockito.when(movieRepository.save(any())).thenReturn(movie);
 
         Movie result = dbMovieService.createMovie(dto);
@@ -58,7 +58,7 @@ public class DbMovieServiceTest {
 
     @Test
     public void createMovieInvalidDtoTest() {
-        MovieDto dto = new MovieDto();
+        MovieFormDto dto = new MovieFormDto();
 
         assertThatThrownBy(() -> dbMovieService.createMovie(dto))
                 .isInstanceOf(InvalidDtoException.class);
