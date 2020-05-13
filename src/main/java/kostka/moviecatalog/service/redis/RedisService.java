@@ -3,7 +3,7 @@ package kostka.moviecatalog.service.redis;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kostka.moviecatalog.configuration.RedisLockConfiguration;
-import kostka.moviecatalog.entity.Movie;
+import kostka.moviecatalog.dto.MovieListDto;
 import kostka.moviecatalog.service.StatisticService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +43,7 @@ public class RedisService {
      * @param key Redis key which is used to map the proper list of movies.
      * @throws JsonProcessingException
      */
-    public void updateMoviesInRedis(final List<Movie> movies, final String key) throws JsonProcessingException {
+    public void updateMoviesInRedis(final List<MovieListDto> movies, final String key) throws JsonProcessingException {
         String json = getJsonStringFromList(movies);
         LOGGER.info("Adding movies '{}' to the redis cache with key: '{}'", json, key);
         redisTemplate.opsForValue().set(key, json);
@@ -61,7 +61,7 @@ public class RedisService {
         return redisTemplate.opsForValue().get(key);
     }
 
-    private String getJsonStringFromList(final List<Movie> movies) throws JsonProcessingException {
+    private String getJsonStringFromList(final List<MovieListDto> movies) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(movies);
     }
@@ -74,9 +74,9 @@ public class RedisService {
      */
     @Async
     public CompletableFuture<Void> tryToUpdateMoviesInRedis(
-            final Supplier<List<Movie>> moviesSupplier,
+            final Supplier<List<MovieListDto>> moviesSupplier,
             final String key) {
-        List<Movie> movies = moviesSupplier.get();
+        List<MovieListDto> movies = moviesSupplier.get();
         if (movies.isEmpty()) {
             return CompletableFuture.completedFuture(null);
         }

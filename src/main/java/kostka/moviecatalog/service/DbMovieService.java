@@ -1,6 +1,7 @@
 package kostka.moviecatalog.service;
 
-import kostka.moviecatalog.dto.MovieDto;
+import kostka.moviecatalog.dto.MovieFormDto;
+import kostka.moviecatalog.dto.MovieListDto;
 import kostka.moviecatalog.entity.EsMovie;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.exception.InvalidDtoException;
@@ -33,12 +34,12 @@ public class DbMovieService {
         this.statisticService = statisticService;
     }
 
-    public Movie createMovie(final MovieDto dto) {
+    public Movie createMovie(final MovieFormDto dto) {
         if (dto.getName() == null) {
             LOGGER.error("Movie dto does not contain name.");
             throw new InvalidDtoException();
         }
-        Movie movie = this.populateMovieFromDto(dto);
+        Movie movie = this.populateMovie(dto);
         LOGGER.info("DB movie with name '{}' is created in MySQL", movie.getName());
         return movieRepository.save(movie);
     }
@@ -72,6 +73,24 @@ public class DbMovieService {
         return movieRepository.findAll();
     }
 
+    public List<MovieListDto> getAllMoviesForCaching() {
+        return this.getAllMoviesFromDB().stream()
+                .map(this::fillMovieListDtoWithData)
+                .collect(Collectors.toList());
+    }
+
+    public List<MovieListDto> getTop5RatingMoviesForCaching() {
+        return this.getTop5RatingMoviesFromDB().stream()
+                .map(this::fillMovieListDtoWithData)
+                .collect(Collectors.toList());
+    }
+
+    public List<MovieListDto> get5LatestMoviesForCaching() {
+        return this.get5LatestMoviesFromDB().stream()
+                .map(this::fillMovieListDtoWithData)
+                .collect(Collectors.toList());
+    }
+
     public List<Movie> getTop5RatingMoviesFromDB() {
         LOGGER.info("get top 5 from DB");
         try {
@@ -93,7 +112,7 @@ public class DbMovieService {
         movieRepository.deleteById(movieId);
     }
 
-    private Movie populateMovieFromDto(final MovieDto dto) {
+    private Movie populateMovie(final MovieFormDto dto) {
         Movie movie = new Movie();
         movie.setName(dto.getName());
         movie.setDescription(dto.getDescription());
@@ -101,5 +120,15 @@ public class DbMovieService {
         movie.setMusic(dto.getMusic());
         movie.setCamera(dto.getCamera());
         return movie;
+    }
+
+    private MovieListDto fillMovieListDtoWithData(final Movie movie) {
+        MovieListDto dto = new MovieListDto();
+        dto.setId(movie.getId());
+        dto.setName(movie.getName());
+        dto.setDescription(movie.getDescription());
+        dto.setAverageRating(movie.getAverageRating());
+
+        return dto;
     }
 }

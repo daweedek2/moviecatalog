@@ -1,6 +1,6 @@
 package kostka.moviecatalog.service;
 
-import kostka.moviecatalog.dto.MovieDto;
+import kostka.moviecatalog.dto.MovieFormDto;
 import kostka.moviecatalog.dto.RatingDto;
 import kostka.moviecatalog.entity.EsMovie;
 import kostka.moviecatalog.entity.Movie;
@@ -17,8 +17,8 @@ public class Generator {
         return movie;
     }
 
-    public MovieDto createValidMovieDto(final String name) {
-        MovieDto dto = new MovieDto();
+    public MovieFormDto createValidMovieFormDto(final String name) {
+        MovieFormDto dto = new MovieFormDto();
         dto.setName(name);
         return dto;
     }

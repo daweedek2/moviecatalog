@@ -27,22 +27,6 @@ public class Movie {
     @Column
     private double averageRating;
 
-    public Movie(final Long id,
-                 final String name,
-                 final String director,
-                 final String camera,
-                 final String music,
-                 final String description,
-                 final double averageRating) {
-        this.id = id;
-        this.name = name;
-        this.director = director;
-        this.camera = camera;
-        this.music = music;
-        this.description = description;
-        this.averageRating = averageRating;
-    }
-
     public Movie() {
     }
 

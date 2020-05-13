@@ -1,7 +1,7 @@
 package kostka.moviecatalog.service.integrationTests;
 
 import kostka.moviecatalog.MovieCatalogApplication;
-import kostka.moviecatalog.dto.MovieDto;
+import kostka.moviecatalog.dto.MovieFormDto;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.exception.InvalidDtoException;
 import kostka.moviecatalog.exception.MovieNotFoundException;
@@ -46,7 +46,7 @@ public class DbMovieServiceIntegrationTest {
 
     @Before
     public void createTestMovie() {
-        MovieDto dto = new MovieDto();
+        MovieFormDto dto = new MovieFormDto();
         dto.setName(TEST_NAME);
         dto.setCamera(TEST_CAMERA);
         dto.setDescription(TEST_DESCRIPTION);
@@ -58,7 +58,7 @@ public class DbMovieServiceIntegrationTest {
     @Test
     public void createMovieIntegrationTest() {
         long countBefore = movieRepository.count();
-        MovieDto dto = new MovieDto();
+        MovieFormDto dto = new MovieFormDto();
         dto.setName(TEST_NAME_2);
         dbMovieService.createMovie(dto);
 
@@ -69,7 +69,7 @@ public class DbMovieServiceIntegrationTest {
     @Test
     public void doNotCreateMovieWithEmptyDtoIntegrationTest() {
         long countBefore = movieRepository.count();
-        MovieDto dto = new MovieDto();
+        MovieFormDto dto = new MovieFormDto();
 
         assertThatThrownBy(() -> dbMovieService.createMovie(dto))
                 .isInstanceOf(InvalidDtoException.class);
@@ -78,7 +78,7 @@ public class DbMovieServiceIntegrationTest {
 
     @Test
     public void moviePopulatedFromDtoProperlyIntegrationTest() {
-        MovieDto dto = new MovieDto();
+        MovieFormDto dto = new MovieFormDto();
         dto.setName(TEST_NAME_2);
         dto.setCamera(TEST_CAMERA);
         dto.setDescription(TEST_DESCRIPTION);
