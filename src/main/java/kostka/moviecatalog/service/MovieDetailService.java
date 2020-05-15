@@ -17,16 +17,19 @@ public class MovieDetailService {
     private final DbMovieService movieService;
     private final ExternalCommentService externalCommentService;
     private final ExternalRatingService externalRatingService;
+    private final ExternalShopService externalShopService;
     private static final Logger LOGGER = LoggerFactory.getLogger(MovieDetailService.class);
 
 
     @Autowired
     public MovieDetailService(final DbMovieService movieService,
                               final ExternalCommentService externalCommentService,
-                              final ExternalRatingService externalRatingService) {
+                              final ExternalRatingService externalRatingService,
+                              final ExternalShopService externalShopService) {
         this.movieService = movieService;
         this.externalCommentService = externalCommentService;
         this.externalRatingService = externalRatingService;
+        this.externalShopService = externalShopService;
     }
 
     /**
@@ -35,7 +38,7 @@ public class MovieDetailService {
      * @param movieId id of the movie.
      * @return MovieDetail with all data.
      */
-    public MovieDetail getMovieDetail(final Long movieId) {
+    public MovieDetail getMovieDetail(final Long movieId, final Long userId) {
         Movie movie = null;
         try {
             movie = movieService.getMovie(movieId);
@@ -47,9 +50,10 @@ public class MovieDetailService {
 
         List<Comment> comments = externalCommentService.getCommentsFromCommentService(movieId);
         List<Rating> ratings = externalRatingService.getRatingsFromRatingService(movieId);
+        Boolean isBoughtByUser = externalShopService.checkAlreadyBoughtMovieForUser(movieId, userId);
         LOGGER.info("Movie data are prepared.");
 
-        return populateMovieDetail(movie, comments, ratings);
+        return populateMovieDetail(movie, comments, ratings, isBoughtByUser);
     }
 
     public void setAverageRatingForMovie(final Long movieId) {
@@ -67,7 +71,8 @@ public class MovieDetailService {
      */
     private MovieDetail populateMovieDetail(final Movie movie,
                                             final List<Comment> comments,
-                                            final List<Rating> ratings) {
+                                            final List<Rating> ratings,
+                                            final boolean isBoughtByUser) {
         MovieDetail movieDetail = new MovieDetail();
         movieDetail.setMovieId(movie.getId());
         movieDetail.setName(movie.getName());
@@ -76,6 +81,7 @@ public class MovieDetailService {
         movieDetail.setAverageRating(movie.getAverageRating());
         movieDetail.setComments(comments);
         movieDetail.setRatings(ratings);
+        movieDetail.setBought(isBoughtByUser);
         return movieDetail;
     }
 }

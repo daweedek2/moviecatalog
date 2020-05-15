@@ -11,14 +11,30 @@
 <body>
 <div class="container">
 <h2 class="header-panel" th:text="${movieDetail.name}"></h2>
-    <p class="text">Movie Id: <span th:text="${movieDetail.movieId}"></span>
+    <p class="text">Movie Id: <span th:text="${movieDetail.movieId}"></span></p>
+    <p class="text">Director: <span th:text="${movieDetail.director}"></span></p>
+    <p class="text">Description: <span th:text="${movieDetail.description}"></span></p>
+    <p class="text">Calculated Average Rating: <span th:text="${movieDetail.averageRating}"></span></p>
+    <p>
+        <div th:if="${movieDetail.bought == false}">
+            <form action="#" th:action="@{/movies/detail/buy}" method="post">
+                <input type="hidden" name="movieId" id="movieId" th:value="${movieDetail.movieId}" />
+            <button class="btn btn-info" type="submit" onclick="return confirm('Do you really want to buy this movie?')">
+                Buy Movie
+            </button>
+            </form>
+
+            <div class="container" th:if="${status} != ''">
+                <div class="alert-info">
+                    <p th:utext="${status}"></p>
+                </div>
+            </div>
+        </div>
+        <div th:if="${movieDetail.bought}">
+            <p class="alert-info">Movie is yours :)</p>
+        </div>
     </p>
-    <p class="text">Director: <span th:text="${movieDetail.director}"></span>
-    </p>
-    <p class="text">Description: <span th:text="${movieDetail.description}"></span>
-    </p>
-    <p class="text">Calculated Average Rating: <span th:text="${movieDetail.averageRating}"></span>
-    </p>
+
     <div class="container">
         <table class="table">
             <thead>

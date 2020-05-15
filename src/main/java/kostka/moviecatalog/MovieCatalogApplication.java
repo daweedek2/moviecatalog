@@ -2,6 +2,7 @@ package kostka.moviecatalog;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -31,12 +32,18 @@ import java.time.Duration;
 public class MovieCatalogApplication {
     static final Logger LOGGER = LoggerFactory.getLogger(MovieCatalogApplication.class);
 
+    @Value("${rest-template.connection.timeout}")
+    private Long connectionTimeout;
+
+    @Value("${rest-template.read.timeout}")
+    private Long readTimeout;
+
     @Bean
     @LoadBalanced
     public RestTemplate getRestTemplate(final RestTemplateBuilder restTemplateBuilder) {
         return restTemplateBuilder
-                .setConnectTimeout(Duration.ofSeconds(10L))
-                .setReadTimeout(Duration.ofSeconds(10L))
+                .setConnectTimeout(Duration.ofSeconds(connectionTimeout))
+                .setReadTimeout(Duration.ofSeconds(readTimeout))
                 .build();
     }
 
