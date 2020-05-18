@@ -130,9 +130,6 @@
             <tr>
                 <th> Movie Id </th>
                 <th> Movie name </th>
-                <th> Director </th>
-                <th> Camera </th>
-                <th> Music </th>
                 <th> Description </th>
                 <th> Average rating </th>
                 <th> Action </th>
@@ -145,9 +142,6 @@
             <tr th:each="movie : ${allMovies}">
                 <td><span th:text="${movie.id}"></span></td>
                 <td><span th:text="${movie.name}"></span></td>
-                <td><span th:text="${movie.director}"></span></td>
-                <td><span th:text="${movie.camera}"></span></td>
-                <td><span th:text="${movie.music}"></span></td>
                 <td><span th:text="${movie.description}"></span></td>
                 <td><span th:text="${movie.averageRating}"></span></td>
                 <td><a href="#" class="button" th:href="@{/movies/detail/{movieId}(movieId=${movie.id})}">Detail</a> ||

@@ -11,6 +11,7 @@ public class MovieDetail {
     private String director;
     private String description;
     private double averageRating;
+    private boolean bought;
     private List<Comment> comments;
     private List<Rating> ratings;
 
@@ -19,7 +20,7 @@ public class MovieDetail {
 
     public MovieDetail(final Long movieId, final String name, final String director,
                        final String description, final double averageRating, final List<Comment> comments,
-                       final List<Rating> ratings) {
+                       final List<Rating> ratings, final boolean bought) {
         this.movieId = movieId;
         this.name = name;
         this.director = director;
@@ -27,6 +28,7 @@ public class MovieDetail {
         this.averageRating = averageRating;
         this.comments = comments;
         this.ratings = ratings;
+        this.bought = bought;
     }
 
     public Long getMovieId() {
@@ -83,5 +85,13 @@ public class MovieDetail {
 
     public void setRatings(final List<Rating> ratings) {
         this.ratings = ratings;
+    }
+
+    public boolean isBought() {
+        return bought;
+    }
+
+    public void setBought(final boolean bought) {
+        this.bought = bought;
     }
 }

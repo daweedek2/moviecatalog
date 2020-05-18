@@ -122,7 +122,7 @@ public class DbMovieService {
         return movie;
     }
 
-    private MovieListDto fillMovieListDtoWithData(final Movie movie) {
+    public MovieListDto fillMovieListDtoWithData(final Movie movie) {
         MovieListDto dto = new MovieListDto();
         dto.setId(movie.getId());
         dto.setName(movie.getName());

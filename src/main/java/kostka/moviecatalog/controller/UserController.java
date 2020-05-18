@@ -1,16 +1,17 @@
 package kostka.moviecatalog.controller;
 
+import kostka.moviecatalog.security.CustomUserDetails;
 import kostka.moviecatalog.service.CacheService;
 import kostka.moviecatalog.service.ExternalCommentService;
+import kostka.moviecatalog.service.ExternalShopService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.util.Collections;
 
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.ALL_MOVIES_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.LATEST_MOVIES_KEY;
@@ -23,13 +24,16 @@ public class UserController {
     private static final String LATEST_COMMENTS_KEY = "latestComments";
     private static final String MY_MOVIES_KEY = "myMovies";
     private ExternalCommentService externalCommentService;
+    private ExternalShopService externalShopService;
     private CacheService cacheService;
 
     @Autowired
     public UserController(final ExternalCommentService externalCommentService,
-                          final CacheService cacheService) {
+                          final CacheService cacheService,
+                          final ExternalShopService externalShopService) {
         this.externalCommentService = externalCommentService;
         this.cacheService = cacheService;
+        this.externalShopService = externalShopService;
     }
 
     /**
@@ -37,12 +41,13 @@ public class UserController {
      * @return name of the html file (user.html).
      */
     @GetMapping
-    public String getUserHomePage(final Model model) {
+    public String getUserHomePage(
+            final @AuthenticationPrincipal CustomUserDetails user,
+            final Model model) {
         LOGGER.info("rendering user home page");
         model.addAttribute(TOP_RATING_KEY, cacheService.getMoviesFromCacheWithKey(TOP_RATING_KEY));
         model.addAttribute(LATEST_MOVIES_KEY, cacheService.getMoviesFromCacheWithKey(LATEST_MOVIES_KEY));
-        //TODO: adapt my movies when my movies feature is implemented
-        model.addAttribute(MY_MOVIES_KEY, Collections.emptyList());
+        model.addAttribute(MY_MOVIES_KEY, externalShopService.getAlreadyBoughtMoviesForUser(user.getUserId()));
         model.addAttribute(LATEST_COMMENTS_KEY, externalCommentService.getLatest5Comments());
         return "user";
     }
