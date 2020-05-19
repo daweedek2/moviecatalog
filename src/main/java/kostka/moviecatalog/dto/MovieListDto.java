@@ -8,6 +8,7 @@ public final class MovieListDto {
     private String name;
     private String description;
     private double averageRating;
+    private boolean forAdults;
 
     public Long getId() {
         return id;
@@ -39,5 +40,13 @@ public final class MovieListDto {
 
     public void setAverageRating(final double averageRating) {
         this.averageRating = averageRating;
+    }
+
+    public boolean isForAdults() {
+        return forAdults;
+    }
+
+    public void setForAdults(final boolean forAdults) {
+        this.forAdults = forAdults;
     }
 }

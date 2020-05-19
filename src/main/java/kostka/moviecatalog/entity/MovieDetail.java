@@ -12,6 +12,7 @@ public class MovieDetail {
     private String description;
     private double averageRating;
     private boolean bought;
+    private boolean forAdults;
     private List<Comment> comments;
     private List<Rating> ratings;
 
@@ -93,5 +94,13 @@ public class MovieDetail {
 
     public void setBought(final boolean bought) {
         this.bought = bought;
+    }
+
+    public boolean isForAdults() {
+        return forAdults;
+    }
+
+    public void setForAdults(final boolean forAdults) {
+        this.forAdults = forAdults;
     }
 }

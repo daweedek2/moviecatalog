@@ -94,4 +94,16 @@ public class UserServiceTest {
 
         assertThatThrownBy(() -> userService.createUser(dto)).isInstanceOf(FutureBirthDateException.class);
     }
+
+    @Test
+    public void userBirthDateValidationTest() {
+        User adultUser = new User();
+        adultUser.setBirthDate(LocalDate.now().minusYears(18).minusDays(1));
+
+        User youngUser = new User();
+        youngUser.setBirthDate(LocalDate.now().minusYears(18).plusDays(1));
+
+        assertThat(userService.isUserAdultCheck(adultUser)).isTrue();
+        assertThat(userService.isUserAdultCheck(youngUser)).isFalse();
+    }
 }

@@ -26,6 +26,8 @@ public class Movie {
     private String description;
     @Column
     private double averageRating;
+    @Column
+    private boolean forAdults;
 
     public Movie() {
     }
@@ -86,16 +88,11 @@ public class Movie {
         this.averageRating = rating;
     }
 
-    @Override
-    public String toString() {
-        return "Movie{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", director='" + director + '\'' +
-                ", camera='" + camera + '\'' +
-                ", music='" + music + '\'' +
-                ", description='" + description + '\'' +
-                ", rating=" + averageRating +
-                '}';
+    public boolean isForAdults() {
+        return forAdults;
+    }
+
+    public void setForAdults(final boolean forAdults) {
+        this.forAdults = forAdults;
     }
 }

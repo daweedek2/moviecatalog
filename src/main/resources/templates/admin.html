@@ -44,6 +44,10 @@
                     <label for="description"> Description : </label>
                     <input id="description" th:field="*{description}" />
                 </div>
+                <div class="form-group">
+                    <label for="forAdults"> For Adults Only : </label>
+                    <input type="checkbox" id="forAdults" th:field="*{forAdults}" />
+                </div>
                 <button class="arrow-button" type="submit">Create</button>
             </form>
         </div>
@@ -132,6 +136,7 @@
                 <th> Movie name </th>
                 <th> Description </th>
                 <th> Average rating </th>
+                <th> Over 18 </th>
                 <th> Action </th>
             </tr>
             </thead>
@@ -144,6 +149,7 @@
                 <td><span th:text="${movie.name}"></span></td>
                 <td><span th:text="${movie.description}"></span></td>
                 <td><span th:text="${movie.averageRating}"></span></td>
+                <td><span th:text="${movie.forAdults} ? '*' : ''"></span></td>
                 <td><a href="#" class="button" th:href="@{/movies/detail/{movieId}(movieId=${movie.id})}">Detail</a> ||
                     <a href="#" class="button" th:href="@{/admin/movies/delete/{movieId}(movieId=${movie.id})}"
                        onclick="return confirm('Do you really want to delete this movie?')">Delete</a></td>

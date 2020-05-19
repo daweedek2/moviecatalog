@@ -34,6 +34,7 @@ public class MovieSpecIntegrationTest {
 
     public static final String OPERATION_LESS = "<";
     public static final String RATING_FIELD = "averageRating";
+    public static final String FOR_ADULTS_FIELD = "forAdults";
     public static final String OPERATION_LESS_OR_EQUAL = "<=";
     public static final String OPERATION_GREATER_OR_EQUAL = ">=";
     public static final String OPERATION_GREATER = ">";
@@ -142,6 +143,36 @@ public class MovieSpecIntegrationTest {
         dto.setValue(4);
         dto.setOperation(OPERATION_LESS_OR_EQUAL);
         dto.setField(RATING_FIELD);
+
+        List<Movie> result = service.getMoviesWithCriteria(dto);
+
+        assertThat(result).size().isEqualTo(0);
+        assertThat(result).doesNotContain(movie);
+    }
+
+    @Test
+    public void getMoviesForAdultsIntegrationTest() {
+        Movie movie = movieRepository.findAll().get(0);
+        movie.setForAdults(true);
+        SearchCriteriaDto dto = new SearchCriteriaDto();
+        dto.setValue(true);
+        dto.setOperation(OPERATION_EQUAL);
+        dto.setField(FOR_ADULTS_FIELD);
+
+        List<Movie> result = service.getMoviesWithCriteria(dto);
+
+        assertThat(result).size().isEqualTo(1);
+        assertThat(result).contains(movie);
+    }
+
+    @Test
+    public void getNoMoviesForAdultsIntegrationTest() {
+        Movie movie = movieRepository.findAll().get(0);
+        movie.setForAdults(false);
+        SearchCriteriaDto dto = new SearchCriteriaDto();
+        dto.setValue(true);
+        dto.setOperation(OPERATION_EQUAL);
+        dto.setField(FOR_ADULTS_FIELD);
 
         List<Movie> result = service.getMoviesWithCriteria(dto);
 

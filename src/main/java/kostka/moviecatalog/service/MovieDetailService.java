@@ -82,6 +82,7 @@ public class MovieDetailService {
         movieDetail.setComments(comments);
         movieDetail.setRatings(ratings);
         movieDetail.setBought(isBoughtByUser);
+        movieDetail.setForAdults(movie.isForAdults());
         return movieDetail;
     }
 }

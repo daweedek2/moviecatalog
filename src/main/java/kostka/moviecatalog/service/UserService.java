@@ -22,6 +22,7 @@ import static kostka.moviecatalog.configuration.WebSecurityConfiguration.USER_RO
 @Service
 public class UserService {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
+    public static final int ADULTS_LIMIT = 18;
     private UserRepository userRepository;
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
@@ -83,5 +84,11 @@ public class UserService {
     private String getSecuredPassword(final String password) {
         LOGGER.info("Securing password...");
         return passwordEncoder.encode(password);
+    }
+
+    public boolean isUserAdultCheck(final User user) {
+        LocalDate birthDate = user.getBirthDate();
+
+        return birthDate.isBefore(LocalDate.now().minusYears(ADULTS_LIMIT));
     }
 }
