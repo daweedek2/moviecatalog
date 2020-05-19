@@ -94,6 +94,7 @@ public class AdministrationController {
             Movie movie = dbMovieService.createMovie(dto);
             rabbitMqSender.sendToCreateElasticQueue(movie.getId().toString());
             rabbitMqSender.sendUpdateRequestToQueue();
+            rabbitMqSender.sendRefreshAdminRequestToQueue();
         } catch (InvalidDtoException e) {
             LOGGER.error("Creation of movie failed", e);
             addModelAttributes(model, "Movie cannot be created.");
@@ -116,6 +117,7 @@ public class AdministrationController {
             dbMovieService.deleteMovie(movieId);
             rabbitMqSender.sendToDeleteElasticQueue(movieId.toString());
             rabbitMqSender.sendUpdateRequestToQueue();
+            rabbitMqSender.sendRefreshAdminRequestToQueue();
         } catch (Exception e) {
             LOGGER.error("Movie with id '{}' cannot be deleted.", movieId, e);
         }
@@ -140,7 +142,7 @@ public class AdministrationController {
             addModelAttributes(model, "Comment is not created. CommentService is down.");
             return ADMIN_VIEW;
         }
-        rabbitMqSender.sendRefreshMovieDetailRequestQueue();
+        rabbitMqSender.sendRefreshMovieDetailRequestToQueue();
         rabbitMqSender.sendUpdateRequestToQueue();
 
         redirectAttributes.addFlashAttribute(SUCCESS, "Comment is successfully created.");
@@ -186,6 +188,7 @@ public class AdministrationController {
         try {
             userService.createUser(dto);
             redirectAttributes.addFlashAttribute(SUCCESS, "User is successfully created.");
+            rabbitMqSender.sendRefreshAdminRequestToQueue();
             return REDIRECT_ADMIN_VIEW;
         } catch (Exception e) {
             LOGGER.error("Creation of user failed.", e);

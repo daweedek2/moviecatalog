@@ -51,4 +51,11 @@ public class RabbitMqReceiverTest {
         verify(redisService).tryToUpdateMoviesInRedis(any(), eq(TOP_RATING_KEY));
         verify(redisService).tryToUpdateMoviesInRedis(any(), eq(LATEST_MOVIES_KEY));
     }
+
+    @Test
+    public void receiveRefreshAdminRequestTest() {
+        rabbitMqReceiver.receiveRefreshAdminRequest();
+        verify(stompService).sendSTOMPToRefreshAdmin();
+        verify(statisticService).incrementSyncedRabbitMqCounter();
+    }
 }

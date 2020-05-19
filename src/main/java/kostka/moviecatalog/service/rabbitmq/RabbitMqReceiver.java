@@ -30,6 +30,7 @@ public class RabbitMqReceiver {
     public static final String SINGLE_RATING_QUEUE = "single-rating-queue";
     public static final String RECALCULATE_QUEUE = "recalculate-queue";
     public static final String MOVIE_DETAIL_QUEUE = "movieDetail-queue";
+    public static final String ADMIN_QUEUE = "admin-queue";
     public static final String DEFAULT_QUEUE = "default-queue";
     public static final String CREATE_MOVIE_KEY = "createMovie";
     public static final String DELETE_MOVIE_KEY = "deleteMovie";
@@ -40,6 +41,7 @@ public class RabbitMqReceiver {
     public static final String RATING_KEY = "rating";
     public static final String SINGLE_RATING_KEY = "single-rating";
     public static final String MOVIE_DETAIL_KEY = "movieDetail";
+    public static final String ADMIN_KEY = "admin";
     public static final String DEFAULT_KEY = "default";
     public static final String CANNOT_PARSE_JSON = "Cannot parse JSON";
     public static final String TOPIC = "/topic/";
@@ -194,5 +196,18 @@ public class RabbitMqReceiver {
         LOGGER.info("Received message from RabbitMQ to refresh movie detail.");
         statisticService.incrementSyncedRabbitMqCounter();
         stompService.sendSTOMPToRefreshMovieDetail();
+    }
+
+    @RabbitListener(
+            bindings = @QueueBinding(
+                    exchange = @Exchange(TOPIC_EXCHANGE),
+                    key = ADMIN_KEY,
+                    value = @Queue(ADMIN_QUEUE)
+            )
+    )
+    public void receiveRefreshAdminRequest() {
+        LOGGER.info("Received message from RabbitMQ to refresh admin page.");
+        statisticService.incrementSyncedRabbitMqCounter();
+        stompService.sendSTOMPToRefreshAdmin();
     }
 }

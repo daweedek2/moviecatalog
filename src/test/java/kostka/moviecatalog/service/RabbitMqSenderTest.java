@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
+import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.ADMIN_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.CREATE_MOVIE_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.DELETE_MOVIE_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.RECALCULATE_KEY;
@@ -42,5 +43,11 @@ public class RabbitMqSenderTest {
     public void sendUpdateRequestToQueueTest() {
         rabbitMqSender.sendUpdateRequestToQueue();
         verify(rabbitTemplate).convertAndSend(eq(TOPIC_EXCHANGE), eq(RECALCULATE_KEY), eq(RECALCULATE_KEY));
+    }
+
+    @Test
+    public void sendRefreshAdminRequestToQueueTest() {
+        rabbitMqSender.sendRefreshAdminRequestToQueue();
+        verify(rabbitTemplate).convertAndSend(eq(TOPIC_EXCHANGE), eq(ADMIN_KEY), eq(ADMIN_KEY));
     }
 }
