@@ -24,6 +24,7 @@ public class MovieSpecification implements Specification<Movie> {
         final String field = criteria.getField();
         final String operation = criteria.getOperation();
         final Object value = criteria.getValue();
+        final Object type = root.get(field).getJavaType();
 
         if (operation.equalsIgnoreCase(">")) {
             return builder.greaterThan(root.<String>get(field), value.toString());
@@ -42,20 +43,24 @@ public class MovieSpecification implements Specification<Movie> {
         }
 
         if (operation.equalsIgnoreCase("==")) {
-            if (root.get(field).getJavaType() == String.class) {
+            if (type == String.class) {
                 return builder.like(
                         root.<String>get(field), "%" + value + "%");
+            } else if (type == boolean.class) {
+                return builder.equal(root.get(field), Boolean.valueOf(value.toString()));
             } else {
                 return builder.equal(root.get(field), value);
             }
         }
 
         if (operation.equalsIgnoreCase("!=")) {
-            if (root.get(field).getJavaType() == String.class) {
+            if (type == String.class) {
                 return builder.notLike(
                         root.<String>get(field), "%" + value + "%");
+            } else if (type == boolean.class) {
+                return builder.notEqual(root.get(field), Boolean.getBoolean(value.toString()));
             } else {
-                return builder.equal(root.get(field), value);
+                return builder.notEqual(root.get(field), value);
             }
         }
 

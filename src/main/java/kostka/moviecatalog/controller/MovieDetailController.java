@@ -2,6 +2,7 @@ package kostka.moviecatalog.controller;
 
 import kostka.moviecatalog.dto.OrderDto;
 import kostka.moviecatalog.entity.Order;
+import kostka.moviecatalog.entity.User;
 import kostka.moviecatalog.security.CustomUserDetails;
 import kostka.moviecatalog.service.ExternalShopService;
 import kostka.moviecatalog.service.MovieDetailService;
@@ -15,14 +16,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import static kostka.moviecatalog.service.UserService.isUserAdultCheck;
+
 @Controller
 @RequestMapping("/movies/detail")
 public class MovieDetailController {
-    private final MovieDetailService movieDetailService;
-    private final ExternalShopService externalShopService;
+    public static final String MOVIE_DETAIL_ATTR = "movieDetail";
+    public static final String IS_USER_ADULT_ATTR = "isUserAdult";
     public static final String STATUS_ATTR = "status";
     private static final String MOVIE_DETAIL_VIEW = "detail";
     private static final String REDIRECT_MOVIE_DETAIL_VIEW = "redirect:/movies/detail/";
+
+    private final MovieDetailService movieDetailService;
+    private final ExternalShopService externalShopService;
 
     @Autowired
     public MovieDetailController(
@@ -43,7 +49,7 @@ public class MovieDetailController {
             final @PathVariable Long movieId,
             final @AuthenticationPrincipal CustomUserDetails user,
             final Model model) {
-        addMovieDetailModelAttributes(movieId, user.getUserId(), model, "");
+        addMovieDetailModelAttributes(movieId, user.getUser(), model, "");
         return MOVIE_DETAIL_VIEW;
     }
 
@@ -52,32 +58,33 @@ public class MovieDetailController {
             final @RequestParam("movieId") Long movieId,
             final @AuthenticationPrincipal CustomUserDetails user,
             final Model model) {
-        Long userId = user.getUserId();
+        User currentUser = user.getUser();
         OrderDto dto = new OrderDto();
         dto.setMovieId(movieId);
-        dto.setUserId(userId);
+        dto.setUserId(user.getUserId());
         Order order = externalShopService.buyMovieInShopService(dto);
 
         if (order == null) {
-            addMovieDetailModelAttributes(movieId, userId, model, "Cannot buy movie.");
+            addMovieDetailModelAttributes(movieId, currentUser, model, "Cannot buy movie.");
             return MOVIE_DETAIL_VIEW;
         }
 
         if (order.getId() == null) {
-            addMovieDetailModelAttributes(movieId, userId, model, "Shop service is down. Movie is not bought");
+            addMovieDetailModelAttributes(movieId, currentUser, model, "Shop service is down. Movie is not bought");
             return MOVIE_DETAIL_VIEW;
         }
 
-        addMovieDetailModelAttributes(movieId, userId, model, "Movie is successfully bought.");
+        addMovieDetailModelAttributes(movieId, currentUser, model, "Movie is successfully bought.");
         return REDIRECT_MOVIE_DETAIL_VIEW + movieId;
     }
 
     private void addMovieDetailModelAttributes(
             final Long movieId,
-            final Long userId,
+            final User user,
             final Model model,
             final String status) {
         model.addAttribute(STATUS_ATTR, status);
-        model.addAttribute("movieDetail", movieDetailService.getMovieDetail(movieId, userId));
+        model.addAttribute(MOVIE_DETAIL_ATTR, movieDetailService.getMovieDetail(movieId, user.getUserId()));
+        model.addAttribute(IS_USER_ADULT_ATTR, isUserAdultCheck(user));
     }
 }

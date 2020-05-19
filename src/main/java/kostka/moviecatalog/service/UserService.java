@@ -25,6 +25,7 @@ public class UserService {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
+    public static final int ADULTS_LIMIT = 18;
 
     @Autowired
     public UserService(final UserRepository userRepository,
@@ -83,5 +84,11 @@ public class UserService {
     private String getSecuredPassword(final String password) {
         LOGGER.info("Securing password...");
         return passwordEncoder.encode(password);
+    }
+
+    public static boolean isUserAdultCheck(final User user) {
+        LocalDate birthDate = user.getBirthDate();
+
+        return birthDate.isBefore(LocalDate.now().minusYears(ADULTS_LIMIT));
     }
 }

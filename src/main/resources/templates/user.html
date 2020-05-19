@@ -30,6 +30,7 @@
                     <th> Name </th>
                     <th> Description </th>
                     <th> Average rating </th>
+                    <th> Over 18 </th>
                     <th> Action </th>
                 </tr>
                 </thead>
@@ -42,6 +43,7 @@
                     <td><span th:text="${movie.name}"></span></td>
                     <td><span th:text="${movie.description}"></span></td>
                     <td><span th:text="${movie.averageRating}"></span></td>
+                    <td><span th:text="${movie.forAdults} ? '*' : ''"></span></td>
                     <td><a href="#" class="button" th:href="@{/movies/detail/{movieId}(movieId=${movie.id})}">Detail</a></td>
                 </tr>
                 </tbody>
@@ -61,6 +63,7 @@
                     <th> Name </th>
                     <th> Description </th>
                     <th> Average rating </th>
+                    <th> Over 18 </th>
                     <th> Action </th>
                 </tr>
                 </thead>
@@ -73,6 +76,7 @@
                     <td><span th:text="${movie.name}"></span></td>
                     <td><span th:text="${movie.description}"></span></td>
                     <td><span th:text="${movie.averageRating}"></span></td>
+                    <td><span th:text="${movie.forAdults} ? '*' : ''"></span></td>
                     <td><a href="#" class="button" th:href="@{/movies/detail/{movieId}(movieId=${movie.id})}">Detail</a></td>
                 </tr>
                 </tbody>
@@ -87,6 +91,7 @@
                     <th> Name </th>
                     <th> Description </th>
                     <th> Average rating </th>
+                    <th> Over 18 </th>
                     <th> Action </th>
                 </tr>
                 </thead>
@@ -99,11 +104,14 @@
                     <td><span th:text="${movie.name}"></span></td>
                     <td><span th:text="${movie.description}"></span></td>
                     <td><span th:text="${movie.averageRating}"></span></td>
+                    <td><span th:text="${movie.forAdults} ? '*' : ''"></span></td>
                     <td><a href="#" class="button" th:href="@{/movies/detail/{movieId}(movieId=${movie.id})}">Detail</a></td>
                 </tr>
                 </tbody>
             </table>
         </div>
+    </div>
+    <div class="row">
         <div class="col-sm">
             <h4>Latest 5 comments</h4>
             <table class="table">

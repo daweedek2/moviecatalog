@@ -1,6 +1,8 @@
 package kostka.moviecatalog.service;
 
-import kostka.moviecatalog.entity.Movie;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import kostka.moviecatalog.dto.MovieListDto;
 import kostka.moviecatalog.service.redis.RedisService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +17,7 @@ import java.util.List;
 import static kostka.moviecatalog.service.integrationTests.DbMovieServiceIntegrationTest.TEST_NAME;
 import static kostka.moviecatalog.service.integrationTests.DbMovieServiceIntegrationTest.TEST_NAME_2;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CacheServiceTest {
@@ -29,47 +32,48 @@ public class CacheServiceTest {
     @InjectMocks
     CacheService cacheService;
 
-    private Generator generator = new Generator();
+    private ObjectMapper mapper = new ObjectMapper();
 
     @Test
-    public void getAllMoviesFromRedisCacheTest() {
-        Movie movie = generator.createMovieWithName(TEST_NAME);
-        Movie movie2 = generator.createMovieWithName(TEST_NAME_2);
-        List<Movie> movies = Arrays.asList(movie, movie2);
+    public void getAllMoviesFromRedisCacheTest() throws JsonProcessingException {
+        String moviesJson = create2MoviesJson();
+        Mockito.when(redisService.getMoviesWithKey(eq(ALL_MOVIES_KEY))).thenReturn(moviesJson);
 
-        Mockito.when(redisService.getMoviesWithKey(ALL_MOVIES_KEY)).thenReturn(movies.toString());
+        List<MovieListDto> result = cacheService.getMoviesFromCacheWithKey(ALL_MOVIES_KEY);
 
-        String result = redisService.getMoviesWithKey(ALL_MOVIES_KEY);
-
-        assertThat(result).isEqualTo(movies.toString());
-        assertThat(result).contains(TEST_NAME, TEST_NAME_2);
+        assertThat(result.size()).isEqualTo(2);
     }
 
     @Test
-    public void getTop5MoviesFromRedisCacheTest() {
-        Movie movie = generator.createMovieWithName(TEST_NAME);
-        Movie movie2 = generator.createMovieWithName(TEST_NAME_2);
-        List<Movie> movies = Arrays.asList(movie, movie2);
+    public void getTop5MoviesFromRedisCacheTest() throws JsonProcessingException{
+        String moviesJson = create2MoviesJson();
+        Mockito.when(redisService.getMoviesWithKey(eq(TOP_MOVIES_KEY))).thenReturn(moviesJson);
 
-        Mockito.when(redisService.getMoviesWithKey(TOP_MOVIES_KEY)).thenReturn(movies.toString());
+        List<MovieListDto> result = cacheService.getMoviesFromCacheWithKey(TOP_MOVIES_KEY);
 
-        String result = redisService.getMoviesWithKey(TOP_MOVIES_KEY);
-
-        assertThat(result).isEqualTo(movies.toString());
-        assertThat(result).contains(TEST_NAME, TEST_NAME_2);
+        assertThat(result.size()).isEqualTo(2);
     }
 
     @Test
-    public void get5LatestMoviesFromRedisCacheTest() {
-        Movie movie = generator.createMovieWithName(TEST_NAME);
-        Movie movie2 = generator.createMovieWithName(TEST_NAME_2);
-        List<Movie> movies = Arrays.asList(movie, movie2);
+    public void get5LatestMoviesFromRedisCacheTest() throws JsonProcessingException {
+        String moviesJson = create2MoviesJson();
+        Mockito.when(redisService.getMoviesWithKey(eq(LATEST_MOVIES_KEY))).thenReturn(moviesJson);
 
-        Mockito.when(redisService.getMoviesWithKey(LATEST_MOVIES_KEY)).thenReturn(movies.toString());
+        List<MovieListDto> result = cacheService.getMoviesFromCacheWithKey(LATEST_MOVIES_KEY);
 
-        String result = redisService.getMoviesWithKey(LATEST_MOVIES_KEY);
+        assertThat(result.size()).isEqualTo(2);
+    }
 
-        assertThat(result).isEqualTo(movies.toString());
-        assertThat(result).contains(TEST_NAME, TEST_NAME_2);
+    private String create2MoviesJson() throws JsonProcessingException{
+        MovieListDto movie = createTestMovieListDto(TEST_NAME);
+        MovieListDto movie2 = createTestMovieListDto(TEST_NAME_2);
+        List<MovieListDto> movies = Arrays.asList(movie, movie2);
+        return mapper.writeValueAsString(movies);
+    }
+
+    private MovieListDto createTestMovieListDto(final String name) {
+        MovieListDto dto = new MovieListDto();
+        dto.setName(name);
+        return dto;
     }
 }

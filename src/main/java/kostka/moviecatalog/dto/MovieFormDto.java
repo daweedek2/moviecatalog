@@ -12,6 +12,7 @@ public class MovieFormDto {
     private String camera;
     private String music;
     private String description;
+    private boolean forAdults;
 
     public String getName() {
         return name;
@@ -51,5 +52,13 @@ public class MovieFormDto {
 
     public void setDescription(final String description) {
         this.description = description;
+    }
+
+    public boolean isForAdults() {
+        return forAdults;
+    }
+
+    public void setForAdults(final boolean forAdults) {
+        this.forAdults = forAdults;
     }
 }

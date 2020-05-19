@@ -119,6 +119,7 @@ public class DbMovieService {
         movie.setDirector(dto.getDirector());
         movie.setMusic(dto.getMusic());
         movie.setCamera(dto.getCamera());
+        movie.setForAdults(dto.isForAdults());
         return movie;
     }
 
@@ -128,6 +129,7 @@ public class DbMovieService {
         dto.setName(movie.getName());
         dto.setDescription(movie.getDescription());
         dto.setAverageRating(movie.getAverageRating());
+        dto.setForAdults(movie.isForAdults());
 
         return dto;
     }
