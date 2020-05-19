@@ -6,7 +6,6 @@ import kostka.moviecatalog.entity.User;
 import kostka.moviecatalog.security.CustomUserDetails;
 import kostka.moviecatalog.service.ExternalShopService;
 import kostka.moviecatalog.service.MovieDetailService;
-import kostka.moviecatalog.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -17,26 +16,26 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import static kostka.moviecatalog.service.UserService.isUserAdultCheck;
+
 @Controller
 @RequestMapping("/movies/detail")
 public class MovieDetailController {
     public static final String MOVIE_DETAIL_ATTR = "movieDetail";
     public static final String IS_USER_ADULT_ATTR = "isUserAdult";
-    private final MovieDetailService movieDetailService;
-    private final ExternalShopService externalShopService;
-    private final UserService userService;
     public static final String STATUS_ATTR = "status";
     private static final String MOVIE_DETAIL_VIEW = "detail";
     private static final String REDIRECT_MOVIE_DETAIL_VIEW = "redirect:/movies/detail/";
 
+    private final MovieDetailService movieDetailService;
+    private final ExternalShopService externalShopService;
+
     @Autowired
     public MovieDetailController(
             final MovieDetailService movieDetailService,
-            final ExternalShopService externalShopService,
-            final UserService userService) {
+            final ExternalShopService externalShopService) {
         this.movieDetailService = movieDetailService;
         this.externalShopService = externalShopService;
-        this.userService = userService;
     }
 
     /**
@@ -86,6 +85,6 @@ public class MovieDetailController {
             final String status) {
         model.addAttribute(STATUS_ATTR, status);
         model.addAttribute(MOVIE_DETAIL_ATTR, movieDetailService.getMovieDetail(movieId, user.getUserId()));
-        model.addAttribute(IS_USER_ADULT_ATTR, userService.isUserAdultCheck(user));
+        model.addAttribute(IS_USER_ADULT_ATTR, isUserAdultCheck(user));
     }
 }

@@ -17,21 +17,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import static kostka.moviecatalog.service.UserService.ADULTS_LIMIT;
+import static kostka.moviecatalog.service.UserService.isUserAdultCheck;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-
 @RunWith(MockitoJUnitRunner.class)
 public class UserServiceTest {
 
     public static final String TEST_USERNAME = "test";
     public static final String TEST_PASSWORD = "pwd";
-    public static final LocalDate TEST_BIRTH_DATE = LocalDate.of(1990, 2, 1);
     public static final String BIRTH_DATE_STRING = "1990-02-01";
     public static final String FUTURE_BIRTH_DATE_STRING = "2050-02-01";
+    public static final LocalDate TEST_BIRTH_DATE = LocalDate.of(1990, 2, 1);
 
     @Mock
     private UserRepository userRepository;
@@ -98,12 +99,12 @@ public class UserServiceTest {
     @Test
     public void userBirthDateValidationTest() {
         User adultUser = new User();
-        adultUser.setBirthDate(LocalDate.now().minusYears(18).minusDays(1));
+        adultUser.setBirthDate(LocalDate.now().minusYears(ADULTS_LIMIT).minusDays(1));
 
         User youngUser = new User();
-        youngUser.setBirthDate(LocalDate.now().minusYears(18).plusDays(1));
+        youngUser.setBirthDate(LocalDate.now().minusYears(ADULTS_LIMIT).plusDays(1));
 
-        assertThat(userService.isUserAdultCheck(adultUser)).isTrue();
-        assertThat(userService.isUserAdultCheck(youngUser)).isFalse();
+        assertThat(isUserAdultCheck(adultUser)).isTrue();
+        assertThat(isUserAdultCheck(youngUser)).isFalse();
     }
 }
