@@ -7,6 +7,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.ADMIN_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.CREATE_MOVIE_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.DELETE_MOVIE_KEY;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.MOVIE_DETAIL_KEY;
@@ -76,9 +77,15 @@ public class RabbitMqSender {
         rabbitTemplate.convertAndSend(TOPIC_EXCHANGE, SINGLE_RATING_KEY, movieId);
     }
 
-    public void sendRefreshMovieDetailRequestQueue() {
+    public void sendRefreshMovieDetailRequestToQueue() {
         LOGGER.info("Sending refresh movie detail request to movie-detail queue.");
         statisticService.incrementSyncedRabbitMqCounter();
         rabbitTemplate.convertAndSend(TOPIC_EXCHANGE, MOVIE_DETAIL_KEY, MOVIE_DETAIL_KEY);
+    }
+
+    public void sendRefreshAdminRequestToQueue() {
+        LOGGER.info("Sending refresh admin page request to admin queue.");
+        statisticService.incrementSyncedRabbitMqCounter();
+        rabbitTemplate.convertAndSend(TOPIC_EXCHANGE, ADMIN_KEY, ADMIN_KEY);
     }
 }
