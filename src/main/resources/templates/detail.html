@@ -21,7 +21,7 @@
     <p>
         <div th:if="${movieDetail.bought == false and isUserAdult}">
             <form action="#" th:action="@{/movies/detail/buy}" method="post">
-                <input type="hidden" name="movieId" id="movieId" th:value="${movieDetail.movieId}" />
+                <input type="hidden" name="movieId" id="id" th:value="${movieDetail.movieId}" />
             <button class="btn btn-info" type="submit" onclick="return confirm('Do you really want to buy this movie?')">
                 Buy Movie
             </button>
@@ -39,27 +39,44 @@
     </p>
 
     <div class="container">
-        <table class="table">
-            <thead>
-            <tr>
-                <th> Comment Id </th>
-                <th> Movie Id </th>
-                <th> Author Id </th>
-                <th> Text </th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:if="${movieDetail.comments.empty}">
-                <td colspan="2"> No Comments Available </td>
-            </tr>
-            <tr th:each="comment : ${movieDetail.comments}">
-                <td><span th:text="${comment.commentId}"></span></td>
-                <td><span th:text="${comment.movieId}"> </span></td>
-                <td><span th:text="${comment.authorId}"> </span></td>
-                <td><span th:text="${comment.commentText}"> </span></td>
-            </tr>
-            </tbody>
-        </table>
+        <div class="row">
+            <div class="col-sm">
+                <h4 class="header-panel">New Comment</h4>
+                <form action="#" th:action="@{/movies/detail/comment/create}" th:object="${commentDto}" method="post">
+                    <div class="form-group">
+                        <input type="hidden" name="movieId" id="movieId" th:value="${movieDetail.movieId}" />
+                    </div>
+                    <div class="form-group">
+                        <label for="commentText"> Text * : </label>
+                        <input id="commentText" th:field="*{commentText}" required/>
+                        <p class="error" th:if="${#fields.hasErrors('commentText')}" th:errors="*{commentText}" style="color: red">Comment text error.</p>
+                    </div>
+                    <button class="arrow-button" type="submit">Create</button>
+                </form>
+                <br>
+            </div>
+            <div class="col-sm">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th> Comment Id </th>
+                        <th> Author Id </th>
+                        <th> Text </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${movieDetail.comments.empty}">
+                        <td colspan="2"> No Comments Available </td>
+                    </tr>
+                    <tr th:each="comment : ${movieDetail.comments}">
+                        <td><span th:text="${comment.commentId}"></span></td>
+                        <td><span th:text="${comment.movieId}"> </span></td>
+                        <td><span th:text="${comment.commentText}"> </span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
     <div class="container">
         <table class="table">

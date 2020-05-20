@@ -55,27 +55,6 @@
             </form>
         </div>
         <div class="col-sm">
-            <h4 class="header-panel" style="text-align: center">New Comment</h4>
-            <br>
-            <form action="#" th:action="@{/admin/comment/create}" th:object="${commentDto}" method="post">
-                <div class="form-group">
-                    <label for="movieId"> Movie Id * : </label>
-                    <input id="movieId" th:field="*{movieId}" />
-                    <p class="error" th:if="${#fields.hasErrors('movieId')}" th:errors="*{movieId}" style="color: red">Movie ID error.</p>
-                </div>
-                <div class="form-group">
-                    <label for="commentAuthorId"> Author Id : </label>
-                    <input id="commentAuthorId" th:field="*{authorId}" />
-                </div>
-                <div class="form-group">
-                    <label for="commentText"> Comment Text * : </label>
-                    <input id="commentText" th:field="*{commentText}" />
-                    <p class="error" th:if="${#fields.hasErrors('commentText')}" th:errors="*{commentText}" style="color: red">Comment text error.</p>
-                </div>
-                <button class="arrow-button" type="submit">Create</button>
-            </form>
-        </div>
-        <div class="col-sm">
             <h4 class="header-panel" style="text-align: center">New Rating</h4>
             <br>
             <form action="#" th:action="@{/admin/rating/create}" th:object="${ratingDto}" method="post">
