@@ -2,7 +2,7 @@ package kostka.moviecatalog.dto;
 
 import javax.validation.constraints.NotEmpty;
 
-public final class UserDto {
+public final class UserFormDto {
     private String firstName;
     private String lastName;
     @NotEmpty(message = "Birth date cannot be empty.")
