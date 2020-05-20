@@ -1,10 +1,8 @@
 package kostka.moviecatalog.controller;
 
-import kostka.moviecatalog.dto.CommentDto;
 import kostka.moviecatalog.dto.MovieFormDto;
 import kostka.moviecatalog.dto.RatingDto;
 import kostka.moviecatalog.dto.UserFormDto;
-import kostka.moviecatalog.entity.Comment;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.entity.Rating;
 import kostka.moviecatalog.exception.InvalidDtoException;
@@ -124,31 +122,6 @@ public class AdministrationController {
         return REDIRECT_ADMIN_VIEW;
     }
 
-    @PostMapping("/comment/create")
-    public String createComment(final @Valid @ModelAttribute CommentDto dto,
-                                final BindingResult bindingResult,
-                                final RedirectAttributes redirectAttributes,
-                                final Model model) {
-        LOGGER.info("create comment request");
-
-        if (bindingResult.hasErrors()) {
-            addModelAttributes(model, INVALID_DTO);
-            return ADMIN_VIEW;
-        }
-
-        Comment createdComment = externalCommentService.createCommentInCommentService(dto);
-        if (createdComment.getCommentId() == null) {
-            LOGGER.info("Comment service is down.");
-            addModelAttributes(model, "Comment is not created. CommentService is down.");
-            return ADMIN_VIEW;
-        }
-        rabbitMqSender.sendRefreshMovieDetailRequestToQueue();
-        rabbitMqSender.sendUpdateRequestToQueue();
-
-        redirectAttributes.addFlashAttribute(SUCCESS, "Comment is successfully created.");
-        return REDIRECT_ADMIN_VIEW;
-    }
-
     @PostMapping("/rating/create")
     public String createRating(final @Valid @ModelAttribute RatingDto dto,
                                final BindingResult bindingResult,
@@ -198,7 +171,6 @@ public class AdministrationController {
 
     private void addModelAttributes(final Model model, final String message) {
         model.addAttribute("movieDto", new MovieFormDto());
-        model.addAttribute("commentDto", new CommentDto());
         model.addAttribute("ratingDto", new RatingDto());
         model.addAttribute("userDto", new UserFormDto());
         model.addAttribute(ALL_MOVIES_KEY, cacheService.getMoviesFromCacheWithKey(ALL_MOVIES_KEY));
