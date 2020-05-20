@@ -2,7 +2,7 @@ package kostka.moviecatalog.service.integrationTests;
 
 import kostka.moviecatalog.service.ScheduledService;
 import kostka.moviecatalog.service.StatisticService;
-import kostka.moviecatalog.service.configuration.ScheduledConfig;
+import kostka.moviecatalog.configuration.ScheduledConfig;
 import kostka.moviecatalog.service.rabbitmq.RabbitMqSender;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;

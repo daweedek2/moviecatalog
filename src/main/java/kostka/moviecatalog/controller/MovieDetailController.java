@@ -36,7 +36,6 @@ import static kostka.moviecatalog.service.UserService.isUserAdultCheck;
 @Controller
 @RequestMapping("/movies/detail")
 public class MovieDetailController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MovieDetailController.class);
     public static final String MOVIE_DETAIL_VIEW = "detail";
     public static final String REDIRECT_MOVIE_DETAIL_VIEW = "redirect:/movies/detail/";
     public static final String MOVIE_DETAIL_ATTR = "movieDetail";
@@ -44,6 +43,8 @@ public class MovieDetailController {
     public static final String STATUS_ATTR = "status";
     public static final String COMMENT_DTO_ATTR = "commentDto";
     public static final String RATING_DTO_ATTR = "ratingDto";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MovieDetailController.class);
 
     private final MovieDetailService movieDetailService;
     private final ExternalShopService externalShopService;
@@ -153,7 +154,8 @@ public class MovieDetailController {
         Comment createdComment = externalCommentService.createCommentInCommentService(dto);
         if (createdComment.getCommentId() == null) {
             LOGGER.info("Comment service is down.");
-            addMovieDetailModelAttributes(dto.getMovieId(), currentUser, model, "Comment is not created. CommentService is down.");
+            addMovieDetailModelAttributes(dto.getMovieId(), currentUser, model,
+                    "Comment is not created. CommentService is down.");
             return MOVIE_DETAIL_VIEW;
         }
 
