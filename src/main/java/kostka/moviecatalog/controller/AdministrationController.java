@@ -1,15 +1,12 @@
 package kostka.moviecatalog.controller;
 
 import kostka.moviecatalog.dto.MovieFormDto;
-import kostka.moviecatalog.dto.RatingDto;
+import kostka.moviecatalog.dto.UserDto;
 import kostka.moviecatalog.dto.UserFormDto;
 import kostka.moviecatalog.entity.Movie;
-import kostka.moviecatalog.entity.Rating;
 import kostka.moviecatalog.exception.InvalidDtoException;
 import kostka.moviecatalog.service.CacheService;
 import kostka.moviecatalog.service.DbMovieService;
-import kostka.moviecatalog.service.ExternalCommentService;
-import kostka.moviecatalog.service.ExternalRatingService;
 import kostka.moviecatalog.service.UserService;
 import kostka.moviecatalog.service.rabbitmq.RabbitMqSender;
 import kostka.moviecatalog.service.redis.RedisService;
@@ -42,8 +39,6 @@ public class AdministrationController {
     public static final String ALL_USERS_ATTR = "allUsers";
     private DbMovieService dbMovieService;
     private RabbitMqSender rabbitMqSender;
-    private ExternalCommentService externalCommentService;
-    private ExternalRatingService externalRatingService;
     private RedisService redisService;
     private UserService userService;
     private CacheService cacheService;
@@ -51,15 +46,11 @@ public class AdministrationController {
     @Autowired
     public AdministrationController(final DbMovieService dbMovieService,
                                     final RabbitMqSender rabbitMqSender,
-                                    final ExternalCommentService externalCommentService,
-                                    final ExternalRatingService externalRatingService,
                                     final RedisService redisService,
                                     final UserService userService,
                                     final CacheService cacheService) {
         this.dbMovieService = dbMovieService;
         this.rabbitMqSender = rabbitMqSender;
-        this.externalCommentService = externalCommentService;
-        this.externalRatingService = externalRatingService;
         this.redisService = redisService;
         this.userService = userService;
         this.cacheService = cacheService;
@@ -122,30 +113,6 @@ public class AdministrationController {
         return REDIRECT_ADMIN_VIEW;
     }
 
-    @PostMapping("/rating/create")
-    public String createRating(final @Valid @ModelAttribute RatingDto dto,
-                               final BindingResult bindingResult,
-                               final RedirectAttributes redirectAttributes,
-                               final Model model) {
-        LOGGER.info("create rating request");
-
-        if (bindingResult.hasErrors()) {
-            addModelAttributes(model, INVALID_DTO);
-            return ADMIN_VIEW;
-        }
-
-        Rating createdRating = externalRatingService.createRatingInRatingService(dto);
-        if (createdRating.getRatingId() == null) {
-            LOGGER.info("Rating service is down.");
-            addModelAttributes(model, "Rating is not created. RatingService is down.");
-            return ADMIN_VIEW;
-        }
-        rabbitMqSender.sendToSetAverageRatingForSingleMovie(dto.getId().toString());
-
-        redirectAttributes.addFlashAttribute(SUCCESS, "Rating is successfully created.");
-        return REDIRECT_ADMIN_VIEW;
-    }
-
     @PostMapping("user/create")
     public String createUser(final @Valid UserFormDto dto,
                              final BindingResult bindingResult,
@@ -171,7 +138,6 @@ public class AdministrationController {
 
     private void addModelAttributes(final Model model, final String message) {
         model.addAttribute("movieDto", new MovieFormDto());
-        model.addAttribute("ratingDto", new RatingDto());
         model.addAttribute("userDto", new UserFormDto());
         model.addAttribute(ALL_MOVIES_KEY, cacheService.getMoviesFromCacheWithKey(ALL_MOVIES_KEY));
         model.addAttribute(ALL_USERS_ATTR, userService.getAllUsers());

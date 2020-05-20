@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
  * Used for transferring data from FE to BE during creation of new rating.
  */
 public class RatingDto {
-    public static final int MIN_RATING_VALUE = 0;
+    public static final int MIN_RATING_VALUE = 1;
     public static final int MAX_RATING_VALUE = 10;
 
     @NotNull(message = "Id cannot be empty.")
