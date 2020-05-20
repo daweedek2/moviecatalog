@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class DbMovieService {
-    static final Logger LOGGER = LoggerFactory.getLogger(DbMovieService.class);
     public static final long SLEEP_TIME = 5000L;
+    private static final Logger LOGGER = LoggerFactory.getLogger(DbMovieService.class);
     private MovieRepository movieRepository;
     private EsMovieService esMovieService;
     private StatisticService statisticService;

@@ -29,13 +29,13 @@ import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.ALL_MOVIES_K
 @Controller
 @RequestMapping(value = "/admin")
 public class AdministrationController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AdministrationController.class);
     public static final String ADMIN_VIEW = "admin";
     public static final String REDIRECT_ADMIN_VIEW = "redirect:/admin";
     public static final String ERROR = "status";
     public static final String INVALID_DTO = "Required fields are empty.";
     public static final String SUCCESS = "success";
     public static final String ALL_USERS_ATTR = "allUsers";
+    private static final Logger LOGGER = LoggerFactory.getLogger(AdministrationController.class);
     private DbMovieService dbMovieService;
     private RabbitMqSender rabbitMqSender;
     private RedisService redisService;

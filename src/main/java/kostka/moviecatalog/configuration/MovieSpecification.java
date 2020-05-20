@@ -13,11 +13,11 @@ import javax.persistence.criteria.Root;
  * Configuration of jpa specification for searching movie with some pre-defined criteria.
  */
 public class MovieSpecification implements Specification<Movie> {
+    private SearchCriteriaDto criteria;
+
     public MovieSpecification(final SearchCriteriaDto criteria) {
         this.criteria = criteria;
     }
-
-    private SearchCriteriaDto criteria;
 
     @Override
     public Predicate toPredicate(final Root<Movie> root, final CriteriaQuery<?> query, final CriteriaBuilder builder) {

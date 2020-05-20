@@ -23,10 +23,10 @@ import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.TOP_RATING_K
 @Controller
 @RequestMapping(value = "/")
 public class UserController {
-    static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+    public static final String REDIRECT_TO_ALL_MOVIES = "redirect:/allMovies";
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
     private static final String LATEST_COMMENTS_KEY = "latestComments";
     private static final String MY_MOVIES_KEY = "myMovies";
-    public static final String REDIRECT_TO_ALL_MOVIES = "redirect:/allMovies";
     private ExternalCommentService externalCommentService;
     private ExternalShopService externalShopService;
     private CacheService cacheService;

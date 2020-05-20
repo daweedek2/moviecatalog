@@ -22,12 +22,12 @@ import static kostka.moviecatalog.service.ExternalCommentService.DEFAULT_ID;
  */
 @Service
 public class ExternalRatingService {
-    private RestTemplate restTemplate;
-    private DbMovieService dbMovieService;
     private static final Logger LOGGER = LoggerFactory.getLogger(ExternalRatingService.class);
     private static final String RATING_URL_SERVICE_DISCOVERY = "http://rating-service/rating/";
     private static final String AVERAGE_RATING_URL_SERVICE_DISCOVERY = "http://rating-service/rating/average/";
     private static final String CREATE_RATING_URL_SERVICE_DISCOVERY = "http://rating-service/rating/create";
+    private RestTemplate restTemplate;
+    private DbMovieService dbMovieService;
 
     @Autowired
     public ExternalRatingService(final RestTemplate restTemplate, final DbMovieService dbMovieService) {

@@ -15,8 +15,8 @@ import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.TOPIC;
  */
 @Service
 public class STOMPService {
-    private SimpMessagingTemplate messagingTemplate;
     private static final Logger LOGGER = LoggerFactory.getLogger(STOMPService.class);
+    private SimpMessagingTemplate messagingTemplate;
 
     public STOMPService(final SimpMessagingTemplate messagingTemplate) {
         this.messagingTemplate = messagingTemplate;

@@ -20,11 +20,11 @@ import java.util.Objects;
 @Service
 public class ExternalCommentService {
     public static final long DEFAULT_ID = 999L;
-    private RestTemplate restTemplate;
     private static final Logger LOGGER = LoggerFactory.getLogger(ExternalCommentService.class);
     private static final String COMMENT_URL_SERVICE_DISCOVERY = "http://comment-service/comments/";
     private static final String LATEST_COMMENTS_URL_SERVICE_DISCOVERY = "http://comment-service/comments/latest5";
     private static final String CREATE_COMMENT_URL_SERVICE_DISCOVERY = "http://comment-service/comments/create";
+    private RestTemplate restTemplate;
 
     @Autowired
     public ExternalCommentService(final RestTemplate restTemplate) {
