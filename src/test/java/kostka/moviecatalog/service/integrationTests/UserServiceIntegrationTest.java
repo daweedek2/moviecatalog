@@ -1,7 +1,7 @@
 package kostka.moviecatalog.service.integrationTests;
 
 import kostka.moviecatalog.MovieCatalogApplication;
-import kostka.moviecatalog.dto.UserDto;
+import kostka.moviecatalog.dto.UserFormDto;
 import kostka.moviecatalog.entity.User;
 import kostka.moviecatalog.repository.MovieElasticSearchRepository;
 import kostka.moviecatalog.repository.RoleRepository;
@@ -51,7 +51,7 @@ public class UserServiceIntegrationTest {
 
     @Test
     public void createUserSuccessfullyIntegrationTest() {
-        UserDto dto = new UserDto();
+        UserFormDto dto = new UserFormDto();
         dto.setFirstName(TEST_FIRST_NAME);
         dto.setLastName(TEST_LAST_NAME);
         dto.setPassword(TEST_PASSWORD);

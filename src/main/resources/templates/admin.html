@@ -159,6 +159,64 @@
             </tr>
             </tbody>
         </table>
+        <div class="col-sm">
+            <h4>All movies</h4>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th> Movie Id </th>
+                    <th> Movie name </th>
+                    <th> Description </th>
+                    <th> Average rating </th>
+                    <th> Action </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${allMovies.empty}">
+                    <td colspan="2"> No Movies Available </td>
+                </tr>
+                <tr th:each="movie : ${allMovies}">
+                    <td><span th:text="${movie.id}"></span></td>
+                    <td><span th:text="${movie.name}"></span></td>
+                    <td><span th:text="${movie.description}"></span></td>
+                    <td><span th:text="${movie.averageRating}"></span></td>
+                    <td><a href="#" class="button" th:href="@{/movies/detail/{movieId}(movieId=${movie.id})}">Detail</a> ||
+                        <a href="#" class="button" th:href="@{/admin/movies/delete/{movieId}(movieId=${movie.id})}"
+                           onclick="return confirm('Do you really want to delete this movie?')">Delete</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-sm">
+            <h4>All users</h4>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th> User Id </th>
+                    <th> Username </th>
+                    <th> First name </th>
+                    <th> Last name </th>
+                    <th> Birth Date </th>
+                    <th> Action </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${allUsers.empty}">
+                    <td colspan="2"> No Users Available </td>
+                </tr>
+                <tr th:each="user : ${allUsers}">
+                    <td><span th:text="${user.userId}"></span></td>
+                    <td><span th:text="${user.userName}"></span></td>
+                    <td><span th:text="${user.firstName}"></span></td>
+                    <td><span th:text="${user.lastName}"></span></td>
+                    <td><span th:text="${user.birthDate}"></span></td>
+                    <td><a href="#" class="button" th:href="@{/users/detail/{userId}(userId=${user.userId})}">Detail</a> ||
+                        <a href="#" class="button" th:href="@{/admin/users/delete/{userId}(userId=${user.userId})}"
+                           onclick="return confirm('Do you really want to delete this user?')">Delete</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 </body>

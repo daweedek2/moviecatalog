@@ -1,6 +1,6 @@
 package kostka.moviecatalog.service;
 
-import kostka.moviecatalog.dto.UserDto;
+import kostka.moviecatalog.dto.UserFormDto;
 import kostka.moviecatalog.entity.Role;
 import kostka.moviecatalog.entity.User;
 import kostka.moviecatalog.exception.FutureBirthDateException;
@@ -53,7 +53,7 @@ public class UserServiceTest {
         user.setPassword(TEST_PASSWORD);
         user.setBirthDate(TEST_BIRTH_DATE);
 
-        UserDto dto = new UserDto();
+        UserFormDto dto = new UserFormDto();
         dto.setBirthDate(BIRTH_DATE_STRING);
         dto.setUserName(TEST_USERNAME);
         dto.setPassword(TEST_PASSWORD);
@@ -74,7 +74,7 @@ public class UserServiceTest {
     public void createUserAlreadyUsedUserNameTest() {
         User user = new User();
         User user2 = new User();
-        UserDto dto = new UserDto();
+        UserFormDto dto = new UserFormDto();
         dto.setBirthDate(BIRTH_DATE_STRING);
         dto.setUserName(TEST_USERNAME);
         dto.setPassword(TEST_PASSWORD);
@@ -87,7 +87,7 @@ public class UserServiceTest {
     public void createUserFutureBirthDateTest() {
         User user = new User();
         User user2 = new User();
-        UserDto dto = new UserDto();
+        UserFormDto dto = new UserFormDto();
         dto.setBirthDate(FUTURE_BIRTH_DATE_STRING);
         dto.setUserName(TEST_USERNAME);
         dto.setPassword(TEST_PASSWORD);

@@ -1,6 +1,7 @@
 package kostka.moviecatalog.service;
 
-import kostka.moviecatalog.dto.UserDto;
+import kostka.moviecatalog.dto.UserFormDto;
+import kostka.moviecatalog.dto.UserListDto;
 import kostka.moviecatalog.entity.Role;
 import kostka.moviecatalog.entity.User;
 import kostka.moviecatalog.exception.FutureBirthDateException;
@@ -15,7 +16,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static kostka.moviecatalog.configuration.WebSecurityConfiguration.USER_ROLE;
 
@@ -36,7 +39,7 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User createUser(final UserDto dto) {
+    public User createUser(final UserFormDto dto) {
         validateDto(dto);
         LOGGER.info("creating user with username '{}'.", dto.getUserName());
         User user = populateUserFromUserDto(dto);
@@ -49,7 +52,7 @@ public class UserService {
         return Collections.singleton(role);
     }
 
-    private void validateDto(final UserDto dto) {
+    private void validateDto(final UserFormDto dto) {
         LOGGER.info("Validating user Dto.");
         if (isUsernameAlreadyUsed(dto.getUserName())) {
             throw new UserNameNotUniqueException();
@@ -63,6 +66,13 @@ public class UserService {
         LOGGER.info("Saving user with username '{}'.", user.getUsername());
         return userRepository.save(user);
     }
+    public List<UserListDto> getAllUsers() {
+        LOGGER.info("Getting all users DTOs from database");
+        return userRepository.findAll()
+                .stream()
+                .map(this::populateUserListDto)
+                .collect(Collectors.toList());
+    }
 
     private boolean isBirthDateInFuture(final LocalDate birthDate) {
         return birthDate.isAfter(LocalDate.now());
@@ -72,13 +82,23 @@ public class UserService {
         return userRepository.findByUsername(userName).isPresent();
     }
 
-    private User populateUserFromUserDto(final UserDto dto) {
+    private User populateUserFromUserDto(final UserFormDto dto) {
         User user = new User();
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setBirthDate(LocalDate.parse(dto.getBirthDate()));
         user.setUsername(dto.getUserName());
         return user;
+    }
+
+    private UserListDto populateUserListDto(final User user) {
+        UserListDto dto = new UserListDto();
+        dto.setUserId(user.getUserId());
+        dto.setUserName(user.getUsername());
+        dto.setFirstName(user.getFirstName());
+        dto.setLastName(user.getLastName());
+        dto.setBirthDate(user.getBirthDate());
+        return dto;
     }
 
     private String getSecuredPassword(final String password) {

@@ -3,7 +3,7 @@ package kostka.moviecatalog.controller;
 import kostka.moviecatalog.dto.CommentDto;
 import kostka.moviecatalog.dto.MovieFormDto;
 import kostka.moviecatalog.dto.RatingDto;
-import kostka.moviecatalog.dto.UserDto;
+import kostka.moviecatalog.dto.UserFormDto;
 import kostka.moviecatalog.entity.Comment;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.entity.Rating;
@@ -41,6 +41,7 @@ public class AdministrationController {
     public static final String ERROR = "status";
     public static final String INVALID_DTO = "Required fields are empty.";
     public static final String SUCCESS = "success";
+    public static final String ALL_USERS_ATTR = "allUsers";
     private DbMovieService dbMovieService;
     private RabbitMqSender rabbitMqSender;
     private ExternalCommentService externalCommentService;
@@ -174,7 +175,7 @@ public class AdministrationController {
     }
 
     @PostMapping("user/create")
-    public String createUser(final @Valid UserDto dto,
+    public String createUser(final @Valid UserFormDto dto,
                              final BindingResult bindingResult,
                              final RedirectAttributes redirectAttributes,
                              final Model model) {
@@ -200,8 +201,9 @@ public class AdministrationController {
         model.addAttribute("movieDto", new MovieFormDto());
         model.addAttribute("commentDto", new CommentDto());
         model.addAttribute("ratingDto", new RatingDto());
-        model.addAttribute("userDto", new UserDto());
+        model.addAttribute("userDto", new UserFormDto());
         model.addAttribute(ALL_MOVIES_KEY, cacheService.getMoviesFromCacheWithKey(ALL_MOVIES_KEY));
+        model.addAttribute(ALL_USERS_ATTR, userService.getAllUsers());
         model.addAttribute(ERROR, message);
     }
 }
