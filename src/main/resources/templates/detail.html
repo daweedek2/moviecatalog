@@ -79,27 +79,44 @@
         </div>
     </div>
     <div class="container">
-        <table class="table">
-            <thead>
-            <tr>
-                <th> Rating Id </th>
-                <th> Movie Id </th>
-                <th> Author Id </th>
-                <th> Value </th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:if="${movieDetail.ratings.empty}">
-                <td colspan="2"> No Ratings Available </td>
-            </tr>
-            <tr th:each="rating : ${movieDetail.ratings}">
-                <td><span th:text="${rating.ratingId}"></span></td>
-                <td><span th:text="${rating.movieId}"> </span></td>
-                <td><span th:text="${rating.authorId}"> </span></td>
-                <td><span th:text="${rating.ratingValue}"> </span></td>
-            </tr>
-            </tbody>
-        </table>
+        <div class="row">
+            <div class="col-sm">
+                <h4 class="header-panel">New Rating</h4>
+                <form action="#" th:action="@{/movies/detail/rating/create}" th:object="${ratingDto}" method="post">
+                    <div class="form-group">
+                        <input type="hidden" name="id" id="id" th:value="${movieDetail.movieId}" />
+                    </div>
+                    <div class="form-group">
+                        <label for="ratingValue"> Rating Value * : </label>
+                        <input id="ratingValue" th:field="*{ratingValue}" required/>
+                        <p class="error" th:if="${#fields.hasErrors('ratingValue')}" th:errors="*{ratingValue}" style="color: red">Rating value error.</p>
+                    </div>
+                    <button class="arrow-button" type="submit">Create</button>
+                </form>
+                <br>
+            </div>
+            <div class="col-sm">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th> Rating Id </th>
+                        <th> Author Id </th>
+                        <th> Value </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${movieDetail.ratings.empty}">
+                        <td colspan="2"> No Ratings Available </td>
+                    </tr>
+                    <tr th:each="rating : ${movieDetail.ratings}">
+                        <td><span th:text="${rating.ratingId}"></span></td>
+                        <td><span th:text="${rating.authorId}"> </span></td>
+                        <td><span th:text="${rating.ratingValue}"> </span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 </body>

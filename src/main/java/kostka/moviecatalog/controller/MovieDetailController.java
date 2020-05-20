@@ -2,10 +2,13 @@ package kostka.moviecatalog.controller;
 
 import kostka.moviecatalog.dto.CommentDto;
 import kostka.moviecatalog.dto.OrderDto;
+import kostka.moviecatalog.dto.RatingDto;
 import kostka.moviecatalog.entity.Comment;
 import kostka.moviecatalog.entity.Order;
+import kostka.moviecatalog.entity.Rating;
 import kostka.moviecatalog.entity.User;
 import kostka.moviecatalog.security.CustomUserDetails;
+import kostka.moviecatalog.service.ExternalRatingService;
 import kostka.moviecatalog.service.ExternalCommentService;
 import kostka.moviecatalog.service.ExternalShopService;
 import kostka.moviecatalog.service.MovieDetailService;
@@ -46,17 +49,20 @@ public class MovieDetailController {
     private final ExternalShopService externalShopService;
     private final ExternalCommentService externalCommentService;
     private final RabbitMqSender rabbitMqSender;
+    private final ExternalRatingService externalRatingService;
 
     @Autowired
     public MovieDetailController(
             final MovieDetailService movieDetailService,
             final ExternalShopService externalShopService,
             final ExternalCommentService externalCommentService,
+            final ExternalRatingService externalRatingService,
             final RabbitMqSender rabbitMqSender) {
         this.movieDetailService = movieDetailService;
         this.externalShopService = externalShopService;
         this.externalCommentService = externalCommentService;
         this.rabbitMqSender = rabbitMqSender;
+        this.externalRatingService = externalRatingService;
     }
 
     /**
@@ -91,12 +97,42 @@ public class MovieDetailController {
         }
 
         if (order.getId() == null) {
-            addMovieDetailModelAttributes(movieId, currentUser, model, "Shop service is down. Movie is not bought");
+            addMovieDetailModelAttributes(movieId, currentUser, model,
+                    "Shop service is down. Movie is not bought");
             return MOVIE_DETAIL_VIEW;
         }
 
         addMovieDetailModelAttributes(movieId, currentUser, model, "Movie is successfully bought.");
         return REDIRECT_MOVIE_DETAIL_VIEW + movieId;
+    }
+
+    @PostMapping("/rating/create")
+    public String createRating(final @Valid @ModelAttribute RatingDto dto,
+                               final BindingResult bindingResult,
+                               final @AuthenticationPrincipal CustomUserDetails user,
+                               final RedirectAttributes redirectAttributes,
+                               final Model model) {
+        LOGGER.info("create rating request");
+        User currentUser = user.getUser();
+        dto.setAuthorId(user.getUserId());
+
+        if (bindingResult.hasErrors()) {
+            addMovieDetailModelAttributes(dto.getId(), currentUser, model, INVALID_DTO);
+            return MOVIE_DETAIL_VIEW;
+        }
+
+        Rating createdRating = externalRatingService.createRatingInRatingService(dto);
+        if (createdRating.getRatingId() == null) {
+            LOGGER.info("Rating service is down.");
+            addMovieDetailModelAttributes(dto.getId(), currentUser, model,
+                    "Rating is not created. RatingService is down.");
+            return MOVIE_DETAIL_VIEW;
+        }
+
+        rabbitMqSender.sendToSetAverageRatingForSingleMovie(dto.getId().toString());
+        rabbitMqSender.sendRefreshMovieDetailRequestToQueue();
+        redirectAttributes.addFlashAttribute(STATUS_ATTR, "Rating is successfully created.");
+        return REDIRECT_MOVIE_DETAIL_VIEW;
     }
 
     @PostMapping("/comment/create")
@@ -136,5 +172,6 @@ public class MovieDetailController {
         model.addAttribute(MOVIE_DETAIL_ATTR, movieDetailService.getMovieDetail(movieId, user.getUserId()));
         model.addAttribute(IS_USER_ADULT_ATTR, isUserAdultCheck(user));
         model.addAttribute(COMMENT_DTO_ATTR, new CommentDto());
+        model.addAttribute(RATING_DTO_ATTR, new RatingDto());
     }
 }
