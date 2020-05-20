@@ -101,8 +101,7 @@ public class AdministrationController {
             addModelAttributes(model, "Movie cannot be created.");
             return ADMIN_VIEW;
         }
-
-        redirectAttributes.addFlashAttribute(SUCCESS, "Movie is successfully created.");
+        redirectAttributes.addFlashAttribute(SUCCESS, "Comment is successfully created.");
         return REDIRECT_ADMIN_VIEW;
     }
 
@@ -188,8 +187,8 @@ public class AdministrationController {
 
         try {
             userService.createUser(dto);
-            redirectAttributes.addFlashAttribute(SUCCESS, "User is successfully created.");
             rabbitMqSender.sendRefreshAdminRequestToQueue();
+            redirectAttributes.addFlashAttribute(SUCCESS, "User is successfully created.");
             return REDIRECT_ADMIN_VIEW;
         } catch (Exception e) {
             LOGGER.error("Creation of user failed.", e);

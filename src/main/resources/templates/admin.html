@@ -131,34 +131,6 @@
 <br>
 <div class="container">
     <div class="row">
-        <h4>All movies</h4>
-        <table class="table">
-            <thead>
-            <tr>
-                <th> Movie Id </th>
-                <th> Movie name </th>
-                <th> Description </th>
-                <th> Average rating </th>
-                <th> Over 18 </th>
-                <th> Action </th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:if="${allMovies.empty}">
-                <td colspan="2"> No Movies Available </td>
-            </tr>
-            <tr th:each="movie : ${allMovies}">
-                <td><span th:text="${movie.id}"></span></td>
-                <td><span th:text="${movie.name}"></span></td>
-                <td><span th:text="${movie.description}"></span></td>
-                <td><span th:text="${movie.averageRating}"></span></td>
-                <td><span th:text="${movie.forAdults} ? '*' : ''"></span></td>
-                <td><a href="#" class="button" th:href="@{/movies/detail/{movieId}(movieId=${movie.id})}">Detail</a> ||
-                    <a href="#" class="button" th:href="@{/admin/movies/delete/{movieId}(movieId=${movie.id})}"
-                       onclick="return confirm('Do you really want to delete this movie?')">Delete</a></td>
-            </tr>
-            </tbody>
-        </table>
         <div class="col-sm">
             <h4>All movies</h4>
             <table class="table">
@@ -168,6 +140,7 @@
                     <th> Movie name </th>
                     <th> Description </th>
                     <th> Average rating </th>
+                    <th> Over 18 </th>
                     <th> Action </th>
                 </tr>
                 </thead>
@@ -180,6 +153,7 @@
                     <td><span th:text="${movie.name}"></span></td>
                     <td><span th:text="${movie.description}"></span></td>
                     <td><span th:text="${movie.averageRating}"></span></td>
+                    <td><span th:text="${movie.forAdults} ? '*' : ''"></span></td>
                     <td><a href="#" class="button" th:href="@{/movies/detail/{movieId}(movieId=${movie.id})}">Detail</a> ||
                         <a href="#" class="button" th:href="@{/admin/movies/delete/{movieId}(movieId=${movie.id})}"
                            onclick="return confirm('Do you really want to delete this movie?')">Delete</a></td>

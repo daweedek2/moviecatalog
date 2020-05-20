@@ -66,8 +66,9 @@ public class UserService {
         LOGGER.info("Saving user with username '{}'.", user.getUsername());
         return userRepository.save(user);
     }
+
     public List<UserListDto> getAllUsers() {
-        LOGGER.info("Getting all users DTOs from database");
+        LOGGER.info("Getting all users from database");
         return userRepository.findAll()
                 .stream()
                 .map(this::populateUserListDto)
