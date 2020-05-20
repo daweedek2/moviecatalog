@@ -1,7 +1,6 @@
 package kostka.moviecatalog.controller;
 
 import kostka.moviecatalog.dto.MovieFormDto;
-import kostka.moviecatalog.dto.UserDto;
 import kostka.moviecatalog.dto.UserFormDto;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.exception.InvalidDtoException;

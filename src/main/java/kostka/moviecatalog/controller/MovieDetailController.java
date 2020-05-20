@@ -39,14 +39,10 @@ public class MovieDetailController {
     private static final Logger LOGGER = LoggerFactory.getLogger(MovieDetailController.class);
     public static final String MOVIE_DETAIL_VIEW = "detail";
     public static final String REDIRECT_MOVIE_DETAIL_VIEW = "redirect:/movies/detail/";
-    private static final Logger LOGGER = LoggerFactory.getLogger(MovieDetailController.class);
     public static final String MOVIE_DETAIL_ATTR = "movieDetail";
     public static final String IS_USER_ADULT_ATTR = "isUserAdult";
     public static final String STATUS_ATTR = "status";
     public static final String COMMENT_DTO_ATTR = "commentDto";
-    public static final String RATING_DTO_ATTR = "ratingDto";
-    public static final String MOVIE_DETAIL_VIEW = "detail";
-    public static final String REDIRECT_MOVIE_DETAIL_VIEW = "redirect:/movies/detail/";
     public static final String RATING_DTO_ATTR = "ratingDto";
 
     private final MovieDetailService movieDetailService;
@@ -54,15 +50,12 @@ public class MovieDetailController {
     private final ExternalCommentService externalCommentService;
     private final RabbitMqSender rabbitMqSender;
     private final ExternalRatingService externalRatingService;
-    private final RabbitMqSender rabbitMqSender;
 
     @Autowired
     public MovieDetailController(
             final MovieDetailService movieDetailService,
             final ExternalShopService externalShopService,
             final ExternalCommentService externalCommentService,
-            final RabbitMqSender rabbitMqSender) {
-            final ExternalShopService externalShopService,
             final ExternalRatingService externalRatingService,
             final RabbitMqSender rabbitMqSender) {
         this.movieDetailService = movieDetailService;
@@ -70,7 +63,6 @@ public class MovieDetailController {
         this.externalCommentService = externalCommentService;
         this.rabbitMqSender = rabbitMqSender;
         this.externalRatingService = externalRatingService;
-        this.rabbitMqSender = rabbitMqSender;
     }
 
     /**
@@ -105,7 +97,8 @@ public class MovieDetailController {
         }
 
         if (order.getId() == null) {
-            addMovieDetailModelAttributes(movieId, currentUser, model, "Shop service is down. Movie is not bought");
+            addMovieDetailModelAttributes(movieId, currentUser, model,
+                    "Shop service is down. Movie is not bought");
             return MOVIE_DETAIL_VIEW;
         }
 
