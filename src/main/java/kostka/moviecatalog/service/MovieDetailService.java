@@ -14,12 +14,11 @@ import java.util.List;
 
 @Service
 public class MovieDetailService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MovieDetailService.class);
     private final DbMovieService movieService;
     private final ExternalCommentService externalCommentService;
     private final ExternalRatingService externalRatingService;
     private final ExternalShopService externalShopService;
-    private static final Logger LOGGER = LoggerFactory.getLogger(MovieDetailService.class);
-
 
     @Autowired
     public MovieDetailService(final DbMovieService movieService,

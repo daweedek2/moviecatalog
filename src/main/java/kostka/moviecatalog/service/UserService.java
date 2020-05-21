@@ -24,11 +24,11 @@ import static kostka.moviecatalog.configuration.WebSecurityConfiguration.USER_RO
 
 @Service
 public class UserService {
+    public static final int ADULTS_LIMIT = 18;
     private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
     private UserRepository userRepository;
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
-    public static final int ADULTS_LIMIT = 18;
 
     @Autowired
     public UserService(final UserRepository userRepository,

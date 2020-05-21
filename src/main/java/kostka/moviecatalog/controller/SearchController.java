@@ -17,9 +17,10 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/movies")
 public class SearchController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SearchController.class);
     private DbMovieService dbMovieService;
     private MovieSpecificationService specificationService;
-    static final Logger LOGGER = LoggerFactory.getLogger(SearchController.class);
+
     @Autowired
     public SearchController(final DbMovieService dbMovieService,
                             final MovieSpecificationService specificationService) {

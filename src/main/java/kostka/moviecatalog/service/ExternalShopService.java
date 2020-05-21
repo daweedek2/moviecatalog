@@ -22,11 +22,11 @@ import static kostka.moviecatalog.service.ExternalCommentService.DEFAULT_ID;
 @Service
 public class ExternalShopService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExternalShopService.class);
-    private RestTemplate restTemplate;
-    private DbMovieService dbMovieService;
     private static final String SHOP_URL_SERVICE_DISCOVERY_CREATE = "http://shop-service/order/create";
     private static final String SHOP_URL_SERVICE_DISCOVERY_GET_USER_ORDERS = "http://shop-service/order/user/";
     private static final String SHOP_URL_SERVICE_DISCOVERY_ORDER_EXISTS_CHECK = "http://shop-service/order/checkOrder/";
+    private RestTemplate restTemplate;
+    private DbMovieService dbMovieService;
 
     @Autowired
     public ExternalShopService(

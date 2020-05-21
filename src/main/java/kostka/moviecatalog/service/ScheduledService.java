@@ -11,14 +11,13 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ScheduledService {
+    public static final String SCHEDULED_TASK_NO_MOVIE_IN_DB = "[Scheduled task] NO Movie in DB.";
     private static final int INIT_DELAY_RATING = 5000;
     private static final int INIT_DELAY_FE = 10000;
     private static final int FIXED_DELAY = 60000;
-    public static final String SCHEDULED_TASK_NO_MOVIE_IN_DB = "[Scheduled task] NO Movie in DB.";
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScheduledService.class);
     private RabbitMqSender rabbitMqSender;
     private StatisticService statisticService;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ScheduledService.class);
 
     public ScheduledService(final RabbitMqSender rabbitMqSender, final StatisticService statisticService) {
         this.rabbitMqSender = rabbitMqSender;

@@ -18,9 +18,9 @@ import static kostka.moviecatalog.service.redis.RedisService.GENERAL_COUNTER;
 @RestController
 @RequestMapping("/stats")
 public class StatisticController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(StatisticController.class);
     private StatisticService statisticService;
     private RedisService redisService;
-    private static final Logger LOGGER = LoggerFactory.getLogger(StatisticController.class);
 
     @Autowired
     public StatisticController(final StatisticService statisticService, final RedisService redisService) {

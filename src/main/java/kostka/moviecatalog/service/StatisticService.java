@@ -16,13 +16,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Service
 public class StatisticService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(StatisticService.class);
-
     public static final String REDIS_SYNCED_COUNTER = "redisSyncedCounter";
     public static final String RABBIT_MQ_SYNCED_COUNTER = "rabbitMqSyncedCounter";
     public static final String ELASTIC_SYNCED_COUNTER = "elasticSyncedCounter";
     public static final String SCHEDULED_SYNCED_COUNTER = "scheduledSyncedCounter";
     public static final String DB_SYNCED_COUNTER = "dbSyncedCounter";
+    private static final Logger LOGGER = LoggerFactory.getLogger(StatisticService.class);
+
     private SynchronizedCounter redisSyncedCounter = new SynchronizedCounter();
     private SynchronizedCounter rabbitMqSyncedCounter = new SynchronizedCounter();
     private SynchronizedCounter elasticSyncedCounter = new SynchronizedCounter();
