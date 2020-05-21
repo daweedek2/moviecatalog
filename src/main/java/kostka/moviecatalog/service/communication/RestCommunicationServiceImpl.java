@@ -5,11 +5,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service("RestCommunicationService")
-public class RestCommunicationService implements CommunicationService {
+public class RestCommunicationServiceImpl implements CommunicationService {
     private RestTemplate restTemplate;
 
     @Autowired
-    public RestCommunicationService(final RestTemplate restTemplate) {
+    public RestCommunicationServiceImpl(final RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
