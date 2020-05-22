@@ -133,7 +133,7 @@ public class MovieDetailController {
         rabbitMqSender.sendToSetAverageRatingForSingleMovie(dto.getId().toString());
         rabbitMqSender.sendRefreshMovieDetailRequestToQueue();
         redirectAttributes.addFlashAttribute(STATUS_ATTR, "Rating is successfully created.");
-        return REDIRECT_MOVIE_DETAIL_VIEW;
+        return REDIRECT_MOVIE_DETAIL_VIEW + dto.getId();
     }
 
     @PostMapping("/comment/create")
@@ -162,7 +162,7 @@ public class MovieDetailController {
         rabbitMqSender.sendRefreshMovieDetailRequestToQueue();
         rabbitMqSender.sendUpdateRequestToQueue();
         redirectAttributes.addFlashAttribute(STATUS_ATTR, "Comment is successfully created.");
-        return REDIRECT_MOVIE_DETAIL_VIEW;
+        return REDIRECT_MOVIE_DETAIL_VIEW + dto.getMovieId();
     }
 
     private void addMovieDetailModelAttributes(
