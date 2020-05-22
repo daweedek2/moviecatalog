@@ -40,7 +40,7 @@
     -->
 
     <module name="SuppressionFilter">
-        <property name="file" value="/config/checkstyle/suppressions.xml" />
+        <property name="file" value="${baseDir}/config/checkstyle/suppressions.xml" />
         <property name="optional" value="false"/>
     </module>
 
