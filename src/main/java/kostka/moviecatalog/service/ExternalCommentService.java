@@ -4,11 +4,11 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import kostka.moviecatalog.dto.CommentDto;
 import kostka.moviecatalog.entity.Comment;
 import kostka.moviecatalog.entity.MovieComments;
+import kostka.moviecatalog.service.communication.CommunicationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,21 +21,23 @@ import java.util.Objects;
 public class ExternalCommentService {
     public static final long DEFAULT_ID = 999L;
     private static final Logger LOGGER = LoggerFactory.getLogger(ExternalCommentService.class);
-    private static final String COMMENT_URL_SERVICE_DISCOVERY = "http://comment-service/comments/";
-    private static final String LATEST_COMMENTS_URL_SERVICE_DISCOVERY = "http://comment-service/comments/latest5";
-    private static final String CREATE_COMMENT_URL_SERVICE_DISCOVERY = "http://comment-service/comments/create";
-    private RestTemplate restTemplate;
+    private static final String COMMENT_SERVICE_URL = "http://comment-service/comments/";
+    private static final String GET_LATEST5 = "latest5";
+    private static final String CREATE = "create";
+
+    private CommunicationService communicationService;
 
     @Autowired
-    public ExternalCommentService(final RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    public ExternalCommentService(
+            final CommunicationService communicationService) {
+        this.communicationService = communicationService;
     }
 
     @HystrixCommand(fallbackMethod = "getCommentsFromCommentServiceFallback")
     public List<Comment> getCommentsFromCommentService(final Long movieId) {
         LOGGER.info("Getting comments from Comment service.");
-        MovieComments commentsResponse = restTemplate.getForObject(
-                COMMENT_URL_SERVICE_DISCOVERY + movieId,
+        MovieComments commentsResponse = communicationService.sendGetRequest(
+                COMMENT_SERVICE_URL + movieId,
                 MovieComments.class);
         return Objects.requireNonNull(commentsResponse).getComments();
     }
@@ -49,7 +51,7 @@ public class ExternalCommentService {
     @HystrixCommand(fallbackMethod = "createCommentInCommentServiceFallback")
     public Comment createCommentInCommentService(final CommentDto dto) {
         LOGGER.info("Create new comment request for CommentService.");
-        return restTemplate.postForObject(CREATE_COMMENT_URL_SERVICE_DISCOVERY, dto, Comment.class);
+        return communicationService.sendPostRequest(COMMENT_SERVICE_URL + CREATE, dto, Comment.class);
     }
 
     public Comment createCommentInCommentServiceFallback(final CommentDto dto) {
@@ -60,8 +62,8 @@ public class ExternalCommentService {
     @HystrixCommand(fallbackMethod = "getLatest5CommentsFallback")
     public List<Comment> getLatest5Comments() {
         LOGGER.info("Getting latest comments from Comment service.");
-        MovieComments commentsResponse = restTemplate.getForObject(
-                LATEST_COMMENTS_URL_SERVICE_DISCOVERY, MovieComments.class);
+        MovieComments commentsResponse = communicationService.sendGetRequest(
+                COMMENT_SERVICE_URL + GET_LATEST5, MovieComments.class);
 
         return Objects.requireNonNull(commentsResponse).getComments();
     }

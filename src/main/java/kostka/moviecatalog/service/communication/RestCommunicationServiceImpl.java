@@ -1,10 +1,15 @@
 package kostka.moviecatalog.service.communication;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-@Service("RestCommunicationService")
+@Service
+@ConditionalOnProperty(
+        name = "communication.web-client",
+        havingValue = "false",
+        matchIfMissing = true)
 public class RestCommunicationServiceImpl implements CommunicationService {
     private RestTemplate restTemplate;
 

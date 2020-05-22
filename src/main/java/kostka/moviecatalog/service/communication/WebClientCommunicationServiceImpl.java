@@ -2,11 +2,15 @@ package kostka.moviecatalog.service.communication;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
-@Service("WebClientCommService")
+@Service
+@ConditionalOnProperty(
+        name = "communication.web-client",
+        havingValue = "true")
 public class WebClientCommunicationServiceImpl implements CommunicationService {
     private WebClient.Builder webClient;
 
