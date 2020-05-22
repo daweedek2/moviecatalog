@@ -5,11 +5,11 @@ import kostka.moviecatalog.dto.MovieListDto;
 import kostka.moviecatalog.dto.OrderDto;
 import kostka.moviecatalog.entity.Order;
 import kostka.moviecatalog.entity.UserOrders;
+import kostka.moviecatalog.service.communication.CommunicationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -22,24 +22,25 @@ import static kostka.moviecatalog.service.ExternalCommentService.DEFAULT_ID;
 @Service
 public class ExternalShopService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExternalShopService.class);
-    private static final String SHOP_URL_SERVICE_DISCOVERY_CREATE = "http://shop-service/order/create";
-    private static final String SHOP_URL_SERVICE_DISCOVERY_GET_USER_ORDERS = "http://shop-service/order/user/";
-    private static final String SHOP_URL_SERVICE_DISCOVERY_ORDER_EXISTS_CHECK = "http://shop-service/order/checkOrder/";
-    private RestTemplate restTemplate;
+    private static final String SHOP_SERVICE_URL = "http://shop-service/order/";
+    private static final String CREATE = "create";
+    private static final String GET_USER_ORDERS = "user/";
+    private static final String CHECK_ORDER = "checkOrder/";
     private DbMovieService dbMovieService;
+    private CommunicationService communicationService;
 
     @Autowired
     public ExternalShopService(
-            final RestTemplate restTemplate,
+            final CommunicationService communicationService,
             final DbMovieService dbMovieService) {
-        this.restTemplate = restTemplate;
+        this.communicationService = communicationService;
         this.dbMovieService = dbMovieService;
     }
 
     @HystrixCommand(fallbackMethod = "buyMovieInShopServiceFallback")
     public Order buyMovieInShopService(final OrderDto dto) {
         LOGGER.info("request to buy movie in shop service");
-        return restTemplate.postForObject(SHOP_URL_SERVICE_DISCOVERY_CREATE, dto, Order.class);
+        return communicationService.sendPostRequest(SHOP_SERVICE_URL + CREATE, dto, Order.class);
     }
 
     public Order buyMovieInShopServiceFallback(final OrderDto dto) {
@@ -52,8 +53,8 @@ public class ExternalShopService {
 
     @HystrixCommand(fallbackMethod = "getAlreadyBoughtMoviesForUserFallback")
     public List<MovieListDto> getAlreadyBoughtMoviesForUser(final Long userId) {
-        UserOrders orders = restTemplate.getForObject(
-                SHOP_URL_SERVICE_DISCOVERY_GET_USER_ORDERS + userId,
+        UserOrders orders = communicationService.sendGetRequest(
+                SHOP_SERVICE_URL + GET_USER_ORDERS + userId,
                 UserOrders.class);
         if (orders.getOrders().isEmpty()) {
             return Collections.emptyList();
@@ -75,8 +76,8 @@ public class ExternalShopService {
 
     @HystrixCommand(fallbackMethod = "checkAlreadyBoughtMovieForUserFallback")
     public Boolean checkAlreadyBoughtMovieForUser(final Long movieId, final Long userId) {
-        return restTemplate.getForObject(
-                SHOP_URL_SERVICE_DISCOVERY_ORDER_EXISTS_CHECK + movieId + "/" + userId,
+        return communicationService.sendGetRequest(
+                SHOP_SERVICE_URL + CHECK_ORDER + movieId + "/" + userId,
                 Boolean.class);
     }
 

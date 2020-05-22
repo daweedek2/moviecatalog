@@ -5,11 +5,11 @@ import kostka.moviecatalog.dto.RatingDto;
 import kostka.moviecatalog.entity.AverageRating;
 import kostka.moviecatalog.entity.MovieRating;
 import kostka.moviecatalog.entity.Rating;
+import kostka.moviecatalog.service.communication.CommunicationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,15 +23,17 @@ import static kostka.moviecatalog.service.ExternalCommentService.DEFAULT_ID;
 @Service
 public class ExternalRatingService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExternalRatingService.class);
-    private static final String RATING_URL_SERVICE_DISCOVERY = "http://rating-service/rating/";
-    private static final String AVERAGE_RATING_URL_SERVICE_DISCOVERY = "http://rating-service/rating/average/";
-    private static final String CREATE_RATING_URL_SERVICE_DISCOVERY = "http://rating-service/rating/create";
-    private RestTemplate restTemplate;
+    private static final String RATING_SERVICE_URL = "http://rating-service/rating/";
+    private static final String GET_AVERAGE = "average/";
+    private static final String CREATE = "create";
     private DbMovieService dbMovieService;
+    private CommunicationService communicationService;
 
     @Autowired
-    public ExternalRatingService(final RestTemplate restTemplate, final DbMovieService dbMovieService) {
-        this.restTemplate = restTemplate;
+    public ExternalRatingService(
+            final CommunicationService communicationService,
+            final DbMovieService dbMovieService) {
+        this.communicationService = communicationService;
         this.dbMovieService = dbMovieService;
     }
 
@@ -43,8 +45,8 @@ public class ExternalRatingService {
     @HystrixCommand(fallbackMethod = "getRatingsFromRatingServiceFallback")
     public List<Rating> getRatingsFromRatingService(final Long movieId) {
         LOGGER.info("Getting ratings from Rating service.");
-        MovieRating ratingsResponse = restTemplate.getForObject(
-                RATING_URL_SERVICE_DISCOVERY + movieId,
+        MovieRating ratingsResponse = communicationService.sendGetRequest(
+                RATING_SERVICE_URL + movieId,
                 MovieRating.class);
 
         return Objects.requireNonNull(ratingsResponse).getMovieRatings();
@@ -58,8 +60,8 @@ public class ExternalRatingService {
     @HystrixCommand(fallbackMethod = "getAverageRatingFromRatingServiceFallback")
     public double getAverageRatingFromRatingService(final Long movieId) {
         LOGGER.info("Getting average rating from Rating service.");
-        AverageRating ratingsResponse = restTemplate.getForObject(
-                AVERAGE_RATING_URL_SERVICE_DISCOVERY + movieId,
+        AverageRating ratingsResponse = communicationService.sendGetRequest(
+                RATING_SERVICE_URL + GET_AVERAGE + movieId,
                 AverageRating.class);
 
         return Objects.requireNonNull(ratingsResponse).getAverageRatingValue();
@@ -93,7 +95,7 @@ public class ExternalRatingService {
     @HystrixCommand(fallbackMethod = "createRatingInRatingServiceFallback")
     public Rating createRatingInRatingService(final RatingDto dto) {
         LOGGER.info("Create new rating request for RatingService.");
-        return restTemplate.postForObject(CREATE_RATING_URL_SERVICE_DISCOVERY, dto, Rating.class);
+        return communicationService.sendPostRequest(RATING_SERVICE_URL + CREATE, dto, Rating.class);
     }
 
     public Rating createRatingInRatingServiceFallback(final RatingDto dto) {
