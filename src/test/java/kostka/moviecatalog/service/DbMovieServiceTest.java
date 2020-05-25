@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
@@ -23,6 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DbMovieServiceTest {
@@ -42,14 +42,13 @@ public class DbMovieServiceTest {
     @Mock
     private StatisticService statisticService;
 
-
     private Generator generator = new Generator();
 
     @Test
     public void createMovieValidDtoTest() {
         Movie movie = generator.createMovieWithName(TEST_NAME);
         MovieFormDto dto = generator.createValidMovieFormDto(TEST_NAME);
-        Mockito.when(movieRepository.save(any())).thenReturn(movie);
+        when(movieRepository.save(any())).thenReturn(movie);
 
         Movie result = dbMovieService.createMovie(dto);
 
@@ -67,7 +66,7 @@ public class DbMovieServiceTest {
     @Test
     public void saveMovieTest() {
         Movie movie = generator.createMovieWithName(TEST_NAME);
-        Mockito.when(movieRepository.save(any())).thenReturn(movie);
+        when(movieRepository.save(any())).thenReturn(movie);
 
         Movie result = dbMovieService.saveMovie(movie);
 
@@ -77,7 +76,7 @@ public class DbMovieServiceTest {
     @Test
     public void getExistingMovieTest() {
         Movie movie = generator.createMovieWithName(TEST_NAME);
-        Mockito.when(movieRepository.findById(any())).thenReturn(Optional.of(movie));
+        when(movieRepository.findById(any())).thenReturn(Optional.of(movie));
 
         Movie result = dbMovieService.getMovie(1L);
 
@@ -87,7 +86,7 @@ public class DbMovieServiceTest {
     @Test
     public void getNonExistingMovieTest() {
         Movie movie = generator.createMovieWithName(TEST_NAME);
-        Mockito.when(movieRepository.findById(any())).thenReturn(Optional.empty());
+        when(movieRepository.findById(any())).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> dbMovieService.getMovie(1L))
                 .isInstanceOf(MovieNotFoundException.class);
@@ -100,8 +99,8 @@ public class DbMovieServiceTest {
         List<Long> ids = Arrays.asList(movie.getId(), movie2.getId());
         List<Movie> movies = Arrays.asList(movie, movie2);
 
-        Mockito.when(esMovieService.fullTextSearch(any())).thenReturn(anyList());
-        Mockito.when(movieRepository.findByIdInOrderByIdDesc(ids)).thenReturn(movies);
+        when(esMovieService.fullTextSearch(any())).thenReturn(anyList());
+        when(movieRepository.findByIdInOrderByIdDesc(ids)).thenReturn(movies);
 
         List<Movie> result = dbMovieService.fullTextSearch("test");
 
@@ -113,8 +112,8 @@ public class DbMovieServiceTest {
     public void fullTextSearchNoResultFromESTest() {
         List<Long> ids = Arrays.asList(1L, 2L);
 
-        Mockito.when(esMovieService.fullTextSearch(any())).thenReturn(anyList());
-        Mockito.when(movieRepository.findByIdInOrderByIdDesc(ids)).thenReturn(Collections.emptyList());
+        when(esMovieService.fullTextSearch(any())).thenReturn(anyList());
+        when(movieRepository.findByIdInOrderByIdDesc(ids)).thenReturn(Collections.emptyList());
 
         List<Movie> result = dbMovieService.fullTextSearch("test");
 
@@ -127,7 +126,7 @@ public class DbMovieServiceTest {
         Movie movie2 = generator.createMovieWithName(TEST_NAME_2);
         List<Movie> movies = Arrays.asList(movie, movie2);
 
-        Mockito.when(movieRepository.findAll()).thenReturn(movies);
+        when(movieRepository.findAll()).thenReturn(movies);
 
         List<Movie> result = dbMovieService.getAllMoviesFromDB();
 
@@ -137,7 +136,7 @@ public class DbMovieServiceTest {
 
     @Test
     public void getAllMoviesFromDBIsEmptyTest() {
-        Mockito.when(movieRepository.findAll()).thenReturn(Collections.emptyList());
+        when(movieRepository.findAll()).thenReturn(Collections.emptyList());
 
         List<Movie> result = dbMovieService.getAllMoviesFromDB();
 
@@ -150,23 +149,23 @@ public class DbMovieServiceTest {
         Movie movie2 = generator.createMovieWithName(TEST_NAME_2);
         List<Movie> movies = Arrays.asList(movie, movie2);
 
-        Mockito.when(movieRepository.findTop5ByOrderByAverageRatingDesc()).thenReturn(movies);
+        when(movieRepository.findNTopRatedMovies(eq(5))).thenReturn(movies);
 
-        List<Movie> result = dbMovieService.getTop5RatingMoviesFromDB();
+        List<Movie> result = dbMovieService.getNTopRatedMoviesFromDB(5);
 
         assertThat(result).size().isEqualTo(2);
         assertThat(result).containsExactlyInAnyOrder(movie, movie2);
     }
 
     @Test
-    public void get5LatestMoviesFromDBTest() {
+    public void getLatestMoviesFromDBTest() {
         Movie movie = generator.createMovieWithName(TEST_NAME);
         Movie movie2 = generator.createMovieWithName(TEST_NAME_2);
         List<Movie> movies = Arrays.asList(movie, movie2);
 
-        Mockito.when(movieRepository.findTop5ByOrderByIdDesc()).thenReturn(movies);
+        when(movieRepository.findNLatestMovies(eq(5))).thenReturn(movies);
 
-        List<Movie> result = dbMovieService.get5LatestMoviesFromDB();
+        List<Movie> result = dbMovieService.getNLatestMoviesFromDB(5);
 
         assertThat(result).size().isEqualTo(2);
         assertThat(result).containsExactlyInAnyOrder(movie, movie2);

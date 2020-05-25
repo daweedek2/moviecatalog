@@ -84,6 +84,18 @@
                 <button class="arrow-button" type="submit">Create</button>
             </form>
         </div>
+        <div class="col-sm">
+            <h4 class="header-panel" style="text-align: center">Runtime Configurations</h4>
+            <br>
+            <form action="#" th:action="@{/admin/config/update}" th:object="${visibleMoviesConfigDto}" method="post">
+                <div class="form-group">
+                    <label for="visibleMoviesValue"> Number of visible movies in the user tables : </label>
+                    <input id="visibleMoviesValue" th:field="*{limit}" th:value="${visibleMoviesConfigDto.limit}"/>
+                    <input type="hidden" id="config_name" th:field="*{configName}" th:value="${visibleMoviesConfigDto.configName}"/>
+                </div>
+                <button class="arrow-button" type="submit">Update</button>
+            </form>
+        </div>
     </div>
 </div>
 <br>

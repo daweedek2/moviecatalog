@@ -130,9 +130,9 @@ public class RabbitMqReceiver {
             CompletableFuture<Void> allMoviesRedis = redisService
                     .tryToUpdateMoviesInRedis(dbMovieService::getAllMoviesForCaching, ALL_MOVIES_KEY);
             CompletableFuture<Void> topMoviesRedis = redisService
-                    .tryToUpdateMoviesInRedis(dbMovieService::getTop5RatingMoviesForCaching, TOP_RATING_KEY);
+                    .tryToUpdateMoviesInRedis(dbMovieService::getTopRatingMoviesForCaching, TOP_RATING_KEY);
             CompletableFuture<Void> latestMoviesRedis = redisService
-                    .tryToUpdateMoviesInRedis(dbMovieService::get5LatestMoviesForCaching, LATEST_MOVIES_KEY);
+                    .tryToUpdateMoviesInRedis(dbMovieService::getLatestMoviesForCaching, LATEST_MOVIES_KEY);
 
             CompletableFuture.allOf(allMoviesRedis, topMoviesRedis, latestMoviesRedis).join();
             stompService.sendSTOMPToUpdateAllTables();

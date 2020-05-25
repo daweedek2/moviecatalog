@@ -1,14 +1,18 @@
 package kostka.moviecatalog.controller;
 
 import kostka.moviecatalog.dto.MovieFormDto;
+import kostka.moviecatalog.dto.RuntimeConfigDto;
 import kostka.moviecatalog.dto.UserFormDto;
 import kostka.moviecatalog.entity.Movie;
+import kostka.moviecatalog.entity.runtimeconfiguration.VisibleMoviesConfigValue;
 import kostka.moviecatalog.exception.InvalidDtoException;
 import kostka.moviecatalog.service.CacheService;
 import kostka.moviecatalog.service.DbMovieService;
 import kostka.moviecatalog.service.UserService;
+import kostka.moviecatalog.service.ValidationService;
 import kostka.moviecatalog.service.rabbitmq.RabbitMqSender;
 import kostka.moviecatalog.service.redis.RedisService;
+import kostka.moviecatalog.service.runtimeconfig.RuntimeConfigurationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +28,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 
+import static kostka.moviecatalog.enums.RuntimeConfigurationEnum.VISIBLE_MOVIES;
+import static kostka.moviecatalog.factory.RuntimeConfigurationFactory.getValueForUpdateRuntimeConfig;
 import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.ALL_MOVIES_KEY;
 
 @Controller
@@ -41,18 +47,24 @@ public class AdministrationController {
     private RedisService redisService;
     private UserService userService;
     private CacheService cacheService;
+    private RuntimeConfigurationService runtimeConfigService;
+    private ValidationService validationService;
 
     @Autowired
     public AdministrationController(final DbMovieService dbMovieService,
                                     final RabbitMqSender rabbitMqSender,
                                     final RedisService redisService,
                                     final UserService userService,
-                                    final CacheService cacheService) {
+                                    final CacheService cacheService,
+                                    final RuntimeConfigurationService runtimeConfigService,
+                                    final ValidationService validationService) {
         this.dbMovieService = dbMovieService;
         this.rabbitMqSender = rabbitMqSender;
         this.redisService = redisService;
         this.userService = userService;
         this.cacheService = cacheService;
+        this.runtimeConfigService = runtimeConfigService;
+        this.validationService = validationService;
     }
 
     @GetMapping()
@@ -135,11 +147,49 @@ public class AdministrationController {
         }
     }
 
+    @PostMapping("config/update")
+    public String updateRuntimeConfig(final @Valid RuntimeConfigDto dto,
+                                      final BindingResult bindingResult,
+                                      final RedirectAttributes redirectAttributes,
+                                      final Model model) {
+        LOGGER.info("update runtime config request");
+
+        if (bindingResult.hasErrors()) {
+            addModelAttributes(model, INVALID_DTO);
+            return ADMIN_VIEW;
+        }
+
+        try {
+            validationService.validateVisibleMoviesConfigValue(dto.getLimit());
+            // TODO: in dto send Enum instead of the string
+            runtimeConfigService.updateRuntimeConfiguration(dto.getConfigName(), getValueForUpdateRuntimeConfig(dto));
+            redirectAttributes.addFlashAttribute(SUCCESS, "Runtime Config is updated.");
+            rabbitMqSender.sendUpdateRequestToQueue();
+            return REDIRECT_ADMIN_VIEW;
+        } catch (Exception e) {
+            LOGGER.error("Runtime Config update failed.", e);
+            addModelAttributes(model, "Runtime Config is not updated.");
+            return ADMIN_VIEW;
+        }
+    }
+
     private void addModelAttributes(final Model model, final String message) {
         model.addAttribute("movieDto", new MovieFormDto());
         model.addAttribute("userDto", new UserFormDto());
         model.addAttribute(ALL_MOVIES_KEY, cacheService.getMoviesFromCacheWithKey(ALL_MOVIES_KEY));
         model.addAttribute(ALL_USERS_ATTR, userService.getAllUsers());
         model.addAttribute(ERROR, message);
+        try {
+            model.addAttribute(
+                    "visibleMoviesConfigDto",
+                    new RuntimeConfigDto(
+                            runtimeConfigService
+                                    .getRuntimeConfigurationValue(VISIBLE_MOVIES, VisibleMoviesConfigValue.class)
+                                    .getLimit(),
+                            VISIBLE_MOVIES.getName()));
+
+        } catch (Exception e) {
+            LOGGER.error("Cannot set runtime config dto", e);
+        }
     }
 }

@@ -52,10 +52,16 @@ public class UserController {
             final @AuthenticationPrincipal CustomUserDetails user,
             final Model model) {
         LOGGER.info("rendering user home page");
-        model.addAttribute(TOP_RATING_KEY, cacheService.getMoviesFromCacheWithKey(TOP_RATING_KEY));
-        model.addAttribute(LATEST_MOVIES_KEY, cacheService.getMoviesFromCacheWithKey(LATEST_MOVIES_KEY));
-        model.addAttribute(MY_MOVIES_KEY, externalShopService.getAlreadyBoughtMoviesForUser(user.getUserId()));
-        model.addAttribute(LATEST_COMMENTS_KEY, externalCommentService.getLatest5Comments());
+        model.addAttribute(
+                TOP_RATING_KEY, cacheService.getMoviesFromCacheWithKey(TOP_RATING_KEY));
+        model.addAttribute(
+                LATEST_MOVIES_KEY, cacheService.getMoviesFromCacheWithKey(LATEST_MOVIES_KEY));
+        model.addAttribute(
+                MY_MOVIES_KEY,
+                externalShopService.getAlreadyBoughtMoviesForUser(user.getUserId()));
+        model.addAttribute(
+                LATEST_COMMENTS_KEY,
+                externalCommentService.getLatest5Comments());
         return "user";
     }
 

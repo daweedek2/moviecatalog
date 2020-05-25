@@ -1,12 +1,15 @@
 package kostka.moviecatalog.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import kostka.moviecatalog.dto.MovieFormDto;
 import kostka.moviecatalog.dto.MovieListDto;
 import kostka.moviecatalog.entity.EsMovie;
 import kostka.moviecatalog.entity.Movie;
+import kostka.moviecatalog.entity.runtimeconfiguration.VisibleMoviesConfigValue;
 import kostka.moviecatalog.exception.InvalidDtoException;
 import kostka.moviecatalog.exception.MovieNotFoundException;
 import kostka.moviecatalog.repository.MovieRepository;
+import kostka.moviecatalog.service.runtimeconfig.RuntimeConfigurationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,21 +20,27 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static kostka.moviecatalog.enums.RuntimeConfigurationEnum.VISIBLE_MOVIES;
+
 @Service
 public class DbMovieService {
     public static final long SLEEP_TIME = 5000L;
     private static final Logger LOGGER = LoggerFactory.getLogger(DbMovieService.class);
+    private static final int DEFAULT_LIMIT = 5;
     private MovieRepository movieRepository;
     private EsMovieService esMovieService;
     private StatisticService statisticService;
+    private RuntimeConfigurationService runtimeConfigService;
 
     @Autowired
     public DbMovieService(final MovieRepository movieRepository,
                           final EsMovieService esMovieService,
-                          final StatisticService statisticService) {
+                          final StatisticService statisticService,
+                          final RuntimeConfigurationService runtimeConfigService) {
         this.movieRepository = movieRepository;
         this.esMovieService = esMovieService;
         this.statisticService = statisticService;
+        this.runtimeConfigService = runtimeConfigService;
     }
 
     public Movie createMovie(final MovieFormDto dto) {
@@ -79,37 +88,50 @@ public class DbMovieService {
                 .collect(Collectors.toList());
     }
 
-    public List<MovieListDto> getTop5RatingMoviesForCaching() {
-        return this.getTop5RatingMoviesFromDB().stream()
+    public List<MovieListDto> getTopRatingMoviesForCaching() {
+        final int limit = getLimitValueFromConfig();
+        return this.getNTopRatedMoviesFromDB(limit).stream()
                 .map(this::fillMovieListDtoWithData)
                 .collect(Collectors.toList());
     }
 
-    public List<MovieListDto> get5LatestMoviesForCaching() {
-        return this.get5LatestMoviesFromDB().stream()
+    public List<MovieListDto> getLatestMoviesForCaching() {
+        final int limit = getLimitValueFromConfig();
+        return this.getNLatestMoviesFromDB(limit).stream()
                 .map(this::fillMovieListDtoWithData)
                 .collect(Collectors.toList());
     }
 
-    public List<Movie> getTop5RatingMoviesFromDB() {
-        LOGGER.info("get top 5 from DB");
+    public List<Movie> getNLatestMoviesFromDB(final int limit) {
+        LOGGER.info("get latest '{}' from DB", limit);
+        statisticService.incrementSyncedDbCounter();
+        return movieRepository.findNLatestMovies(limit);
+    }
+
+    public List<Movie> getNTopRatedMoviesFromDB(final int limit) {
+        LOGGER.info("get '{}' top rated movies from DB", limit);
         try {
             Thread.sleep(SLEEP_TIME);
         } catch (Exception e) {
             LOGGER.error("sleep error", e);
         }
         statisticService.incrementSyncedDbCounter();
-        return movieRepository.findTop5ByOrderByAverageRatingDesc();
-    }
-
-    public List<Movie> get5LatestMoviesFromDB() {
-        LOGGER.info("get latest 5 from DB");
-        statisticService.incrementSyncedDbCounter();
-        return movieRepository.findTop5ByOrderByIdDesc();
+        return movieRepository.findNTopRatedMovies(limit);
     }
 
     public void deleteMovie(final Long movieId) {
         movieRepository.deleteById(movieId);
+    }
+
+    public MovieListDto fillMovieListDtoWithData(final Movie movie) {
+        MovieListDto dto = new MovieListDto();
+        dto.setId(movie.getId());
+        dto.setName(movie.getName());
+        dto.setDescription(movie.getDescription());
+        dto.setAverageRating(movie.getAverageRating());
+        dto.setForAdults(movie.isForAdults());
+
+        return dto;
     }
 
     private Movie populateMovie(final MovieFormDto dto) {
@@ -123,14 +145,14 @@ public class DbMovieService {
         return movie;
     }
 
-    public MovieListDto fillMovieListDtoWithData(final Movie movie) {
-        MovieListDto dto = new MovieListDto();
-        dto.setId(movie.getId());
-        dto.setName(movie.getName());
-        dto.setDescription(movie.getDescription());
-        dto.setAverageRating(movie.getAverageRating());
-        dto.setForAdults(movie.isForAdults());
-
-        return dto;
+    private int getLimitValueFromConfig() {
+        try {
+            VisibleMoviesConfigValue value = runtimeConfigService
+                    .getRuntimeConfigurationValue(VISIBLE_MOVIES, VisibleMoviesConfigValue.class);
+            return value.getLimit();
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Cannot get Config value", e);
+            return DEFAULT_LIMIT;
+        }
     }
 }
