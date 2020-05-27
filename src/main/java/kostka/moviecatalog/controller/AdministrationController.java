@@ -135,6 +135,23 @@ public class AdministrationController {
         }
     }
 
+    /**
+     * Method for deleting existing user from db..
+     * @param userId id of the deleted user.
+     */
+    @GetMapping("/users/delete/{userId}")
+    public String deleteUser(final @PathVariable Long userId) {
+        LOGGER.info("delete user with id '{}' request", userId);
+
+        try {
+            userService.deleteUser(userId);
+        } catch (Exception e) {
+            LOGGER.error("User with id '{}' cannot be deleted.", userId, e);
+        }
+        rabbitMqSender.sendRefreshAdminRequestToQueue();
+        return REDIRECT_ADMIN_VIEW;
+    }
+
     private void addModelAttributes(final Model model, final String message) {
         model.addAttribute("movieDto", new MovieFormDto());
         model.addAttribute("userDto", new UserFormDto());
