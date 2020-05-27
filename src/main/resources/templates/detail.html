@@ -9,6 +9,7 @@
     <script src="/movieDetailScript.js"></script>
 </head>
 <body>
+<div th:insert="header/header :: header()"></div>
 <div class="container">
 <h2 class="header-panel" th:text="${movieDetail.name}"></h2>
     <div th:if="${movieDetail.forAdults}">

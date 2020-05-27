@@ -9,6 +9,7 @@
     <script src="/adminScript.js"></script>
 </head>
 <body>
+<div th:insert="header/header :: header()"></div>
 <div class="container" th:if="${status} != ''">
     <div class="alert-danger">
         <p th:utext="${status}"></p>
