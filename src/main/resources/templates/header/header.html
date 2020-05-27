@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="cs" xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+<header th:fragment="header()" class="header-panel">
+    <div class="container" align="right">
+        <a href="#" class="button" th:href="@{/logout}" onclick="return confirm('Do you really want to logout?')">
+            Logout
+        </a>
+    </div>
+</header>
+</body>
+</html>
