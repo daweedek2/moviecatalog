@@ -42,6 +42,8 @@ public class CacheServiceTest {
         List<MovieListDto> result = cacheService.getMoviesFromCacheWithKey(ALL_MOVIES_KEY);
 
         assertThat(result.size()).isEqualTo(2);
+        assertThat(result).extracting(
+                "name").containsExactlyInAnyOrder(TEST_NAME, TEST_NAME_2);
     }
 
     @Test
@@ -52,6 +54,8 @@ public class CacheServiceTest {
         List<MovieListDto> result = cacheService.getMoviesFromCacheWithKey(TOP_MOVIES_KEY);
 
         assertThat(result.size()).isEqualTo(2);
+        assertThat(result).extracting(
+                "name").containsExactlyInAnyOrder(TEST_NAME, TEST_NAME_2);
     }
 
     @Test
@@ -62,6 +66,8 @@ public class CacheServiceTest {
         List<MovieListDto> result = cacheService.getMoviesFromCacheWithKey(LATEST_MOVIES_KEY);
 
         assertThat(result.size()).isEqualTo(2);
+        assertThat(result).extracting(
+                "name").containsExactly(TEST_NAME, TEST_NAME_2);
     }
 
     private String create2MoviesJson() throws JsonProcessingException{
