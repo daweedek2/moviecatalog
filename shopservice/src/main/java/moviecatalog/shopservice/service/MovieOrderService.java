@@ -91,13 +91,13 @@ public class MovieOrderService {
     }
 
     /**
-     * Chekcs whether the order is already created.
+     * Checks whether the order is already created.
      *
      * @param movieId the movie id
      * @param userId  the user id
      * @return the boolean
      */
-    public Boolean isOrderAlreadyCreated(
+    public boolean isOrderAlreadyCreated(
             final Long movieId,
             final Long userId) {
         return this.getSpecificMovieOrder(movieId, userId) != null;

@@ -20,7 +20,7 @@
     <p class="text">Description: <span th:text="${movieDetail.description}"></span></p>
     <p class="text">Calculated Average Rating: <span th:text="${movieDetail.averageRating}"></span></p>
     <p>
-        <div th:if="${movieDetail.bought == false and isUserAdult}">
+        <div th:if="${isAllowedToBuy}">
             <form action="#" th:action="@{/movies/detail/buy}" method="post">
                 <input type="hidden" name="movieId" id="id" th:value="${movieDetail.movieId}" />
             <button class="btn btn-info" type="submit" onclick="return confirm('Do you really want to buy this movie?')">

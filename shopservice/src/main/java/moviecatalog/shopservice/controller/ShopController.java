@@ -51,7 +51,7 @@ public class ShopController {
     }
 
     @GetMapping("/checkOrder/{movieId}/{userId}")
-    public Boolean checkOrderAlreadyExists(
+    public boolean checkOrderAlreadyExists(
             final @PathVariable("movieId") Long movieId,
             final @PathVariable("userId") Long userId) {
         return movieOrderService.isOrderAlreadyCreated(movieId, userId);
