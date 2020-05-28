@@ -3,6 +3,7 @@ package kostka.moviecatalog.service.integrationTests;
 import kostka.moviecatalog.MovieCatalogApplication;
 import kostka.moviecatalog.dto.UserFormDto;
 import kostka.moviecatalog.entity.User;
+import kostka.moviecatalog.exception.UserNotFoundException;
 import kostka.moviecatalog.repository.MovieElasticSearchRepository;
 import kostka.moviecatalog.repository.RoleRepository;
 import kostka.moviecatalog.repository.UserRepository;
@@ -21,6 +22,7 @@ import java.time.LocalDate;
 
 import static kostka.moviecatalog.configuration.WebSecurityConfiguration.USER_ROLE;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = MovieCatalogApplication.class)
@@ -51,12 +53,7 @@ public class UserServiceIntegrationTest {
 
     @Test
     public void createUserSuccessfullyIntegrationTest() {
-        UserFormDto dto = new UserFormDto();
-        dto.setFirstName(TEST_FIRST_NAME);
-        dto.setLastName(TEST_LAST_NAME);
-        dto.setPassword(TEST_PASSWORD);
-        dto.setUserName(TEST_USER_NAME);
-        dto.setBirthDate(TEST_BIRTH_DATE);
+        UserFormDto dto = getUserFormDto();
 
         User createdUser = userService.createUser(dto);
 
@@ -67,4 +64,26 @@ public class UserServiceIntegrationTest {
         assertThat(passwordEncoder.matches(TEST_PASSWORD, createdUser.getPassword())).isTrue();
         assertThat(createdUser.getRoles()).contains(roleRepository.findByName(USER_ROLE));
     }
+
+    @Test
+    public void deleteUserSuccessfullyIntegrationTest() {
+        User user = userService.createUser(getUserFormDto());
+        int before = userRepository.findAll().size();
+
+        userService.deleteUser(user.getUserId());
+
+        assertThat(userRepository.findAll().size()).isEqualTo(before - 1);
+        assertThatThrownBy(() -> userService.getUser(user.getUserId())).isInstanceOf(UserNotFoundException.class);
+    }
+
+    private UserFormDto getUserFormDto() {
+        UserFormDto dto = new UserFormDto();
+        dto.setFirstName(TEST_FIRST_NAME);
+        dto.setLastName(TEST_LAST_NAME);
+        dto.setPassword(TEST_PASSWORD);
+        dto.setUserName(TEST_USER_NAME);
+        dto.setBirthDate(TEST_BIRTH_DATE);
+        return dto;
+    }
+
 }

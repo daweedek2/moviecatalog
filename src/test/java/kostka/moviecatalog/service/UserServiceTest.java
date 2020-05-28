@@ -5,6 +5,7 @@ import kostka.moviecatalog.entity.Role;
 import kostka.moviecatalog.entity.User;
 import kostka.moviecatalog.exception.FutureBirthDateException;
 import kostka.moviecatalog.exception.UserNameNotUniqueException;
+import kostka.moviecatalog.exception.UserNotFoundException;
 import kostka.moviecatalog.repository.RoleRepository;
 import kostka.moviecatalog.repository.UserRepository;
 import org.junit.Test;
@@ -23,11 +24,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserServiceTest {
-
+    public static final Long TEST_ID = 555L;
     public static final String TEST_USERNAME = "test";
     public static final String TEST_PASSWORD = "pwd";
     public static final String BIRTH_DATE_STRING = "1990-02-01";
@@ -106,5 +108,12 @@ public class UserServiceTest {
 
         assertThat(isUserAdultCheck(adultUser)).isTrue();
         assertThat(isUserAdultCheck(youngUser)).isFalse();
+    }
+
+    @Test
+    public void getNonExistingUserThrowsExceptionTest() {
+        when(userRepository.findById(eq(TEST_ID))).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> userService.getUser(TEST_ID)).isInstanceOf(UserNotFoundException.class);
     }
 }

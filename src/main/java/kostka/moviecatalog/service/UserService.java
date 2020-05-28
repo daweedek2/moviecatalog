@@ -6,6 +6,7 @@ import kostka.moviecatalog.entity.Role;
 import kostka.moviecatalog.entity.User;
 import kostka.moviecatalog.exception.FutureBirthDateException;
 import kostka.moviecatalog.exception.UserNameNotUniqueException;
+import kostka.moviecatalog.exception.UserNotFoundException;
 import kostka.moviecatalog.repository.RoleRepository;
 import kostka.moviecatalog.repository.UserRepository;
 import org.slf4j.Logger;
@@ -111,5 +112,15 @@ public class UserService {
         LocalDate birthDate = user.getBirthDate();
 
         return birthDate.isBefore(LocalDate.now().minusYears(ADULTS_LIMIT));
+    }
+
+    public User getUser(final Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(UserNotFoundException::new);
+    }
+
+    public void deleteUser(final Long userId) {
+        LOGGER.info("Deleting user with id '{}'.", userId);
+        userRepository.delete(this.getUser(userId));
     }
 }
