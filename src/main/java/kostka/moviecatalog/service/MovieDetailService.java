@@ -49,7 +49,7 @@ public class MovieDetailService {
 
         List<Comment> comments = externalCommentService.getCommentsFromCommentService(movieId);
         List<Rating> ratings = externalRatingService.getRatingsFromRatingService(movieId);
-        Boolean isBoughtByUser = externalShopService.checkAlreadyBoughtMovieForUser(movieId, userId);
+        boolean isBoughtByUser = externalShopService.checkAlreadyBoughtMovieForUser(movieId, userId);
         LOGGER.info("Movie data are prepared.");
 
         return populateMovieDetail(movie, comments, ratings, isBoughtByUser);

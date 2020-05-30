@@ -8,8 +8,8 @@ import kostka.moviecatalog.entity.Order;
 import kostka.moviecatalog.entity.Rating;
 import kostka.moviecatalog.entity.User;
 import kostka.moviecatalog.security.CustomUserDetails;
-import kostka.moviecatalog.service.ExternalRatingService;
 import kostka.moviecatalog.service.ExternalCommentService;
+import kostka.moviecatalog.service.ExternalRatingService;
 import kostka.moviecatalog.service.ExternalShopService;
 import kostka.moviecatalog.service.MovieDetailService;
 import kostka.moviecatalog.service.rabbitmq.RabbitMqSender;
@@ -31,7 +31,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.validation.Valid;
 
 import static kostka.moviecatalog.controller.AdministrationController.INVALID_DTO;
-import static kostka.moviecatalog.service.UserService.isUserAdultCheck;
 
 @Controller
 @RequestMapping("/movies/detail")
@@ -39,7 +38,7 @@ public class MovieDetailController {
     public static final String MOVIE_DETAIL_VIEW = "detail";
     public static final String REDIRECT_MOVIE_DETAIL_VIEW = "redirect:/movies/detail/";
     public static final String MOVIE_DETAIL_ATTR = "movieDetail";
-    public static final String IS_USER_ADULT_ATTR = "isUserAdult";
+    public static final String IS_USER_ALLOWED_TO_BUY = "isAllowedToBuy";
     public static final String STATUS_ATTR = "status";
     public static final String COMMENT_DTO_ATTR = "commentDto";
     public static final String RATING_DTO_ATTR = "ratingDto";
@@ -172,7 +171,8 @@ public class MovieDetailController {
             final String status) {
         model.addAttribute(STATUS_ATTR, status);
         model.addAttribute(MOVIE_DETAIL_ATTR, movieDetailService.getMovieDetail(movieId, user.getUserId()));
-        model.addAttribute(IS_USER_ADULT_ATTR, isUserAdultCheck(user));
+        model.addAttribute(IS_USER_ALLOWED_TO_BUY,
+                externalShopService.isUserAllowedToBuyMovie(movieId, user.getUserId()));
         model.addAttribute(COMMENT_DTO_ATTR, new CommentDto());
         model.addAttribute(RATING_DTO_ATTR, new RatingDto());
     }
