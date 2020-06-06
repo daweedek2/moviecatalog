@@ -1,8 +1,8 @@
 package kostka.moviecatalog.builders;
 
-import kostka.moviecatalog.entity.Comment;
-import kostka.moviecatalog.entity.MovieDetail;
-import kostka.moviecatalog.entity.Rating;
+import kostka.moviecatalog.dto.CommentDetailDto;
+import kostka.moviecatalog.dto.MovieDetailDto;
+import kostka.moviecatalog.dto.RatingDetailDto;
 
 import java.util.List;
 
@@ -17,8 +17,8 @@ public class MovieDetailBuilder {
     private double averageRating;
     private boolean bought;
     private boolean forAdults;
-    private List<Comment> comments;
-    private List<Rating> ratings;
+    private List<CommentDetailDto> comments;
+    private List<RatingDetailDto> ratings;
 
     public MovieDetailBuilder() {
     }
@@ -58,18 +58,18 @@ public class MovieDetailBuilder {
         return this;
     }
 
-    public MovieDetailBuilder setComments(List<Comment> comments) {
+    public MovieDetailBuilder setComments(List<CommentDetailDto> comments) {
         this.comments = comments;
         return this;
     }
 
-    public MovieDetailBuilder setRatings(List<Rating> ratings) {
+    public MovieDetailBuilder setRatings(List<RatingDetailDto> ratings) {
         this.ratings = ratings;
         return this;
     }
 
-    public MovieDetail build() {
-        return new MovieDetail(movieId, name, director, description, averageRating,
+    public MovieDetailDto build() {
+        return new MovieDetailDto(movieId, name, director, description, averageRating,
                 bought, forAdults, comments, ratings);
     }
 }

@@ -11,18 +11,18 @@
 <body>
 <div th:insert="header/header :: header()"></div>
 <div class="container">
-<h2 class="header-panel" th:text="${movieDetail.name}"></h2>
-    <div th:if="${movieDetail.forAdults}">
-        <p class="alert-danger"><span th:text="${movieDetail.forAdults} ? 'Movie is only for adults!' : ''"></span></p>
+<h2 class="header-panel" th:text="${movieDetailDto.name}"></h2>
+    <div th:if="${movieDetailDto.forAdults}">
+        <p class="alert-danger"><span th:text="${movieDetailDto.forAdults} ? 'Movie is only for adults!' : ''"></span></p>
     </div>
-    <p class="text">Movie Id: <span th:text="${movieDetail.movieId}"></span></p>
-    <p class="text">Director: <span th:text="${movieDetail.director}"></span></p>
-    <p class="text">Description: <span th:text="${movieDetail.description}"></span></p>
-    <p class="text">Calculated Average Rating: <span th:text="${movieDetail.averageRating}"></span></p>
+    <p class="text">Movie Id: <span th:text="${movieDetailDto.movieId}"></span></p>
+    <p class="text">Director: <span th:text="${movieDetailDto.director}"></span></p>
+    <p class="text">Description: <span th:text="${movieDetailDto.description}"></span></p>
+    <p class="text">Calculated Average Rating: <span th:text="${movieDetailDto.averageRating}"></span></p>
     <p>
         <div th:if="${isAllowedToBuy}">
             <form action="#" th:action="@{/movies/detail/buy}" method="post">
-                <input type="hidden" name="movieId" id="id" th:value="${movieDetail.movieId}" />
+                <input type="hidden" name="movieId" id="id" th:value="${movieDetailDto.movieId}" />
             <button class="btn btn-info" type="submit" onclick="return confirm('Do you really want to buy this movie?')">
                 Buy Movie
             </button>
@@ -34,7 +34,7 @@
                 </div>
             </div>
         </div>
-        <div th:if="${movieDetail.bought}">
+        <div th:if="${movieDetailDto.bought}">
             <p class="alert-info">Movie is yours :)</p>
         </div>
     </p>
@@ -45,7 +45,7 @@
                 <h4 class="header-panel">New Comment</h4>
                 <form action="#" th:action="@{/movies/detail/comment/create}" th:object="${commentDto}" method="post">
                     <div class="form-group">
-                        <input type="hidden" name="movieId" id="movieId" th:value="${movieDetail.movieId}" />
+                        <input type="hidden" name="movieId" id="movieId" th:value="${movieDetailDto.movieId}" />
                     </div>
                     <div class="form-group">
                         <label for="commentText"> Text * : </label>
@@ -61,17 +61,17 @@
                     <thead>
                     <tr>
                         <th> Comment Id </th>
-                        <th> Author Id </th>
+                        <th> Author Name </th>
                         <th> Text </th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:if="${movieDetail.comments.empty}">
+                    <tr th:if="${movieDetailDto.comments.empty}">
                         <td colspan="2"> No Comments Available </td>
                     </tr>
-                    <tr th:each="comment : ${movieDetail.comments}">
+                    <tr th:each="comment : ${movieDetailDto.comments}">
                         <td><span th:text="${comment.commentId}"></span></td>
-                        <td><span th:text="${comment.movieId}"> </span></td>
+                        <td><span th:text="${comment.authorName}"> </span></td>
                         <td><span th:text="${comment.commentText}"> </span></td>
                     </tr>
                     </tbody>
@@ -85,7 +85,7 @@
                 <h4 class="header-panel">New Rating</h4>
                 <form action="#" th:action="@{/movies/detail/rating/create}" th:object="${ratingDto}" method="post">
                     <div class="form-group">
-                        <input type="hidden" name="id" id="id" th:value="${movieDetail.movieId}" />
+                        <input type="hidden" name="id" id="id" th:value="${movieDetailDto.movieId}" />
                     </div>
                     <div class="form-group">
                         <label for="ratingValue"> Rating Value * : </label>
@@ -101,17 +101,17 @@
                     <thead>
                     <tr>
                         <th> Rating Id </th>
-                        <th> Author Id </th>
+                        <th> Author Name </th>
                         <th> Value </th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:if="${movieDetail.ratings.empty}">
+                    <tr th:if="${movieDetailDto.ratings.empty}">
                         <td colspan="2"> No Ratings Available </td>
                     </tr>
-                    <tr th:each="rating : ${movieDetail.ratings}">
+                    <tr th:each="rating : ${movieDetailDto.ratings}">
                         <td><span th:text="${rating.ratingId}"></span></td>
-                        <td><span th:text="${rating.authorId}"> </span></td>
+                        <td><span th:text="${rating.authorName}"> </span></td>
                         <td><span th:text="${rating.ratingValue}"> </span></td>
                     </tr>
                     </tbody>

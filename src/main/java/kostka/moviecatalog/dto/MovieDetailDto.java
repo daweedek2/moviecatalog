@@ -1,11 +1,11 @@
-package kostka.moviecatalog.entity;
+package kostka.moviecatalog.dto;
 
 import java.util.List;
 
 /**
  * Stands for transferring data from BE to FE.
  */
-public class MovieDetail {
+public class MovieDetailDto {
     private Long movieId;
     private String name;
     private String director;
@@ -13,15 +13,15 @@ public class MovieDetail {
     private double averageRating;
     private boolean bought;
     private boolean forAdults;
-    private List<Comment> comments;
-    private List<Rating> ratings;
+    private List<CommentDetailDto> comments;
+    private List<RatingDetailDto> ratings;
 
-    public MovieDetail() {
+    public MovieDetailDto() {
     }
 
-    public MovieDetail(final Long movieId, final String name, final String director, final String description,
+    public MovieDetailDto(final Long movieId, final String name, final String director, final String description,
                        final double averageRating, final boolean bought, final boolean forAdults,
-                       final List<Comment> comments, final List<Rating> ratings) {
+                       final List<CommentDetailDto> comments, final List<RatingDetailDto> ratings) {
         this.movieId = movieId;
         this.name = name;
         this.director = director;
@@ -73,19 +73,19 @@ public class MovieDetail {
         this.averageRating = averageRating;
     }
 
-    public List<Comment> getComments() {
+    public List<CommentDetailDto> getComments() {
         return comments;
     }
 
-    public void setComments(final List<Comment> comments) {
+    public void setComments(final List<CommentDetailDto> comments) {
         this.comments = comments;
     }
 
-    public List<Rating> getRatings() {
+    public List<RatingDetailDto> getRatings() {
         return ratings;
     }
 
-    public void setRatings(final List<Rating> ratings) {
+    public void setRatings(final List<RatingDetailDto> ratings) {
         this.ratings = ratings;
     }
 

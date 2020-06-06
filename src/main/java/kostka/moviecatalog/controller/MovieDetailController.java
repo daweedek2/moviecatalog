@@ -37,7 +37,7 @@ import static kostka.moviecatalog.controller.AdministrationController.INVALID_DT
 public class MovieDetailController {
     public static final String MOVIE_DETAIL_VIEW = "detail";
     public static final String REDIRECT_MOVIE_DETAIL_VIEW = "redirect:/movies/detail/";
-    public static final String MOVIE_DETAIL_ATTR = "movieDetail";
+    public static final String MOVIE_DETAIL_ATTR = "movieDetailDto";
     public static final String IS_USER_ALLOWED_TO_BUY = "isAllowedToBuy";
     public static final String STATUS_ATTR = "status";
     public static final String COMMENT_DTO_ATTR = "commentDto";
