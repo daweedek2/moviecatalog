@@ -100,6 +100,7 @@ public class UserService {
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());
         dto.setBirthDate(user.getBirthDate());
+        dto.setBanned(user.isBanned());
         return dto;
     }
 
@@ -122,5 +123,22 @@ public class UserService {
     public void deleteUser(final Long userId) {
         LOGGER.info("Deleting user with id '{}'.", userId);
         userRepository.delete(this.getUser(userId));
+    }
+
+    public void banUser(final Long userId) {
+        LOGGER.info("Ban user with id '{}'.", userId);
+        this.banUser(userId, true);
+    }
+
+    public void unBanUser(final Long userId) {
+        LOGGER.info("Remove ban from user with id '{}'.", userId);
+        this.banUser(userId, false);
+    }
+
+    private void banUser(final Long userId, final boolean ban) {
+        LOGGER.info("Change ban status for user with id '{}' from '{}' to '{}'.", userId, !ban, ban);
+        User user = getUser(userId);
+        user.setBanned(ban);
+        userRepository.save(user);
     }
 }

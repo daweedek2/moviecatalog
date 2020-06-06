@@ -8,6 +8,7 @@ public final class UserListDto {
     private String lastName;
     private LocalDate birthDate;
     private String userName;
+    private boolean banned;
 
     public Long getUserId() {
         return userId;
@@ -47,5 +48,13 @@ public final class UserListDto {
 
     public void setUserName(final String userName) {
         this.userName = userName;
+    }
+
+    public boolean isBanned() {
+        return banned;
+    }
+
+    public void setBanned(final boolean banned) {
+        this.banned = banned;
     }
 }

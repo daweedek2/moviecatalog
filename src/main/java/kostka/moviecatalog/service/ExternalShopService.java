@@ -25,11 +25,14 @@ import static kostka.moviecatalog.service.UserService.isUserAdultCheck;
 
 @Service
 public class ExternalShopService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExternalShopService.class);
     public static final String SHOP_SERVICE_URL = "http://shop-service/order/";
     public static final String CREATE = "create";
     public static final String GET_USER_ORDERS = "user/";
     public static final String CHECK_ORDER = "checkOrder/";
+    public static final String USER_HAS_ALREADY_BOUGHT_THIS_MOVIE = "User has already bought this movie.";
+    public static final String USER_IS_TOO_YOUNG_TO_BUY_THIS_MOVIE = "User is too young to buy this movie.";
+    public static final String USER_IS_BANNED = "User is banned.";
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExternalShopService.class);
     private DbMovieService dbMovieService;
     private CommunicationService communicationService;
     private UserService userService;
@@ -101,8 +104,9 @@ public class ExternalShopService {
         try {
             validateUserAgeForMovie(movieId, userId);
             validateUserAlreadyBoughtMovie(movieId, userId);
+            validateUserBanned(userId);
         } catch (Exception e) {
-            LOGGER.info("User is not allowed", e);
+            LOGGER.warn(e.getMessage());
             return false;
         }
         return true;
@@ -112,15 +116,27 @@ public class ExternalShopService {
         Movie movie = dbMovieService.getMovie(movieId);
         User user =  userService.getUser(userId);
         if (movie.isForAdults() && !isUserAdultCheck(user)) {
-            LOGGER.info("User is too young to buy this movie");
-            throw new UserNotAllowedToBuyMovieException();
+            LOGGER.info(USER_IS_TOO_YOUNG_TO_BUY_THIS_MOVIE);
+            throw new UserNotAllowedToBuyMovieException(USER_IS_TOO_YOUNG_TO_BUY_THIS_MOVIE);
         }
     }
 
     public void validateUserAlreadyBoughtMovie(final Long movieId, final Long userId) {
         if (this.checkAlreadyBoughtMovieForUser(movieId, userId)) {
-            LOGGER.info("User has already bought this movie");
-            throw new UserNotAllowedToBuyMovieException();
+            LOGGER.info(USER_HAS_ALREADY_BOUGHT_THIS_MOVIE);
+            throw new UserNotAllowedToBuyMovieException(USER_HAS_ALREADY_BOUGHT_THIS_MOVIE);
         }
+    }
+
+    public void validateUserBanned(final Long userId) {
+        User user =  userService.getUser(userId);
+        if (isUserBanned(user)) {
+            LOGGER.info(USER_IS_BANNED);
+            throw new UserNotAllowedToBuyMovieException(USER_IS_BANNED);
+        }
+    }
+
+    public boolean isUserBanned(final User user) {
+        return user.isBanned();
     }
 }

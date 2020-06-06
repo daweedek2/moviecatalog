@@ -152,6 +152,32 @@ public class AdministrationController {
         return REDIRECT_ADMIN_VIEW;
     }
 
+    @GetMapping("/users/ban/{userId}")
+    public String banUser(final @PathVariable Long userId) {
+        LOGGER.info("ban user with id '{}' request", userId);
+
+        try {
+            userService.banUser(userId);
+        } catch (Exception e) {
+            LOGGER.error("User with id '{}' cannot be banned.", userId, e);
+        }
+        rabbitMqSender.sendRefreshAdminRequestToQueue();
+        return REDIRECT_ADMIN_VIEW;
+    }
+
+    @GetMapping("/users/unban/{userId}")
+    public String unBanUser(final @PathVariable Long userId) {
+        LOGGER.info("ban user with id '{}' request", userId);
+
+        try {
+            userService.unBanUser(userId);
+        } catch (Exception e) {
+            LOGGER.error("User with id '{}' cannot be unbanned.", userId, e);
+        }
+        rabbitMqSender.sendRefreshAdminRequestToQueue();
+        return REDIRECT_ADMIN_VIEW;
+    }
+
     private void addModelAttributes(final Model model, final String message) {
         model.addAttribute("movieDto", new MovieFormDto());
         model.addAttribute("userDto", new UserFormDto());
