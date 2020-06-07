@@ -1,5 +1,7 @@
 package kostka.moviecatalog.service;
 
+import kostka.moviecatalog.builders.MovieBuilder;
+import kostka.moviecatalog.builders.MovieDetailBuilder;
 import kostka.moviecatalog.entity.Comment;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.entity.MovieDetail;
@@ -43,8 +45,9 @@ public class MovieDetailService {
             movie = movieService.getMovie(movieId);
         } catch (MovieNotFoundException e) {
             LOGGER.error("Movie not with id '{}' not found", movieId, e);
-            movie = new Movie();
-            movie.setName("Movie does not exists  with this id: " + movieId);
+            movie = new MovieBuilder()
+                    .setName("Movie does not exists  with this id: " + movieId)
+                    .build();
         }
 
         List<Comment> comments = externalCommentService.getCommentsFromCommentService(movieId);
@@ -72,16 +75,16 @@ public class MovieDetailService {
                                             final List<Comment> comments,
                                             final List<Rating> ratings,
                                             final boolean isBoughtByUser) {
-        MovieDetail movieDetail = new MovieDetail();
-        movieDetail.setMovieId(movie.getId());
-        movieDetail.setName(movie.getName());
-        movieDetail.setDirector(movie.getDirector());
-        movieDetail.setDescription(movie.getDescription());
-        movieDetail.setAverageRating(movie.getAverageRating());
-        movieDetail.setComments(comments);
-        movieDetail.setRatings(ratings);
-        movieDetail.setBought(isBoughtByUser);
-        movieDetail.setForAdults(movie.isForAdults());
-        return movieDetail;
+        return new MovieDetailBuilder()
+                .setMovieId(movie.getId())
+                .setName(movie.getName())
+                .setDirector(movie.getDirector())
+                .setDescription(movie.getDescription())
+                .setAverageRating(movie.getAverageRating())
+                .setComments(comments)
+                .setRatings(ratings)
+                .setBought(isBoughtByUser)
+                .setForAdults(movie.isForAdults())
+                .build();
     }
 }
