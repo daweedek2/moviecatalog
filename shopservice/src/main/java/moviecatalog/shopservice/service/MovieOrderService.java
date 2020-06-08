@@ -102,4 +102,9 @@ public class MovieOrderService {
             final Long userId) {
         return this.getSpecificMovieOrder(movieId, userId) != null;
     }
+
+    public int getTotalOrdersCountForUser(
+            final Long userId) {
+        return movieOrderRepository.countByUserId(userId);
+    }
 }

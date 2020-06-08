@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>MovieDetail</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+</head>
+<body>
+<div th:insert="header/header :: header()"></div>
+<div class="container">
+<h2 class="header-panel" th:text="${userDetailDto.fullName}"></h2>
+    <p class="text">User Id: <span th:text="${userDetailDto.userId}"></span></p>
+    <p class="text">User Full name: <span th:text="${userDetailDto.fullName}"></span></p>
+    <p class="text">User Role: <span th:text="${userDetailDto.role}"></span></p>
+    <p class="text">Birth Date: <span th:text="${userDetailDto.birthDate}"></span></p>
+    <p class="text">Banned: <span th:text="${userDetailDto.banned}"></span></p>
+    <p class="text">Total bought movies: <span th:text="${userDetailDto.boughtMoviesCount}"></span></p>
+    <p class="text">Total comments saved: <span th:text="${userDetailDto.commentsCount}"></span></p>
+    <p class="text">Total ratings saved: <span th:text="${userDetailDto.ratingsCount}"></span></p>
+</div>
+</body>
+</html>

@@ -71,4 +71,10 @@ public class RatingController {
         LOGGER.info("get average rating for movie with id {}", movieId);
         return ratingService.getAverageRatingForMovie(movieId);
     }
+
+    @GetMapping("/count/{authorId}")
+    public int getTotalCountOfRatingForAuthor(final @PathVariable Long authorId) {
+        LOGGER.info("get total count of rating for user with id {}", authorId);
+        return ratingService.getTotalRatingCountForAuthor(authorId);
+    }
 }
