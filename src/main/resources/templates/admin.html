@@ -145,7 +145,14 @@
                     <td><span th:text="${user.birthDate}"></span></td>
                     <td><a href="#" class="button" th:href="@{/users/detail/{userId}(userId=${user.userId})}">Detail</a> ||
                         <a href="#" class="button" th:href="@{/admin/users/delete/{userId}(userId=${user.userId})}"
-                           onclick="return confirm('Do you really want to delete this user?')">Delete</a></td>
+                           onclick="return confirm('Do you really want to delete this user?')">Delete</a> ||
+                        <div th:unless="${user.banned}">
+                            <a href="#" class="button" th:href="@{/admin/users/ban/{userId}(userId=${user.userId})}">Ban</a>
+                        </div>
+                        <div th:if="${user.banned}">
+                            <a href="#" class="button" th:href="@{/admin/users/unban/{userId}(userId=${user.userId})}">UnBan</a>
+                        </div>
+                    </td>
                 </tr>
                 </tbody>
             </table>

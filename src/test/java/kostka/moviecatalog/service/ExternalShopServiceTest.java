@@ -209,16 +209,38 @@ public class ExternalShopServiceTest {
 
     }
 
+    @Test
+    public void buyNormalMovieByBannedUserTest() {
+        OrderDto dto = createOrderDto();
+        Movie movie = createNormalMovie();
+        User bannedUser = createBannedUser();
+        when(userService.getUser(any())).thenReturn(bannedUser);
+        when(dbMovieService.getMovie(any())).thenReturn(movie);
+
+        Order result = externalShopService.buyMovieInShopService(dto);
+
+        assertThat(result).isNull();
+    }
+
     private User createAdultUser() {
         User adultUser = new User();
         adultUser.setBirthDate(LocalDate.now().minusYears(19));
+        adultUser.setBanned(false);
         return adultUser;
     }
 
     private User createYoungUser() {
         User youngUser = new User();
         youngUser.setBirthDate(LocalDate.now().minusYears(17));
+        youngUser.setBanned(false);
         return youngUser;
+    }
+
+    private User createBannedUser() {
+        User user = new User();
+        user.setBanned(true);
+        user.setBirthDate(LocalDate.now().minusYears(17));
+        return user;
     }
 
     private Movie createAdultMovie() {

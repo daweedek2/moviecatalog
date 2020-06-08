@@ -28,6 +28,7 @@ public class User implements Serializable {
 
     private String firstName;
     private String lastName;
+    private boolean banned = false;
 
     @ManyToMany(cascade = CascadeType.DETACH, fetch = FetchType.EAGER)
     @JoinTable(name = "user_role",
@@ -89,5 +90,13 @@ public class User implements Serializable {
 
     public void setLastName(final String lastName) {
         this.lastName = lastName;
+    }
+
+    public boolean isBanned() {
+        return banned;
+    }
+
+    public void setBanned(final boolean banned) {
+        this.banned = banned;
     }
 }
