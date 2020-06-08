@@ -15,8 +15,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import static kostka.moviecatalog.service.ExternalCommentService.DEFAULT_ID;
-
 /**
  * Service which communicates with external microservice (RatingService) via rest template.
  */
@@ -73,13 +71,8 @@ public class ExternalRatingService {
      * @return default list of one rating with default values.
      */
     public List<Rating> getRatingsFromRatingServiceFallback(final Long movieId) {
-        LOGGER.info("Rating Service is down - return default rating List.");
-        Rating randomRating = new Rating();
-        randomRating.setMovieId(movieId);
-        randomRating.setRatingId(DEFAULT_ID);
-        randomRating.setRatingValue(0);
-        randomRating.setAuthorId(DEFAULT_ID);
-        return Collections.singletonList(randomRating);
+        LOGGER.info("Rating Service is down - return empty rating List.");
+        return Collections.emptyList();
     }
 
     /**
