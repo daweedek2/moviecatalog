@@ -71,7 +71,11 @@
                     </tr>
                     <tr th:each="comment : ${movieDetailDto.comments}">
                         <td><span th:text="${comment.commentId}"></span></td>
-                        <td><span th:text="${comment.authorName}"> </span></td>
+                        <td>
+                            <a href="#" class="button" th:href="@{/users/detail/{userId}(userId=${comment.userId})}">
+                                <span th:text="${comment.authorName}">Full name</span>
+                            </a>
+                        </td>
                         <td><span th:text="${comment.commentText}"> </span></td>
                     </tr>
                     </tbody>
@@ -111,7 +115,11 @@
                     </tr>
                     <tr th:each="rating : ${movieDetailDto.ratings}">
                         <td><span th:text="${rating.ratingId}"></span></td>
-                        <td><span th:text="${rating.authorName}"> </span></td>
+                        <td>
+                            <a href="#" class="button" th:href="@{/users/detail/{userId}(userId=${rating.userId})}">
+                                <span th:text="${rating.authorName}">Full name</span>
+                            </a>
+                        </td>
                         <td><span th:text="${rating.ratingValue}"> </span></td>
                     </tr>
                     </tbody>
