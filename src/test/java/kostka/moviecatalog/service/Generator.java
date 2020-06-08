@@ -1,5 +1,6 @@
 package kostka.moviecatalog.service;
 
+import kostka.moviecatalog.builders.MovieBuilder;
 import kostka.moviecatalog.dto.MovieFormDto;
 import kostka.moviecatalog.dto.RatingDto;
 import kostka.moviecatalog.entity.EsMovie;
@@ -12,9 +13,9 @@ public class Generator {
     private static final String TEST_NAME = "TestMovieName";
 
     public Movie createMovieWithName(final String name) {
-        Movie movie = new Movie();
-        movie.setName(name);
-        return movie;
+        return new MovieBuilder()
+                .setName(name)
+                .build();
     }
 
     public MovieFormDto createValidMovieFormDto(final String name) {

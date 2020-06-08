@@ -19,17 +19,18 @@ public class MovieDetail {
     public MovieDetail() {
     }
 
-    public MovieDetail(final Long movieId, final String name, final String director,
-                       final String description, final double averageRating, final List<Comment> comments,
-                       final List<Rating> ratings, final boolean bought) {
+    public MovieDetail(final Long movieId, final String name, final String director, final String description,
+                       final double averageRating, final boolean bought, final boolean forAdults,
+                       final List<Comment> comments, final List<Rating> ratings) {
         this.movieId = movieId;
         this.name = name;
         this.director = director;
         this.description = description;
         this.averageRating = averageRating;
+        this.bought = bought;
+        this.forAdults = forAdults;
         this.comments = comments;
         this.ratings = ratings;
-        this.bought = bought;
     }
 
     public Long getMovieId() {

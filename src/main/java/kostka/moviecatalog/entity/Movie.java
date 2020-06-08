@@ -32,6 +32,18 @@ public class Movie {
     public Movie() {
     }
 
+    public Movie(final Long id, final String name, final String director, final String camera, final String music,
+                 final String description, final double averageRating, final boolean forAdults) {
+        this.id = id;
+        this.name = name;
+        this.director = director;
+        this.camera = camera;
+        this.music = music;
+        this.description = description;
+        this.averageRating = averageRating;
+        this.forAdults = forAdults;
+    }
+
     public Long getId() {
         return id;
     }

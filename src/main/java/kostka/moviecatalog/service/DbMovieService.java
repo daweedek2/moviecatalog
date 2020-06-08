@@ -1,5 +1,6 @@
 package kostka.moviecatalog.service;
 
+import kostka.moviecatalog.builders.MovieBuilder;
 import kostka.moviecatalog.dto.MovieFormDto;
 import kostka.moviecatalog.dto.MovieListDto;
 import kostka.moviecatalog.entity.EsMovie;
@@ -113,14 +114,14 @@ public class DbMovieService {
     }
 
     private Movie populateMovie(final MovieFormDto dto) {
-        Movie movie = new Movie();
-        movie.setName(dto.getName());
-        movie.setDescription(dto.getDescription());
-        movie.setDirector(dto.getDirector());
-        movie.setMusic(dto.getMusic());
-        movie.setCamera(dto.getCamera());
-        movie.setForAdults(dto.isForAdults());
-        return movie;
+        return new MovieBuilder()
+                .setName(dto.getName())
+                .setDescription(dto.getDescription())
+                .setDirector(dto.getDirector())
+                .setMusic(dto.getMusic())
+                .setCamera(dto.getCamera())
+                .setForAdults(dto.isForAdults())
+                .build();
     }
 
     public MovieListDto fillMovieListDtoWithData(final Movie movie) {

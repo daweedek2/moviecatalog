@@ -1,5 +1,6 @@
 package kostka.moviecatalog.service;
 
+import kostka.moviecatalog.builders.MovieBuilder;
 import kostka.moviecatalog.dto.OrderDto;
 import kostka.moviecatalog.entity.Movie;
 import kostka.moviecatalog.entity.Order;
@@ -244,15 +245,15 @@ public class ExternalShopServiceTest {
     }
 
     private Movie createAdultMovie() {
-        Movie adultMovie = new Movie();
-        adultMovie.setForAdults(true);
-        return adultMovie;
+        return new MovieBuilder()
+                .setForAdults(true)
+                .build();
     }
 
     private Movie createNormalMovie() {
-        Movie movie = new Movie();
-        movie.setForAdults(false);
-        return movie;
+        return new MovieBuilder()
+                .setForAdults(false)
+                .build();
     }
 
     private OrderDto createOrderDto() {
