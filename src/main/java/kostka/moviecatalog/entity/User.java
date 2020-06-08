@@ -99,4 +99,13 @@ public class User implements Serializable {
     public void setBanned(final boolean banned) {
         this.banned = banned;
     }
+
+    public String getFullName() {
+        String name = firstName == null ? "" : firstName;
+        String surname = lastName == null ? "" : lastName;
+        if (name.equals("") && surname.equals("")) {
+            return username;
+        }
+        return name + " " + surname;
+    }
 }
