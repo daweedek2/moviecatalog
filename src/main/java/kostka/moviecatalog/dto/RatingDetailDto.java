@@ -7,11 +7,13 @@ public class RatingDetailDto {
     private Long ratingId;
     private int ratingValue;
     private String authorName;
+    private Long userId;
 
-    public RatingDetailDto(final Long ratingId, final int ratingValue, final String authorName) {
+    public RatingDetailDto(final Long ratingId, final int ratingValue, final String authorName, final Long userId) {
         this.ratingId = ratingId;
         this.ratingValue = ratingValue;
         this.authorName = authorName;
+        this.userId = userId;
     }
 
     public Long getRatingId() {
@@ -36,5 +38,13 @@ public class RatingDetailDto {
 
     public void setAuthorName(final String authorName) {
         this.authorName = authorName;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(final Long userId) {
+        this.userId = userId;
     }
 }

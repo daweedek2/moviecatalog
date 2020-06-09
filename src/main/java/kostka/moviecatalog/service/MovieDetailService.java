@@ -103,7 +103,8 @@ public class MovieDetailService {
 
     private CommentDetailDto getCommentDtoForMovieDetail(final Comment comment) {
         User user = userService.getUser(comment.getAuthorId());
-        return new CommentDetailDto(comment.getCommentId(), user.getFullName(), comment.getCommentText());
+        return new CommentDetailDto(comment.getCommentId(), user.getFullName(),
+                comment.getCommentText(), user.getUserId());
     }
 
     private List<RatingDetailDto> getRatingDtoListForMovieDetail(final List<Rating> ratings) {
@@ -114,6 +115,7 @@ public class MovieDetailService {
 
     private RatingDetailDto getRatingDtoForMovieDetail(final Rating rating) {
         User user = userService.getUser(rating.getAuthorId());
-        return new RatingDetailDto(rating.getRatingId(), rating.getRatingValue(), user.getFullName());
+        return new RatingDetailDto(rating.getRatingId(), rating.getRatingValue(),
+                user.getFullName(), user.getUserId());
     }
 }
