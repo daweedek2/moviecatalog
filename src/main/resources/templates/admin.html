@@ -10,9 +10,9 @@
 </head>
 <body>
 <div th:insert="header/header :: header()"></div>
-<div class="container" th:if="${status} != ''">
+<div class="container" th:if="${error} != ''">
     <div class="alert-danger">
-        <p th:utext="${status}"></p>
+        <p th:utext="${error}"></p>
     </div>
 </div>
 

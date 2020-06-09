@@ -3,7 +3,6 @@ package kostka.moviecatalog.controller;
 import kostka.moviecatalog.dto.MovieFormDto;
 import kostka.moviecatalog.dto.UserFormDto;
 import kostka.moviecatalog.entity.Movie;
-import kostka.moviecatalog.exception.InvalidDtoException;
 import kostka.moviecatalog.service.CacheService;
 import kostka.moviecatalog.service.DbMovieService;
 import kostka.moviecatalog.service.UserService;
@@ -15,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,7 +31,7 @@ import static kostka.moviecatalog.service.rabbitmq.RabbitMqReceiver.ALL_MOVIES_K
 public class AdministrationController {
     public static final String ADMIN_VIEW = "admin";
     public static final String REDIRECT_ADMIN_VIEW = "redirect:/admin";
-    public static final String ERROR = "status";
+    public static final String ERROR = "error";
     public static final String INVALID_DTO = "Required fields are empty.";
     public static final String SUCCESS = "success";
     public static final String ALL_USERS_ATTR = "allUsers";
@@ -57,7 +57,7 @@ public class AdministrationController {
 
     @GetMapping()
     public String viewAdmin(final Model model) {
-        addModelAttributes(model, "");
+        addModelAttributes(model);
         return ADMIN_VIEW;
     }
 
@@ -75,20 +75,15 @@ public class AdministrationController {
         redisService.incrementGeneralCounterWithLockCheck();
 
         if (bindingResult.hasErrors()) {
-            addModelAttributes(model, INVALID_DTO);
+            addModelAttributes(model);
+            model.addAttribute(ERROR, INVALID_DTO);
             return ADMIN_VIEW;
         }
 
-        try {
-            Movie movie = dbMovieService.createMovie(dto);
-            rabbitMqSender.sendToCreateElasticQueue(movie.getId().toString());
-            rabbitMqSender.sendUpdateRequestToQueue();
-            rabbitMqSender.sendRefreshAdminRequestToQueue();
-        } catch (InvalidDtoException e) {
-            LOGGER.error("Creation of movie failed", e);
-            addModelAttributes(model, "Movie cannot be created.");
-            return ADMIN_VIEW;
-        }
+        Movie movie = dbMovieService.createMovie(dto);
+        rabbitMqSender.sendToCreateElasticQueue(movie.getId().toString());
+        rabbitMqSender.sendUpdateRequestToQueue();
+        rabbitMqSender.sendRefreshAdminRequestToQueue();
         redirectAttributes.addFlashAttribute(SUCCESS, "Comment is successfully created.");
         return REDIRECT_ADMIN_VIEW;
     }
@@ -101,14 +96,10 @@ public class AdministrationController {
     public String deleteMovie(final @PathVariable Long movieId) {
         LOGGER.info("delete movie with id '{}' request", movieId);
 
-        try {
-            dbMovieService.deleteMovie(movieId);
-            rabbitMqSender.sendToDeleteElasticQueue(movieId.toString());
-            rabbitMqSender.sendUpdateRequestToQueue();
-            rabbitMqSender.sendRefreshAdminRequestToQueue();
-        } catch (Exception e) {
-            LOGGER.error("Movie with id '{}' cannot be deleted.", movieId, e);
-        }
+        dbMovieService.deleteMovie(movieId);
+        rabbitMqSender.sendToDeleteElasticQueue(movieId.toString());
+        rabbitMqSender.sendUpdateRequestToQueue();
+        rabbitMqSender.sendRefreshAdminRequestToQueue();
         return REDIRECT_ADMIN_VIEW;
     }
 
@@ -120,19 +111,15 @@ public class AdministrationController {
         LOGGER.info("create user request");
 
         if (bindingResult.hasErrors()) {
-            addModelAttributes(model, INVALID_DTO);
+            addModelAttributes(model);
+            model.addAttribute(ERROR, INVALID_DTO);
             return ADMIN_VIEW;
         }
 
-        try {
-            userService.createUser(dto);
-            rabbitMqSender.sendRefreshAdminRequestToQueue();
-            redirectAttributes.addFlashAttribute(SUCCESS, "User is successfully created.");
-            return REDIRECT_ADMIN_VIEW;
-        } catch (Exception e) {
-            LOGGER.error("Creation of user failed.", e);
-            return ADMIN_VIEW;
-        }
+        userService.createUser(dto);
+        rabbitMqSender.sendRefreshAdminRequestToQueue();
+        redirectAttributes.addFlashAttribute(SUCCESS, "User is successfully created.");
+        return REDIRECT_ADMIN_VIEW;
     }
 
     /**
@@ -143,11 +130,7 @@ public class AdministrationController {
     public String deleteUser(final @PathVariable Long userId) {
         LOGGER.info("delete user with id '{}' request", userId);
 
-        try {
-            userService.deleteUser(userId);
-        } catch (Exception e) {
-            LOGGER.error("User with id '{}' cannot be deleted.", userId, e);
-        }
+        userService.deleteUser(userId);
         rabbitMqSender.sendRefreshAdminRequestToQueue();
         return REDIRECT_ADMIN_VIEW;
     }
@@ -156,11 +139,7 @@ public class AdministrationController {
     public String banUser(final @PathVariable Long userId) {
         LOGGER.info("ban user with id '{}' request", userId);
 
-        try {
-            userService.banUser(userId);
-        } catch (Exception e) {
-            LOGGER.error("User with id '{}' cannot be banned.", userId, e);
-        }
+        userService.banUser(userId);
         rabbitMqSender.sendRefreshAdminRequestToQueue();
         return REDIRECT_ADMIN_VIEW;
     }
@@ -169,20 +148,29 @@ public class AdministrationController {
     public String unBanUser(final @PathVariable Long userId) {
         LOGGER.info("ban user with id '{}' request", userId);
 
-        try {
-            userService.unBanUser(userId);
-        } catch (Exception e) {
-            LOGGER.error("User with id '{}' cannot be unbanned.", userId, e);
-        }
+        userService.unBanUser(userId);
         rabbitMqSender.sendRefreshAdminRequestToQueue();
         return REDIRECT_ADMIN_VIEW;
     }
 
-    private void addModelAttributes(final Model model, final String message) {
+    private void addModelAttributes(final Model model) {
         model.addAttribute("movieDto", new MovieFormDto());
         model.addAttribute("userDto", new UserFormDto());
         model.addAttribute(ALL_MOVIES_KEY, cacheService.getMoviesFromCacheWithKey(ALL_MOVIES_KEY));
         model.addAttribute(ALL_USERS_ATTR, userService.getAllUsers());
-        model.addAttribute(ERROR, message);
+    }
+
+    /**
+     * In case the exception is thrown during execution controllers method, log this error and print it
+     * and display in the UI.
+     * @param e holds the caught exception.
+     * @param redirectAttributes attributes which holds the message for displaying to UI.
+     * @return redirect to admin view.
+     */
+    @ExceptionHandler(value = Exception.class)
+    public String administratorExceptionHandler(final Exception e, RedirectAttributes redirectAttributes) {
+        LOGGER.error(e.getMessage(), e);
+        redirectAttributes.addFlashAttribute(ERROR, e.getMessage());
+        return REDIRECT_ADMIN_VIEW;
     }
 }
