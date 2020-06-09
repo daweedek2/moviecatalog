@@ -19,7 +19,7 @@ import java.util.Objects;
  */
 @Service
 public class ExternalCommentService {
-    public static final long DEFAULT_ID = 999L;
+    public static final long DEFAULT_ID = 201L;
     private static final Logger LOGGER = LoggerFactory.getLogger(ExternalCommentService.class);
     private static final String COMMENT_SERVICE_URL = "http://comment-service/comments/";
     private static final String COUNT = "count/";
@@ -44,9 +44,8 @@ public class ExternalCommentService {
     }
 
     public List<Comment> getCommentsFromCommentServiceFallback(final Long movieId) {
-        LOGGER.warn("Comment service is down - return default list of comments.");
-        Comment defaultComment = getDefaultComment(movieId);
-        return Collections.singletonList(defaultComment);
+        LOGGER.warn("Comment service is down - return empty list of comments.");
+        return Collections.emptyList();
     }
 
     @HystrixCommand(fallbackMethod = "createCommentInCommentServiceFallback")

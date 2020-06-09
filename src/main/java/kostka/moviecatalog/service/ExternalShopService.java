@@ -83,10 +83,7 @@ public class ExternalShopService {
     }
 
     public List<MovieListDto> getAlreadyBoughtMoviesForUserFallback(final Long userId) {
-        MovieListDto movieList = new MovieListDto();
-        movieList.setId(DEFAULT_ID);
-        movieList.setDescription("Shop Service is down");
-        return Collections.singletonList(movieList);
+        return Collections.emptyList();
     }
 
     @HystrixCommand(fallbackMethod = "checkAlreadyBoughtMovieForUserFallback")
