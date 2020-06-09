@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -69,12 +70,13 @@ public class UserController {
     @GetMapping("randomMovie")
     public String getRandomMovieDetail(final Model model) {
         LOGGER.info("getting random movie detail page");
-        try {
-           Long randomMovieId = randomMovieService.getRandomMovieIdFromAllMovies();
-           return REDIRECT_MOVIE_DETAIL_VIEW + randomMovieId;
-        } catch (NoMoviesInDbException e) {
-            LOGGER.error("Cannot generate Random movie", e);
-            return REDIRECT_TO_ALL_MOVIES;
-        }
+        Long randomMovieId = randomMovieService.getRandomMovieIdFromAllMovies();
+        return REDIRECT_MOVIE_DETAIL_VIEW + randomMovieId;
+    }
+
+    @ExceptionHandler(value = NoMoviesInDbException.class)
+    public String userControllerHandler(final Exception e) {
+        LOGGER.error("No Movies in DB, redirecting to all movies page.");
+        return REDIRECT_TO_ALL_MOVIES;
     }
 }
