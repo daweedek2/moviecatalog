@@ -27,15 +27,14 @@
                 Buy Movie
             </button>
             </form>
-
-            <div class="container" th:if="${status} != ''">
-                <div class="alert-info">
-                    <p th:utext="${status}"></p>
-                </div>
-            </div>
         </div>
         <div th:if="${movieDetailDto.bought}">
             <p class="alert-info">Movie is yours :)</p>
+        </div>
+        <div class="container" th:if="${status} != ''">
+            <div class="alert-info">
+                <p th:utext="${status}"></p>
+            </div>
         </div>
     </p>
 

@@ -76,7 +76,7 @@ public class MovieDetailController {
             final @PathVariable Long movieId,
             final @AuthenticationPrincipal CustomUserDetails user,
             final Model model) {
-        addMovieDetailModelAttributes(movieId, user.getUser(), model, "");
+        addMovieDetailModelAttributes(movieId, user.getUser(), model);
         return MOVIE_DETAIL_VIEW;
     }
 
@@ -84,25 +84,26 @@ public class MovieDetailController {
     public String buyMovie(
             final @RequestParam("movieId") Long movieId,
             final @AuthenticationPrincipal CustomUserDetails user,
+            final RedirectAttributes redirectAttributes,
             final Model model) {
-        User currentUser = user.getUser();
         OrderDto dto = new OrderDto();
         dto.setMovieId(movieId);
         dto.setUserId(user.getUserId());
         Order order = externalShopService.buyMovieInShopService(dto);
 
         if (order == null) {
-            addMovieDetailModelAttributes(movieId, currentUser, model, "Cannot buy movie.");
-            return MOVIE_DETAIL_VIEW;
+            redirectAttributes.addFlashAttribute(
+                    STATUS_ATTR,
+                    "Cannot buy the movie.");
+            return REDIRECT_MOVIE_DETAIL_VIEW + movieId;
         }
 
         if (order.getId() == null) {
-            addMovieDetailModelAttributes(movieId, currentUser, model,
+            redirectAttributes.addFlashAttribute(
+                    STATUS_ATTR,
                     "Shop service is down. Movie is not bought");
-            return MOVIE_DETAIL_VIEW;
+            return REDIRECT_MOVIE_DETAIL_VIEW + movieId;
         }
-
-        addMovieDetailModelAttributes(movieId, currentUser, model, "Movie is successfully bought.");
         return REDIRECT_MOVIE_DETAIL_VIEW + movieId;
     }
 
@@ -113,25 +114,26 @@ public class MovieDetailController {
                                final RedirectAttributes redirectAttributes,
                                final Model model) {
         LOGGER.info("create rating request");
-        User currentUser = user.getUser();
         dto.setAuthorId(user.getUserId());
 
         if (bindingResult.hasErrors()) {
-            addMovieDetailModelAttributes(dto.getId(), currentUser, model, INVALID_DTO);
-            return MOVIE_DETAIL_VIEW;
+            redirectAttributes.addFlashAttribute(
+                    STATUS_ATTR,
+                    INVALID_DTO);
+            return REDIRECT_MOVIE_DETAIL_VIEW + dto.getId();
         }
 
         Rating createdRating = externalRatingService.createRatingInRatingService(dto);
         if (createdRating.getRatingId() == null) {
             LOGGER.info("Rating service is down.");
-            addMovieDetailModelAttributes(dto.getId(), currentUser, model,
+            redirectAttributes.addFlashAttribute(
+                    STATUS_ATTR,
                     "Rating is not created. RatingService is down.");
-            return MOVIE_DETAIL_VIEW;
+            return REDIRECT_MOVIE_DETAIL_VIEW + dto.getId();
         }
 
         rabbitMqSender.sendToSetAverageRatingForSingleMovie(dto.getId().toString());
         rabbitMqSender.sendRefreshMovieDetailRequestToQueue();
-        redirectAttributes.addFlashAttribute(STATUS_ATTR, "Rating is successfully created.");
         return REDIRECT_MOVIE_DETAIL_VIEW + dto.getId();
     }
 
@@ -142,34 +144,33 @@ public class MovieDetailController {
                                 final RedirectAttributes redirectAttributes,
                                 final Model model) {
         LOGGER.info("create comment request");
-        User currentUser = user.getUser();
         dto.setAuthorId(user.getUserId());
 
         if (bindingResult.hasErrors()) {
-            addMovieDetailModelAttributes(dto.getMovieId(), currentUser, model, INVALID_DTO);
-            return MOVIE_DETAIL_VIEW;
+            redirectAttributes.addFlashAttribute(
+                    STATUS_ATTR,
+                    INVALID_DTO);
+            return REDIRECT_MOVIE_DETAIL_VIEW + dto.getMovieId();
         }
 
         Comment createdComment = externalCommentService.createCommentInCommentService(dto);
         if (createdComment.getCommentId() == null) {
             LOGGER.info("Comment service is down.");
-            addMovieDetailModelAttributes(dto.getMovieId(), currentUser, model,
+            redirectAttributes.addFlashAttribute(
+                    STATUS_ATTR,
                     "Comment is not created. CommentService is down.");
-            return MOVIE_DETAIL_VIEW;
+            return REDIRECT_MOVIE_DETAIL_VIEW + dto.getMovieId();
         }
 
         rabbitMqSender.sendRefreshMovieDetailRequestToQueue();
         rabbitMqSender.sendUpdateRequestToQueue();
-        redirectAttributes.addFlashAttribute(STATUS_ATTR, "Comment is successfully created.");
         return REDIRECT_MOVIE_DETAIL_VIEW + dto.getMovieId();
     }
 
     private void addMovieDetailModelAttributes(
             final Long movieId,
             final User user,
-            final Model model,
-            final String status) {
-        model.addAttribute(STATUS_ATTR, status);
+            final Model model) {
         model.addAttribute(MOVIE_DETAIL_ATTR, movieDetailService.getMovieDetail(movieId, user.getUserId()));
         model.addAttribute(IS_USER_ALLOWED_TO_BUY,
                 externalShopService.isUserAllowedToBuyMovie(movieId, user.getUserId()));
