@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>MovieAdmin</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="/sockjs.js"></script>
     <script src="/stomp.js"></script>
     <script src="/adminScript.js"></script>
@@ -83,6 +84,22 @@
                     <p class="error" th:if="${#fields.hasErrors('birthDate')}" th:errors="*{birthDate}" style="color: red">BirthDate error.</p>
                 </div>
                 <button class="arrow-button" type="submit">Create</button>
+            </form>
+        </div>
+        <div class="col-sm">
+            <h4 class="header-panel" style="text-align: center">Runtime Configurations</h4>
+            <br>
+            <form>
+                <select id="configType" name="configType">
+                    <option th:each="type : ${T(kostka.moviecatalog.enumeration.RuntimeConfigurationEnum).values()}"
+                            th:value="${type}" th:text="${type.getName()}"></option>
+                </select>
+                <div id="visible_movies">
+                    <p>Limit:
+                        <input type="number" name="limit" id="limit">
+                    </p>
+                </div>
+                <button class="arrow-button" onclick="updateRuntimeConfig()">Update</button>
             </form>
         </div>
     </div>

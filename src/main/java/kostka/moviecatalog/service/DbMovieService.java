@@ -147,6 +147,6 @@ public class DbMovieService {
                 .getRuntimeConfigurationOptions(VISIBLE_MOVIES);
         int limit = options.getLimit();
         LOGGER.info("max visible movies limit is {}", limit);
-        return options.getLimit();
+        return limit;
     }
 }
