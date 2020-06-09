@@ -56,4 +56,10 @@ public class ShopController {
             final @PathVariable("userId") Long userId) {
         return movieOrderService.isOrderAlreadyCreated(movieId, userId);
     }
+
+    @GetMapping("/user/count/{userId}")
+    public int getTotalCountOfBoughtMoviesForUser(final @PathVariable Long userId) {
+        LOGGER.info("get total movies bought by user with id '{}'", userId);
+        return movieOrderService.getTotalOrdersCountForUser(userId);
+    }
 }

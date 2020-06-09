@@ -26,6 +26,7 @@ public class ExternalRatingService {
     private static final String RATING_SERVICE_URL = "http://rating-service/rating/";
     private static final String GET_AVERAGE = "average/";
     private static final String CREATE = "create";
+    private static final String COUNT = "count/";
     private DbMovieService dbMovieService;
     private CommunicationService communicationService;
 
@@ -101,5 +102,18 @@ public class ExternalRatingService {
     public Rating createRatingInRatingServiceFallback(final RatingDto dto) {
         LOGGER.warn("RatingService is down, default rating is returned.");
         return new Rating();
+    }
+
+    @HystrixCommand(fallbackMethod = "getRatingsByUserCountFallback")
+    public int getRatingsByUserCount(final Long userId) {
+        LOGGER.info("Getting count of all ratings by user with id '{}'.", userId);
+        return communicationService.sendGetRequest(
+                RATING_SERVICE_URL + COUNT + userId,
+                int.class);
+    }
+
+    public int getRatingsByUserCountFallback(final Long userId) {
+        LOGGER.warn("RatingService is down, default count is returned.");
+        return (int) DEFAULT_ID;
     }
 }

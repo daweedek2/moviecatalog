@@ -62,4 +62,8 @@ public class RatingService {
                 .orElse(0.0));
         return averageRating;
     }
+
+    public int getTotalRatingCountForAuthor(final Long authorId) {
+        return ratingRepository.countByAuthorId(authorId);
+    }
 }

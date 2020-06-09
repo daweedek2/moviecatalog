@@ -57,4 +57,19 @@ public class RatingServiceIntegrationTest {
         assertThat(result).contains(rating1, rating2);
         assertThat(result).doesNotContain(rating3);
     }
+
+    @Test
+    public void getRatingsCountForUserIntegrationTest() {
+        RatingDto dto1 = new RatingDto(TEST_ID_1, TEST_ID_2, TEST_VALID_RATING);
+        RatingDto dto2 = new RatingDto(TEST_ID_1, TEST_ID_2, TEST_VALID_RATING);
+        RatingDto dto3 = new RatingDto(TEST_ID_2, TEST_ID_1, TEST_VALID_RATING);
+
+        Rating rating1 = ratingService.createRating(dto1);
+        Rating rating2 = ratingService.createRating(dto2);
+        Rating rating3 = ratingService.createRating(dto3);
+
+        int result = ratingService.getTotalRatingCountForAuthor(TEST_ID_2);
+
+        assertThat(result).isEqualTo(2);
+    }
 }

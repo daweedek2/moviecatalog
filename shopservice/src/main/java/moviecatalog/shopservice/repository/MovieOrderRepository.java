@@ -10,4 +10,5 @@ import java.util.List;
 public interface MovieOrderRepository extends JpaRepository<Order, Long> {
     Order findByMovieIdAndUserId(Long movieId, Long userId);
     List<Order> findAllByUserId(Long userId);
+    int countByUserId(Long userId);
 }

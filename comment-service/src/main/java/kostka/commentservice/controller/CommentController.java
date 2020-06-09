@@ -74,4 +74,10 @@ public class CommentController {
         movieComments.setComments(commentService.getLatest5Comments());
         return movieComments;
     }
+
+    @GetMapping("/count/{authorId}")
+    public int getTotalCommentsForAuthor(@PathVariable final Long authorId) {
+        LOGGER.info("getting comments count for user with id {}", authorId);
+        return commentService.getTotalCommentsForAuthor(authorId);
+    }
 }

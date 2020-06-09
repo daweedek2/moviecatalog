@@ -22,6 +22,7 @@ public class ExternalCommentService {
     public static final long DEFAULT_ID = 999L;
     private static final Logger LOGGER = LoggerFactory.getLogger(ExternalCommentService.class);
     private static final String COMMENT_SERVICE_URL = "http://comment-service/comments/";
+    private static final String COUNT = "count/";
     private static final String GET_LATEST5 = "latest5";
     private static final String CREATE = "create";
 
@@ -71,6 +72,19 @@ public class ExternalCommentService {
     public List<Comment> getLatest5CommentsFallback() {
         LOGGER.warn("CommentService is down, default comment is returned.");
         return Collections.singletonList(getDefaultComment(DEFAULT_ID));
+    }
+
+    @HystrixCommand(fallbackMethod = "getCommentsByUserCountFallback")
+    public int getCommentsByUserCount(final Long userId) {
+        LOGGER.info("Getting count of the comments of the user with id '{}'.", userId);
+        return communicationService.sendGetRequest(
+                COMMENT_SERVICE_URL + COUNT + userId,
+                int.class);
+    }
+
+    public int getCommentsByUserCountFallback(final Long userId) {
+        LOGGER.warn("CommentService is down, default count is returned.");
+        return (int) DEFAULT_ID;
     }
 
     private Comment getDefaultComment(final Long movieId) {

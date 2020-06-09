@@ -81,4 +81,8 @@ public class CommentService {
     public List<Comment> getLatest5Comments() {
         return commentRepository.findTop5ByOrderByCommentIdDesc();
     }
+
+    public int getTotalCommentsForAuthor(final Long authorId) {
+        return commentRepository.countByAuthorId(authorId);
+    }
 }

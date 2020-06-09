@@ -32,6 +32,7 @@ public class ExternalShopService {
     public static final String USER_HAS_ALREADY_BOUGHT_THIS_MOVIE = "User has already bought this movie.";
     public static final String USER_IS_TOO_YOUNG_TO_BUY_THIS_MOVIE = "User is too young to buy this movie.";
     public static final String USER_IS_BANNED = "User is banned.";
+    public static final String COUNT = "count/";
     private static final Logger LOGGER = LoggerFactory.getLogger(ExternalShopService.class);
     private DbMovieService dbMovieService;
     private CommunicationService communicationService;
@@ -98,6 +99,19 @@ public class ExternalShopService {
     public boolean checkAlreadyBoughtMovieForUserFallback(final Long movieId, final Long userId) {
         LOGGER.info("Shop Service is down, returning false to checkAlreadyBoughtMovieForUser method.");
         return false;
+    }
+
+    @HystrixCommand(fallbackMethod = "getBoughtMoviesByUserCountFallback")
+    public int getBoughtMoviesByUserCount(final Long userId) {
+        LOGGER.info("getting count of bought movies for user with id '{}'", userId);
+        return communicationService.sendGetRequest(
+                SHOP_SERVICE_URL + GET_USER_ORDERS + COUNT + userId,
+                int.class);
+    }
+
+    public int getBoughtMoviesByUserCountFallback(final Long userId) {
+        LOGGER.info("Shop Service is down, return default count of bought movies.");
+        return (int) DEFAULT_ID;
     }
 
     public boolean isUserAllowedToBuyMovie(final Long movieId, final Long userId) {
