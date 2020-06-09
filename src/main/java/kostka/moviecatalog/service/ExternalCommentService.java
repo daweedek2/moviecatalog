@@ -19,7 +19,7 @@ import java.util.Objects;
  */
 @Service
 public class ExternalCommentService {
-    public static final long DEFAULT_ID = 201L;
+    public static final long DEFAULT_ID = 999L;
     private static final Logger LOGGER = LoggerFactory.getLogger(ExternalCommentService.class);
     private static final String COMMENT_SERVICE_URL = "http://comment-service/comments/";
     private static final String COUNT = "count/";
