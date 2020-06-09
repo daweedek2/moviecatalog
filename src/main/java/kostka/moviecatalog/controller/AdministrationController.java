@@ -84,7 +84,7 @@ public class AdministrationController {
         rabbitMqSender.sendToCreateElasticQueue(movie.getId().toString());
         rabbitMqSender.sendUpdateRequestToQueue();
         rabbitMqSender.sendRefreshAdminRequestToQueue();
-        redirectAttributes.addFlashAttribute(SUCCESS, "Comment is successfully created.");
+        redirectAttributes.addFlashAttribute(SUCCESS, "Movie is successfully created.");
         return REDIRECT_ADMIN_VIEW;
     }
 
