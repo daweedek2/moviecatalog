@@ -15,6 +15,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import static kostka.moviecatalog.service.ExternalCommentService.DEFAULT_ID;
+
 /**
  * Service which communicates with external microservice (RatingService) via rest template.
  */
