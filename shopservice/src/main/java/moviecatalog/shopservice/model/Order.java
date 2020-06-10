@@ -19,6 +19,8 @@ public class Order {
     private Long userId;
     private LocalDateTime timestamp;
 
+    public Order() {
+    }
 
     /**
      * Gets id.

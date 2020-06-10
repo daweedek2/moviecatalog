@@ -1,5 +1,6 @@
 package kostka.moviecatalog.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import kostka.moviecatalog.dto.CommentDto;
 import kostka.moviecatalog.dto.OrderDto;
 import kostka.moviecatalog.dto.RatingDto;
@@ -20,6 +21,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,6 +39,7 @@ import static kostka.moviecatalog.controller.AdministrationController.INVALID_DT
 public class MovieDetailController {
     public static final String MOVIE_DETAIL_VIEW = "detail";
     public static final String REDIRECT_MOVIE_DETAIL_VIEW = "redirect:/movies/detail/";
+    public static final String REDIRECT_ALL_MOVIES = "redirect:/allMovies";
     public static final String MOVIE_DETAIL_ATTR = "movieDetailDto";
     public static final String IS_USER_ALLOWED_TO_BUY = "isAllowedToBuy";
     public static final String STATUS_ATTR = "status";
@@ -75,7 +78,7 @@ public class MovieDetailController {
     public String getMovieDetail(
             final @PathVariable Long movieId,
             final @AuthenticationPrincipal CustomUserDetails user,
-            final Model model) {
+            final Model model) throws JsonProcessingException {
         addMovieDetailModelAttributes(movieId, user.getUser(), model);
         return MOVIE_DETAIL_VIEW;
     }
@@ -167,10 +170,16 @@ public class MovieDetailController {
         return REDIRECT_MOVIE_DETAIL_VIEW + dto.getMovieId();
     }
 
+    @ExceptionHandler(value = Exception.class)
+    public String movieDetailExceptionHandler(final Exception e, final RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute(STATUS_ATTR, e.getMessage());
+        return REDIRECT_ALL_MOVIES;
+    }
+
     private void addMovieDetailModelAttributes(
             final Long movieId,
             final User user,
-            final Model model) {
+            final Model model) throws JsonProcessingException {
         model.addAttribute(MOVIE_DETAIL_ATTR, movieDetailService.getMovieDetail(movieId, user.getUserId()));
         model.addAttribute(IS_USER_ALLOWED_TO_BUY,
                 externalShopService.isUserAllowedToBuyMovie(movieId, user.getUserId()));

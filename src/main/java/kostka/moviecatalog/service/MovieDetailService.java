@@ -1,5 +1,6 @@
 package kostka.moviecatalog.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import kostka.moviecatalog.builders.MovieBuilder;
 import kostka.moviecatalog.builders.MovieDetailBuilder;
 import kostka.moviecatalog.dto.CommentDetailDto;
@@ -46,7 +47,7 @@ public class MovieDetailService {
      * @param movieId id of the movie.
      * @return MovieDetail with all data.
      */
-    public MovieDetailDto getMovieDetail(final Long movieId, final Long userId) {
+    public MovieDetailDto getMovieDetail(final Long movieId, final Long userId) throws JsonProcessingException {
         Movie movie = null;
         try {
             movie = movieService.getMovie(movieId);

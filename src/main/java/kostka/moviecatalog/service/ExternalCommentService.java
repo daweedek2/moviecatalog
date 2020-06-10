@@ -1,5 +1,7 @@
 package kostka.moviecatalog.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import kostka.moviecatalog.dto.CommentDto;
 import kostka.moviecatalog.entity.Comment;
@@ -10,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -25,27 +28,43 @@ public class ExternalCommentService {
     private static final String COUNT = "count/";
     private static final String GET_LATEST5 = "latest5";
     private static final String CREATE = "create";
+    private static final String MOVIE_COMMENTS_KEY_PREFIX = "movieComments";
+    private static final String USER_COMMENTS_KEY_PREFIX = "userComments";
+    private static final String LATEST_COMMENTS_KEY = "latestComments";
 
     private CommunicationService communicationService;
+    private CacheService cacheService;
+    private ObjectMapper mapper;
 
     @Autowired
     public ExternalCommentService(
-            final CommunicationService communicationService) {
+            final CommunicationService communicationService,
+            final CacheService cacheService,
+            final ObjectMapper mapper) {
         this.communicationService = communicationService;
+        this.cacheService = cacheService;
+        this.mapper = mapper;
     }
 
     @HystrixCommand(fallbackMethod = "getCommentsFromCommentServiceFallback")
-    public List<Comment> getCommentsFromCommentService(final Long movieId) {
+    public List<Comment> getCommentsFromCommentService(final Long movieId) throws JsonProcessingException {
         LOGGER.info("Getting comments from Comment service.");
         MovieComments commentsResponse = communicationService.sendGetRequest(
                 COMMENT_SERVICE_URL + movieId,
                 MovieComments.class);
-        return Objects.requireNonNull(commentsResponse).getComments();
+
+        List<Comment> movieComments = Objects.requireNonNull(commentsResponse).getComments();
+        cacheService.cacheData(getKey(MOVIE_COMMENTS_KEY_PREFIX, movieId), movieComments);
+        return movieComments;
     }
 
-    public List<Comment> getCommentsFromCommentServiceFallback(final Long movieId) {
-        LOGGER.warn("Comment service is down - return empty list of comments.");
-        return Collections.emptyList();
+    public List<Comment> getCommentsFromCommentServiceFallback(final Long movieId) throws JsonProcessingException {
+        LOGGER.warn("Comment service is down - return comments from cache.");
+        String jsonData = cacheService.getCachedDataJsonWithKey(getKey(MOVIE_COMMENTS_KEY_PREFIX, movieId));
+        if (jsonData == null) {
+            Collections.emptyList();
+        }
+        return Arrays.asList(mapper.readValue(jsonData, Comment[].class));
     }
 
     @HystrixCommand(fallbackMethod = "createCommentInCommentServiceFallback")
@@ -60,38 +79,45 @@ public class ExternalCommentService {
     }
 
     @HystrixCommand(fallbackMethod = "getLatest5CommentsFallback")
-    public List<Comment> getLatest5Comments() {
+    public List<Comment> getLatest5Comments() throws JsonProcessingException {
         LOGGER.info("Getting latest comments from Comment service.");
         MovieComments commentsResponse = communicationService.sendGetRequest(
                 COMMENT_SERVICE_URL + GET_LATEST5, MovieComments.class);
 
-        return Objects.requireNonNull(commentsResponse).getComments();
+        List<Comment> latestComments = Objects.requireNonNull(commentsResponse).getComments();
+        cacheService.cacheData(LATEST_COMMENTS_KEY, latestComments);
+        return latestComments;
     }
 
-    public List<Comment> getLatest5CommentsFallback() {
-        LOGGER.warn("CommentService is down, default comment is returned.");
-        return Collections.singletonList(getDefaultComment(DEFAULT_ID));
+    public List<Comment> getLatest5CommentsFallback() throws JsonProcessingException {
+        LOGGER.warn("CommentService is down, comments from cache are returned.");
+        String jsonData = cacheService.getCachedDataJsonWithKey(LATEST_COMMENTS_KEY);
+        if (jsonData == null) {
+            return Collections.emptyList();
+        }
+        return Arrays.asList(mapper.readValue(jsonData, Comment[].class));
     }
 
     @HystrixCommand(fallbackMethod = "getCommentsByUserCountFallback")
-    public int getCommentsByUserCount(final Long userId) {
+    public int getCommentsByUserCount(final Long userId) throws JsonProcessingException {
         LOGGER.info("Getting count of the comments of the user with id '{}'.", userId);
-        return communicationService.sendGetRequest(
+        int userCommentsCount = communicationService.sendGetRequest(
                 COMMENT_SERVICE_URL + COUNT + userId,
                 int.class);
+        cacheService.cacheData(getKey(USER_COMMENTS_KEY_PREFIX, userId), userCommentsCount);
+        return userCommentsCount;
     }
 
-    public int getCommentsByUserCountFallback(final Long userId) {
-        LOGGER.warn("CommentService is down, default count is returned.");
-        return (int) DEFAULT_ID;
+    public int getCommentsByUserCountFallback(final Long userId) throws JsonProcessingException {
+        LOGGER.warn("CommentService is down, zero count is returned.");
+        String jsonData = cacheService.getCachedDataJsonWithKey(getKey(USER_COMMENTS_KEY_PREFIX, userId));
+        if (jsonData == null) {
+            return 0;
+        }
+        return mapper.readValue(jsonData, int.class);
     }
 
-    private Comment getDefaultComment(final Long movieId) {
-        Comment defaultComment = new Comment();
-        defaultComment.setAuthorId(DEFAULT_ID);
-        defaultComment.setCommentId(DEFAULT_ID);
-        defaultComment.setMovieId(movieId);
-        defaultComment.setCommentText("Comment Service is down.");
-        return defaultComment;
+    public static String getKey(final String prefix, final Long id) {
+        return prefix + "-" + id;
     }
 }

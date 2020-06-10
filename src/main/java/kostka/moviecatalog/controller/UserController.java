@@ -1,5 +1,6 @@
 package kostka.moviecatalog.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import kostka.moviecatalog.exception.NoMoviesInDbException;
 import kostka.moviecatalog.security.CustomUserDetails;
 import kostka.moviecatalog.service.CacheService;
@@ -51,7 +52,7 @@ public class UserController {
     @GetMapping
     public String getUserHomePage(
             final @AuthenticationPrincipal CustomUserDetails user,
-            final Model model) {
+            final Model model) throws JsonProcessingException {
         LOGGER.info("rendering user home page");
         model.addAttribute(TOP_RATING_KEY, cacheService.getMoviesFromCacheWithKey(TOP_RATING_KEY));
         model.addAttribute(LATEST_MOVIES_KEY, cacheService.getMoviesFromCacheWithKey(LATEST_MOVIES_KEY));

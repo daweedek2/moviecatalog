@@ -1,5 +1,8 @@
 package kostka.moviecatalog.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import kostka.moviecatalog.dto.MovieListDto;
 import kostka.moviecatalog.dto.OrderDto;
@@ -14,13 +17,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static kostka.moviecatalog.service.ExternalCommentService.DEFAULT_ID;
+import static kostka.moviecatalog.service.ExternalCommentService.getKey;
 import static kostka.moviecatalog.service.UserService.isUserAdultCheck;
 
 @Service
@@ -33,19 +39,31 @@ public class ExternalShopService {
     public static final String USER_IS_TOO_YOUNG_TO_BUY_THIS_MOVIE = "User is too young to buy this movie.";
     public static final String USER_IS_BANNED = "User is banned.";
     public static final String COUNT = "count/";
+    private static final String USER_MOVIES_KEY_PREFIX = "userBoughtMovies";
     private static final Logger LOGGER = LoggerFactory.getLogger(ExternalShopService.class);
     private DbMovieService dbMovieService;
     private CommunicationService communicationService;
     private UserService userService;
+    private CacheService cacheService;
+    private ObjectMapper mapper;
 
     @Autowired
     public ExternalShopService(
             final CommunicationService communicationService,
             final DbMovieService dbMovieService,
-            final UserService userService) {
+            final UserService userService,
+            final CacheService cacheService,
+            final ObjectMapper mapper) {
         this.communicationService = communicationService;
         this.dbMovieService = dbMovieService;
         this.userService = userService;
+        this.cacheService = cacheService;
+        this.mapper = mapper;
+    }
+
+    @PostConstruct
+    public void setUp() {
+        mapper.registerModule(new JavaTimeModule());
     }
 
     @HystrixCommand(fallbackMethod = "buyMovieInShopServiceFallback")
@@ -67,7 +85,8 @@ public class ExternalShopService {
     }
 
     @HystrixCommand(fallbackMethod = "getAlreadyBoughtMoviesForUserFallback")
-    public List<MovieListDto> getAlreadyBoughtMoviesForUser(final Long userId) {
+    public List<MovieListDto> getAlreadyBoughtMoviesForUser(final Long userId) throws JsonProcessingException {
+        LOGGER.info("trying to get user orders from microservice.");
         UserOrders orders = communicationService.sendGetRequest(
                 SHOP_SERVICE_URL + GET_USER_ORDERS + userId,
                 UserOrders.class);
@@ -75,15 +94,22 @@ public class ExternalShopService {
             return Collections.emptyList();
         }
 
-        return Objects.requireNonNull(orders).getOrders()
+        List<MovieListDto> boughtMovies = Objects.requireNonNull(orders).getOrders()
                 .stream()
                 .map(order -> dbMovieService.getMovie(order.getMovieId()))
                 .map(movie -> dbMovieService.fillMovieListDtoWithData(movie))
                 .collect(Collectors.toList());
+        cacheService.cacheData(getKey(USER_MOVIES_KEY_PREFIX, userId), boughtMovies);
+        return boughtMovies;
     }
 
-    public List<MovieListDto> getAlreadyBoughtMoviesForUserFallback(final Long userId) {
-        return Collections.emptyList();
+    public List<MovieListDto> getAlreadyBoughtMoviesForUserFallback(final Long userId) throws JsonProcessingException {
+        LOGGER.info("Shop Service is down, returning bought movies from cache.");
+        String jsonData = cacheService.getCachedDataJsonWithKey(getKey(USER_MOVIES_KEY_PREFIX, userId));
+        if (jsonData == null) {
+            return Collections.emptyList();
+        }
+        return Arrays.asList(mapper.readValue(jsonData, MovieListDto[].class));
     }
 
     @HystrixCommand(fallbackMethod = "checkAlreadyBoughtMovieForUserFallback")
@@ -106,9 +132,14 @@ public class ExternalShopService {
                 int.class);
     }
 
-    public int getBoughtMoviesByUserCountFallback(final Long userId) {
-        LOGGER.info("Shop Service is down, return default count of bought movies.");
-        return (int) DEFAULT_ID;
+    public int getBoughtMoviesByUserCountFallback(final Long userId) throws JsonProcessingException {
+        LOGGER.info("Shop Service is down, return count of bought movies from cache.");
+        String jsonData = cacheService.getCachedDataJsonWithKey(USER_MOVIES_KEY_PREFIX);
+        if (jsonData == null) {
+            return 0;
+        }
+        List<MovieListDto> userMovies = Arrays.asList(mapper.readValue(jsonData, MovieListDto[].class));
+        return userMovies.size();
     }
 
     public boolean isUserAllowedToBuyMovie(final Long movieId, final Long userId) {
