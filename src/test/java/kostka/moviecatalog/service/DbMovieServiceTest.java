@@ -2,9 +2,11 @@ package kostka.moviecatalog.service;
 
 import kostka.moviecatalog.dto.MovieFormDto;
 import kostka.moviecatalog.entity.Movie;
+import kostka.moviecatalog.entity.runtimeconfiguration.VisibleMoviesOptionsRuntimeConfig;
 import kostka.moviecatalog.exception.InvalidDtoException;
 import kostka.moviecatalog.exception.MovieNotFoundException;
 import kostka.moviecatalog.repository.MovieRepository;
+import kostka.moviecatalog.service.runtimeconfiguration.RuntimeConfigurationService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -17,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static kostka.moviecatalog.enumeration.RuntimeConfigurationEnum.VISIBLE_MOVIES;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -29,6 +32,7 @@ public class DbMovieServiceTest {
     private static final Long TEST_ID = 1L;
     private static final String TEST_NAME = "TestName";
     private static final String TEST_NAME_2 = "TestName2";
+    private static final int LIMIT = 5;
 
     @InjectMocks
     DbMovieService dbMovieService;
@@ -41,6 +45,9 @@ public class DbMovieServiceTest {
 
     @Mock
     private StatisticService statisticService;
+
+    @Mock
+    RuntimeConfigurationService runtimeConfigurationService;
 
 
     private Generator generator = new Generator();
@@ -149,10 +156,13 @@ public class DbMovieServiceTest {
         Movie movie = generator.createMovieWithName(TEST_NAME);
         Movie movie2 = generator.createMovieWithName(TEST_NAME_2);
         List<Movie> movies = Arrays.asList(movie, movie2);
+        VisibleMoviesOptionsRuntimeConfig config = new VisibleMoviesOptionsRuntimeConfig(LIMIT);
 
-        Mockito.when(movieRepository.findTop5ByOrderByAverageRatingDesc()).thenReturn(movies);
+        Mockito.when(movieRepository.findNTopRatedMovies(LIMIT)).thenReturn(movies);
+        Mockito.when(runtimeConfigurationService.getRuntimeConfigurationOptions(eq(VISIBLE_MOVIES)))
+                .thenReturn(config);
 
-        List<Movie> result = dbMovieService.getTop5RatingMoviesFromDB();
+        List<Movie> result = dbMovieService.getTopNRatingMoviesFromDB();
 
         assertThat(result).size().isEqualTo(2);
         assertThat(result).containsExactlyInAnyOrder(movie, movie2);
@@ -163,10 +173,13 @@ public class DbMovieServiceTest {
         Movie movie = generator.createMovieWithName(TEST_NAME);
         Movie movie2 = generator.createMovieWithName(TEST_NAME_2);
         List<Movie> movies = Arrays.asList(movie, movie2);
+        VisibleMoviesOptionsRuntimeConfig config = new VisibleMoviesOptionsRuntimeConfig(LIMIT);
 
-        Mockito.when(movieRepository.findTop5ByOrderByIdDesc()).thenReturn(movies);
+        Mockito.when(movieRepository.findNLatestMovies(LIMIT)).thenReturn(movies);
+        Mockito.when(runtimeConfigurationService.getRuntimeConfigurationOptions(eq(VISIBLE_MOVIES)))
+                .thenReturn(config);
 
-        List<Movie> result = dbMovieService.get5LatestMoviesFromDB();
+        List<Movie> result = dbMovieService.getNLatestMoviesFromDB();
 
         assertThat(result).size().isEqualTo(2);
         assertThat(result).containsExactlyInAnyOrder(movie, movie2);
