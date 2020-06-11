@@ -6,7 +6,10 @@ public class CommentDetailDto {
     private String commentText;
     private Long userId;
 
-    public CommentDetailDto(final Long commentId, final String authorName, final String commentText, final Long userId) {
+    public CommentDetailDto(final Long commentId,
+                            final String authorName,
+                            final String commentText,
+                            final Long userId) {
         this.commentId = commentId;
         this.authorName = authorName;
         this.commentText = commentText;

@@ -45,6 +45,7 @@ public class ShopController {
 
     @GetMapping("/user/{userId}")
     public UserOrders getAllOrdersForUser(final @PathVariable Long userId) {
+        LOGGER.info("getting user orders request");
         UserOrders userOrders = new UserOrders();
         userOrders.setOrders(movieOrderService.getAllOrdersForUser(userId));
         return userOrders;
@@ -54,6 +55,7 @@ public class ShopController {
     public boolean checkOrderAlreadyExists(
             final @PathVariable("movieId") Long movieId,
             final @PathVariable("userId") Long userId) {
+        LOGGER.info("check already bought movie");
         return movieOrderService.isOrderAlreadyCreated(movieId, userId);
     }
 

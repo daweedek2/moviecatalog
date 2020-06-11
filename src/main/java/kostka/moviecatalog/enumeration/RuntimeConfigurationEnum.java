@@ -1,7 +1,8 @@
 package kostka.moviecatalog.enumeration;
 
 public enum RuntimeConfigurationEnum {
-    VISIBLE_MOVIES("visible_movies");
+    VISIBLE_MOVIES("visible_movies"),
+    OTHER("other");
 
     private final String name;
 

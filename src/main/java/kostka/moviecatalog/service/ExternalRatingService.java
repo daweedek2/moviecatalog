@@ -1,5 +1,7 @@
 package kostka.moviecatalog.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import kostka.moviecatalog.dto.RatingDto;
 import kostka.moviecatalog.entity.AverageRating;
@@ -11,11 +13,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import static kostka.moviecatalog.service.ExternalCommentService.DEFAULT_ID;
+import static kostka.moviecatalog.service.ExternalCommentService.getKey;
 
 /**
  * Service which communicates with external microservice (RatingService) via rest template.
@@ -27,15 +30,23 @@ public class ExternalRatingService {
     private static final String GET_AVERAGE = "average/";
     private static final String CREATE = "create";
     private static final String COUNT = "count/";
+    private static final String MOVIE_RATINGS_KEY_PREFIX = "movieRatings";
+    private static final String USER_RATINGS_KEY_PREFIX = "userRatings";
     private DbMovieService dbMovieService;
     private CommunicationService communicationService;
+    private CacheService cacheService;
+    private ObjectMapper objectMapper;
 
     @Autowired
     public ExternalRatingService(
             final CommunicationService communicationService,
-            final DbMovieService dbMovieService) {
+            final DbMovieService dbMovieService,
+            final ObjectMapper objectMapper,
+            final CacheService cacheService) {
         this.communicationService = communicationService;
         this.dbMovieService = dbMovieService;
+        this.objectMapper = objectMapper;
+        this.cacheService = cacheService;
     }
 
     /**
@@ -44,13 +55,15 @@ public class ExternalRatingService {
      * @return List of ratings.
      */
     @HystrixCommand(fallbackMethod = "getRatingsFromRatingServiceFallback")
-    public List<Rating> getRatingsFromRatingService(final Long movieId) {
+    public List<Rating> getRatingsFromRatingService(final Long movieId) throws JsonProcessingException {
         LOGGER.info("Getting ratings from Rating service.");
         MovieRating ratingsResponse = communicationService.sendGetRequest(
                 RATING_SERVICE_URL + movieId,
                 MovieRating.class);
 
-        return Objects.requireNonNull(ratingsResponse).getMovieRatings();
+        List<Rating> ratings = Objects.requireNonNull(ratingsResponse).getMovieRatings();
+        cacheService.cacheData(getKey(MOVIE_RATINGS_KEY_PREFIX, movieId), ratings);
+        return ratings;
     }
 
     /**
@@ -73,9 +86,13 @@ public class ExternalRatingService {
      * @param movieId id of the movie.
      * @return default list of one rating with default values.
      */
-    public List<Rating> getRatingsFromRatingServiceFallback(final Long movieId) {
-        LOGGER.info("Rating Service is down - return empty rating List.");
-        return Collections.emptyList();
+    public List<Rating> getRatingsFromRatingServiceFallback(final Long movieId) throws JsonProcessingException {
+        LOGGER.info("Rating Service is down - return rating List from cache.");
+        String jsonData = cacheService.getCachedDataJsonWithKey(getKey(MOVIE_RATINGS_KEY_PREFIX, movieId));
+        if (jsonData == null) {
+            Collections.emptyList();
+        }
+        return Arrays.asList(objectMapper.readValue(jsonData, Rating[].class));
     }
 
     /**
@@ -100,15 +117,21 @@ public class ExternalRatingService {
     }
 
     @HystrixCommand(fallbackMethod = "getRatingsByUserCountFallback")
-    public int getRatingsByUserCount(final Long userId) {
+    public int getRatingsByUserCount(final Long userId) throws JsonProcessingException {
         LOGGER.info("Getting count of all ratings by user with id '{}'.", userId);
-        return communicationService.sendGetRequest(
+        int usersRatingCount = communicationService.sendGetRequest(
                 RATING_SERVICE_URL + COUNT + userId,
                 int.class);
+        cacheService.cacheData(getKey(USER_RATINGS_KEY_PREFIX, userId), usersRatingCount);
+        return usersRatingCount;
     }
 
-    public int getRatingsByUserCountFallback(final Long userId) {
-        LOGGER.warn("RatingService is down, default count is returned.");
-        return (int) DEFAULT_ID;
+    public int getRatingsByUserCountFallback(final Long userId) throws JsonProcessingException {
+        LOGGER.warn("RatingService is down, count from cache is returned.");
+        String jsonData = cacheService.getCachedDataJsonWithKey(getKey(USER_RATINGS_KEY_PREFIX, userId));
+        if (jsonData == null) {
+            return 0;
+        }
+        return objectMapper.readValue(jsonData, int.class);
     }
 }

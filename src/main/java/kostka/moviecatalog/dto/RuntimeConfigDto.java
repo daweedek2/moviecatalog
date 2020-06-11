@@ -17,6 +17,9 @@ public class RuntimeConfigDto {
         this.options = options;
     }
 
+    public RuntimeConfigDto() {
+    }
+
     public String getConfigName() {
         return configName;
     }

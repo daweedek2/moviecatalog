@@ -5,6 +5,9 @@ import java.util.List;
 public class UserOrders {
     private List<Order> orders;
 
+    public UserOrders() {
+    }
+
     public List<Order> getOrders() {
         return orders;
     }

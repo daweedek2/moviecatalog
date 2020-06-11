@@ -37,4 +37,18 @@ public class CacheService {
         }
         return Collections.emptyList();
     }
+
+    public <T> void cacheData(final String key, final T data) throws JsonProcessingException {
+        LOGGER.info("saving data to cache with key '{}'", key);
+        redisService.saveDataToRedisCache(key, prepareJsonData(data));
+    }
+
+    public String getCachedDataJsonWithKey(final String key) {
+        LOGGER.info("getting data from cache with key '{}'", key);
+        return redisService.getDataFromRedisCache(key);
+    }
+
+    private <T> String prepareJsonData(final T data) throws JsonProcessingException {
+        return mapper.writeValueAsString(data);
+    }
 }

@@ -168,7 +168,7 @@ public class AdministrationController {
      * @return redirect to admin view.
      */
     @ExceptionHandler(value = Exception.class)
-    public String administratorExceptionHandler(final Exception e, RedirectAttributes redirectAttributes) {
+    public String administratorExceptionHandler(final Exception e, final RedirectAttributes redirectAttributes) {
         LOGGER.error(e.getMessage(), e);
         redirectAttributes.addFlashAttribute(ERROR, e.getMessage());
         return REDIRECT_ADMIN_VIEW;

@@ -37,6 +37,18 @@ public class RedisService {
         this.statisticService = statisticService;
     }
 
+    public void saveDataToRedisCache(final String key, final String jsonData) {
+        LOGGER.info("Adding data '{}' to the redis cache with key: '{}'", jsonData, key);
+        redisTemplate.opsForValue().set(key, jsonData);
+        statisticService.incrementSyncedRedisCounter();
+    }
+
+    public String getDataFromRedisCache(final String key) {
+        LOGGER.info("Getting data from redis cache with key: '{}'", key);
+        statisticService.incrementSyncedRedisCounter();
+        return redisTemplate.opsForValue().get(key);
+    }
+
     /**
      * Updates list of movies in Redis cache.
      * @param movies list of movies which needs to be updated.

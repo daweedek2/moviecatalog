@@ -1,5 +1,6 @@
 package kostka.moviecatalog.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import kostka.moviecatalog.dto.UserDetailDto;
 import kostka.moviecatalog.entity.User;
 import org.slf4j.Logger;
@@ -25,7 +26,7 @@ public class UserDetailService {
         this.externalRatingService = externalRatingService;
     }
 
-    public UserDetailDto getUserDetailDto(final Long userId) {
+    public UserDetailDto getUserDetailDto(final Long userId) throws JsonProcessingException {
         User user = userService.getUser(userId);
         int boughtMoviesCount = externalShopService.getBoughtMoviesByUserCount(userId);
         int commentsCount = externalCommentService.getCommentsByUserCount(userId);
