@@ -70,9 +70,8 @@ public class ExternalShopServiceTest {
         when(dbMovieService.getMovie(any())).thenReturn(adultMovie);
         when(communicationService.sendGetRequest(any(), any())).thenReturn(true);
 
-        Order result = externalShopService.buyMovieInShopService(dto);
-
-        assertThat(result).isNull();
+        assertThatThrownBy(() -> externalShopService.buyMovieInShopService(dto))
+                .isInstanceOf(UserNotAllowedToBuyMovieException.class);
     }
 
     @Test
@@ -83,9 +82,8 @@ public class ExternalShopServiceTest {
         when(userService.getUser(any())).thenReturn(youngUser);
         when(dbMovieService.getMovie(any())).thenReturn(adultMovie);
 
-        Order result = externalShopService.buyMovieInShopService(dto);
-
-        assertThat(result).isNull();
+        assertThatThrownBy(() -> externalShopService.buyMovieInShopService(dto))
+                .isInstanceOf(UserNotAllowedToBuyMovieException.class);
     }
 
     @Test
@@ -114,9 +112,8 @@ public class ExternalShopServiceTest {
         when(dbMovieService.getMovie(any())).thenReturn(normalMovie);
         when(communicationService.sendGetRequest(any(), any())).thenReturn(true);
 
-        Order result = externalShopService.buyMovieInShopService(dto);
-
-        assertThat(result).isNull();
+        assertThatThrownBy(() -> externalShopService.buyMovieInShopService(dto))
+                .isInstanceOf(UserNotAllowedToBuyMovieException.class);
     }
 
     @Test
@@ -136,7 +133,7 @@ public class ExternalShopServiceTest {
     }
 
     @Test
-    public void buyAlreadyBougthNormalMovieByAdultUserTest() {
+    public void buyAlreadyBoughtNormalMovieByAdultUserTest() {
         Order order = createOrder();
         OrderDto dto = createOrderDto();
         Movie normalMovie = createNormalMovie();
@@ -145,9 +142,8 @@ public class ExternalShopServiceTest {
         when(dbMovieService.getMovie(any())).thenReturn(normalMovie);
         when(communicationService.sendGetRequest(any(), any())).thenReturn(true);
 
-        Order result = externalShopService.buyMovieInShopService(dto);
-
-        assertThat(result).isNull();
+        assertThatThrownBy(() -> externalShopService.buyMovieInShopService(dto))
+                .isInstanceOf(UserNotAllowedToBuyMovieException.class);
     }
 
     @Test
@@ -170,9 +166,8 @@ public class ExternalShopServiceTest {
         when(userService.getUser(any())).thenReturn(youngUser);
         when(dbMovieService.getMovie(any())).thenReturn(adultMovie);
 
-        boolean result = externalShopService.isUserAllowedToBuyMovie(TEST_MOVIE_ID, TEST_USER_ID);
-
-        assertThat(result).isFalse();
+        assertThatThrownBy(() -> externalShopService.validateUserToBuyMovie(TEST_MOVIE_ID, TEST_USER_ID))
+                .isInstanceOf(UserNotAllowedToBuyMovieException.class);
     }
 
     @Test
@@ -184,9 +179,8 @@ public class ExternalShopServiceTest {
         when(dbMovieService.getMovie(any())).thenReturn(adultMovie);
         when(communicationService.sendGetRequest(any(), any())).thenReturn(true);
 
-        boolean result = externalShopService.isUserAllowedToBuyMovie(TEST_MOVIE_ID, TEST_USER_ID);
-
-        assertThat(result).isFalse();
+        assertThatThrownBy(() -> externalShopService.validateUserToBuyMovie(TEST_MOVIE_ID, TEST_USER_ID))
+                .isInstanceOf(UserNotAllowedToBuyMovieException.class);
     }
 
     @Test
@@ -217,10 +211,10 @@ public class ExternalShopServiceTest {
         User bannedUser = createBannedUser();
         when(userService.getUser(any())).thenReturn(bannedUser);
         when(dbMovieService.getMovie(any())).thenReturn(movie);
+        when(communicationService.sendGetRequest(any(), any())).thenReturn(false);
 
-        Order result = externalShopService.buyMovieInShopService(dto);
-
-        assertThat(result).isNull();
+        assertThatThrownBy(() -> externalShopService.buyMovieInShopService(dto))
+                .isInstanceOf(UserNotAllowedToBuyMovieException.class);
     }
 
     private User createAdultUser() {

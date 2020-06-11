@@ -8,6 +8,7 @@ import kostka.moviecatalog.entity.Comment;
 import kostka.moviecatalog.entity.Order;
 import kostka.moviecatalog.entity.Rating;
 import kostka.moviecatalog.entity.User;
+import kostka.moviecatalog.exception.UserNotAllowedToBuyMovieException;
 import kostka.moviecatalog.security.CustomUserDetails;
 import kostka.moviecatalog.service.ExternalCommentService;
 import kostka.moviecatalog.service.ExternalRatingService;
@@ -80,6 +81,13 @@ public class MovieDetailController {
             final @AuthenticationPrincipal CustomUserDetails user,
             final Model model) throws JsonProcessingException {
         addMovieDetailModelAttributes(movieId, user.getUser(), model);
+        try {
+            externalShopService.validateUserToBuyMovie(movieId, user.getUserId());
+            model.addAttribute(IS_USER_ALLOWED_TO_BUY, true);
+        } catch (UserNotAllowedToBuyMovieException e) {
+            model.addAttribute(STATUS_ATTR, e.getMessage());
+            model.addAttribute(IS_USER_ALLOWED_TO_BUY, false);
+        }
         return MOVIE_DETAIL_VIEW;
     }
 
@@ -181,8 +189,6 @@ public class MovieDetailController {
             final User user,
             final Model model) throws JsonProcessingException {
         model.addAttribute(MOVIE_DETAIL_ATTR, movieDetailService.getMovieDetail(movieId, user.getUserId()));
-        model.addAttribute(IS_USER_ALLOWED_TO_BUY,
-                externalShopService.isUserAllowedToBuyMovie(movieId, user.getUserId()));
         model.addAttribute(COMMENT_DTO_ATTR, new CommentDto());
         model.addAttribute(RATING_DTO_ATTR, new RatingDto());
     }
