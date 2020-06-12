@@ -69,9 +69,7 @@ public class ExternalShopService {
     @HystrixCommand(fallbackMethod = "buyMovieInShopServiceFallback")
     public Order buyMovieInShopService(final OrderDto dto) {
         LOGGER.info("request to buy movie in shop service");
-        if (!isUserAllowedToBuyMovie(dto.getMovieId(), dto.getUserId())) {
-            return null;
-        }
+        validateUserToBuyMovie(dto.getMovieId(), dto.getUserId());
 
         return communicationService.sendPostRequest(SHOP_SERVICE_URL + CREATE, dto, Order.class);
     }
@@ -142,16 +140,10 @@ public class ExternalShopService {
         return userMovies.size();
     }
 
-    public boolean isUserAllowedToBuyMovie(final Long movieId, final Long userId) {
-        try {
-            validateUserAgeForMovie(movieId, userId);
-            validateUserAlreadyBoughtMovie(movieId, userId);
-            validateUserBanned(userId);
-        } catch (Exception e) {
-            LOGGER.warn(e.getMessage());
-            return false;
-        }
-        return true;
+    public void validateUserToBuyMovie(final Long movieId, final Long userId) {
+        validateUserAgeForMovie(movieId, userId);
+        validateUserAlreadyBoughtMovie(movieId, userId);
+        validateUserBanned(userId);
     }
 
     public void validateUserAgeForMovie(final Long movieId, final Long userId) {

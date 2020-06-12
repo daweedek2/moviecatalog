@@ -18,6 +18,7 @@
 <div th:insert="header/header :: header()"></div>
 <div class="container">
     <br>
+    <p class="alert-danger" th:utext="${status}"></p>
     <h4>Search movies</h4>
     <form action="#" id="searchForm">
         <div class="form-group">
