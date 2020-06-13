@@ -15,13 +15,15 @@ public class MovieDetailDto {
     private boolean forAdults;
     private List<CommentDetailDto> comments;
     private List<RatingDetailDto> ratings;
+    private int soldsCount;
 
     public MovieDetailDto() {
     }
 
     public MovieDetailDto(final Long movieId, final String name, final String director, final String description,
                        final double averageRating, final boolean bought, final boolean forAdults,
-                       final List<CommentDetailDto> comments, final List<RatingDetailDto> ratings) {
+                       final List<CommentDetailDto> comments, final List<RatingDetailDto> ratings,
+                       final int soldsCount) {
         this.movieId = movieId;
         this.name = name;
         this.director = director;
@@ -31,6 +33,7 @@ public class MovieDetailDto {
         this.forAdults = forAdults;
         this.comments = comments;
         this.ratings = ratings;
+        this.soldsCount = soldsCount;
     }
 
     public Long getMovieId() {
@@ -103,5 +106,13 @@ public class MovieDetailDto {
 
     public void setForAdults(final boolean forAdults) {
         this.forAdults = forAdults;
+    }
+
+    public int getSoldsCount() {
+        return soldsCount;
+    }
+
+    public void setSoldsCount(final int soldsCount) {
+        this.soldsCount = soldsCount;
     }
 }

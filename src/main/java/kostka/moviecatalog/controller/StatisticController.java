@@ -55,6 +55,6 @@ public class StatisticController {
     @GetMapping("/generalCounter")
     public String getGeneralCounterValue() {
         LOGGER.info("get general counter value");
-        return redisService.getMoviesWithKey(GENERAL_COUNTER);
+        return redisService.getDataFromRedisCache(GENERAL_COUNTER);
     }
 }

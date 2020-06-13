@@ -64,4 +64,10 @@ public class ShopController {
         LOGGER.info("get total movies bought by user with id '{}'", userId);
         return movieOrderService.getTotalOrdersCountForUser(userId);
     }
+
+    @GetMapping("/movie/count/{movieId}")
+    public int getTotalCountOfBoughtMoviesForMovie(final @PathVariable Long movieId) {
+        LOGGER.info("get total solds of movie with id '{}'", movieId);
+        return movieOrderService.getTotalOrdersCountForMovie(movieId);
+    }
 }

@@ -26,7 +26,7 @@ public class CacheService {
 
     public List<MovieListDto> getMoviesFromCacheWithKey(final String key) {
         LOGGER.info("get movies from redis cache with key '{}'", key);
-        String json = redisService.getMoviesWithKey(key);
+        String json = this.getCachedDataJsonWithKey(key);
         if (json == null) {
             return Collections.emptyList();
         }

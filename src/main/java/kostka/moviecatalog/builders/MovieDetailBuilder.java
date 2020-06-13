@@ -19,6 +19,7 @@ public class MovieDetailBuilder {
     private boolean forAdults;
     private List<CommentDetailDto> comments;
     private List<RatingDetailDto> ratings;
+    private int soldsCount;
 
     public MovieDetailBuilder() {
     }
@@ -68,8 +69,13 @@ public class MovieDetailBuilder {
         return this;
     }
 
-    public MovieDetailDto build() {
+    public MovieDetailBuilder setSoldsCount(int soldsCount) {
+        this.soldsCount = soldsCount;
+        return this;
+    }
+
+        public MovieDetailDto build() {
         return new MovieDetailDto(movieId, name, director, description, averageRating,
-                bought, forAdults, comments, ratings);
+                bought, forAdults, comments, ratings, soldsCount);
     }
 }

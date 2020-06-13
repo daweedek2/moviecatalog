@@ -34,12 +34,15 @@ public class ExternalShopService {
     public static final String SHOP_SERVICE_URL = "http://shop-service/order/";
     public static final String CREATE = "create";
     public static final String GET_USER_ORDERS = "user/";
+    public static final String GET_MOVIE_ORDERS = "movie/";
     public static final String CHECK_ORDER = "checkOrder/";
     public static final String USER_HAS_ALREADY_BOUGHT_THIS_MOVIE = "User has already bought this movie.";
     public static final String USER_IS_TOO_YOUNG_TO_BUY_THIS_MOVIE = "User is too young to buy this movie.";
     public static final String USER_IS_BANNED = "User is banned.";
     public static final String COUNT = "count/";
-    private static final String USER_MOVIES_KEY_PREFIX = "userBoughtMovies";
+    private static final String USER_MOVIES_KEY_PREFIX = "userBoughtMovies-";
+    private static final String SOLDS_BY_USER_KEY_PREFIX = "userSoldsCount-";
+    private static final String SOLDS_BY_MOVIE_KEY_PREFIX = "movieSoldsCount-";
     private static final Logger LOGGER = LoggerFactory.getLogger(ExternalShopService.class);
     private DbMovieService dbMovieService;
     private CommunicationService communicationService;
@@ -123,21 +126,41 @@ public class ExternalShopService {
     }
 
     @HystrixCommand(fallbackMethod = "getBoughtMoviesByUserCountFallback")
-    public int getBoughtMoviesByUserCount(final Long userId) {
+    public int getBoughtMoviesByUserCount(final Long userId) throws JsonProcessingException {
         LOGGER.info("getting count of bought movies for user with id '{}'", userId);
-        return communicationService.sendGetRequest(
+        int count = communicationService.sendGetRequest(
                 SHOP_SERVICE_URL + GET_USER_ORDERS + COUNT + userId,
                 int.class);
+        cacheService.cacheData(SOLDS_BY_USER_KEY_PREFIX + userId, count);
+        return count;
     }
 
     public int getBoughtMoviesByUserCountFallback(final Long userId) throws JsonProcessingException {
         LOGGER.info("Shop Service is down, return count of bought movies from cache.");
-        String jsonData = cacheService.getCachedDataJsonWithKey(USER_MOVIES_KEY_PREFIX);
+        String jsonData = cacheService.getCachedDataJsonWithKey(SOLDS_BY_USER_KEY_PREFIX + userId);
         if (jsonData == null) {
             return 0;
         }
-        List<MovieListDto> userMovies = Arrays.asList(mapper.readValue(jsonData, MovieListDto[].class));
-        return userMovies.size();
+        return mapper.readValue(jsonData, int.class);
+    }
+
+    @HystrixCommand(fallbackMethod = "getBoughtMoviesByMovieCountFallback")
+    public int getBoughtMoviesByMovieCount(final Long movieId) throws JsonProcessingException {
+        LOGGER.info("get count of solds for movie with id '{}'.", movieId);
+        int count = communicationService.sendGetRequest(
+                SHOP_SERVICE_URL + GET_MOVIE_ORDERS + COUNT + movieId,
+                int.class);
+        cacheService.cacheData(SOLDS_BY_MOVIE_KEY_PREFIX + movieId, count);
+        return count;
+    }
+
+    public int getBoughtMoviesByMovieCountFallback(final Long movieId) throws JsonProcessingException {
+        LOGGER.info("Shop Service is down, return count of bought movies from cache.");
+        String jsonData = cacheService.getCachedDataJsonWithKey(SOLDS_BY_MOVIE_KEY_PREFIX + movieId);
+        if (jsonData == null) {
+            return 0;
+        }
+        return mapper.readValue(jsonData, int.class);
     }
 
     public void validateUserToBuyMovie(final Long movieId, final Long userId) {
