@@ -1,5 +1,6 @@
 package kostka.moviecatalog.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import kostka.moviecatalog.dto.RuntimeConfigDto;
 import kostka.moviecatalog.entity.runtimeconfiguration.RuntimeConfiguration;
 import kostka.moviecatalog.service.runtimeconfiguration.RuntimeConfigurationService;
@@ -33,7 +34,7 @@ public class RuntimeConfigurationController {
 
     @PostMapping("/update")
     public RuntimeConfiguration updateConfiguration(
-            @RequestBody final RuntimeConfigDto dto) {
+            @RequestBody final RuntimeConfigDto dto) throws JsonProcessingException {
         LOGGER.info("update runtime config '{}' request", dto.getConfigName());
         return runtimeConfigurationService.update(dto);
     }

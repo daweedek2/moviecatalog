@@ -1,7 +1,6 @@
 package kostka.moviecatalog.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import kostka.moviecatalog.dto.RatingDto;
 import kostka.moviecatalog.entity.AverageRating;
@@ -35,17 +34,17 @@ public class ExternalRatingService {
     private DbMovieService dbMovieService;
     private CommunicationService communicationService;
     private CacheService cacheService;
-    private ObjectMapper objectMapper;
+    private JsonConvertService jsonConvertService;
 
     @Autowired
     public ExternalRatingService(
             final CommunicationService communicationService,
             final DbMovieService dbMovieService,
-            final ObjectMapper objectMapper,
+            final JsonConvertService jsonConvertService,
             final CacheService cacheService) {
         this.communicationService = communicationService;
         this.dbMovieService = dbMovieService;
-        this.objectMapper = objectMapper;
+        this.jsonConvertService = jsonConvertService;
         this.cacheService = cacheService;
     }
 
@@ -92,7 +91,7 @@ public class ExternalRatingService {
         if (jsonData == null) {
             Collections.emptyList();
         }
-        return Arrays.asList(objectMapper.readValue(jsonData, Rating[].class));
+        return Arrays.asList(jsonConvertService.jsonToData(jsonData, Rating[].class));
     }
 
     /**
@@ -132,6 +131,6 @@ public class ExternalRatingService {
         if (jsonData == null) {
             return 0;
         }
-        return objectMapper.readValue(jsonData, int.class);
+        return jsonConvertService.jsonToData(jsonData, int.class);
     }
 }

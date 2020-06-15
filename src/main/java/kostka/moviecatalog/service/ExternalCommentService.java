@@ -1,7 +1,6 @@
 package kostka.moviecatalog.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import kostka.moviecatalog.dto.CommentDto;
 import kostka.moviecatalog.entity.Comment;
@@ -34,16 +33,16 @@ public class ExternalCommentService {
 
     private CommunicationService communicationService;
     private CacheService cacheService;
-    private ObjectMapper mapper;
+    private JsonConvertService jsonConvertService;
 
     @Autowired
     public ExternalCommentService(
             final CommunicationService communicationService,
             final CacheService cacheService,
-            final ObjectMapper mapper) {
+            final JsonConvertService jsonConvertService) {
         this.communicationService = communicationService;
         this.cacheService = cacheService;
-        this.mapper = mapper;
+        this.jsonConvertService = jsonConvertService;
     }
 
     @HystrixCommand(fallbackMethod = "getCommentsFromCommentServiceFallback")
@@ -64,7 +63,7 @@ public class ExternalCommentService {
         if (jsonData == null) {
             Collections.emptyList();
         }
-        return Arrays.asList(mapper.readValue(jsonData, Comment[].class));
+        return Arrays.asList(jsonConvertService.jsonToData(jsonData, Comment[].class));
     }
 
     @HystrixCommand(fallbackMethod = "createCommentInCommentServiceFallback")
@@ -95,7 +94,7 @@ public class ExternalCommentService {
         if (jsonData == null) {
             return Collections.emptyList();
         }
-        return Arrays.asList(mapper.readValue(jsonData, Comment[].class));
+        return Arrays.asList(jsonConvertService.jsonToData(jsonData, Comment[].class));
     }
 
     @HystrixCommand(fallbackMethod = "getCommentsByUserCountFallback")
@@ -114,7 +113,7 @@ public class ExternalCommentService {
         if (jsonData == null) {
             return 0;
         }
-        return mapper.readValue(jsonData, int.class);
+        return jsonConvertService.jsonToData(jsonData, int.class);
     }
 
     public static String getKey(final String prefix, final Long id) {

@@ -1,9 +1,9 @@
 package kostka.moviecatalog.service.redis;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import kostka.moviecatalog.configuration.RedisLockConfiguration;
 import kostka.moviecatalog.dto.MovieListDto;
+import kostka.moviecatalog.service.JsonConvertService;
 import kostka.moviecatalog.service.StatisticService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,14 +27,18 @@ public class RedisService {
 
     private RedisTemplate<String, String> redisTemplate;
     private StatisticService statisticService;
+    private JsonConvertService jsonConvertService;
 
     private Jedis jedis = new Jedis("localhost", 6379);
     private RedisLockConfiguration redisLock = new RedisLockConfiguration(jedis, "lock", 8000, 3000);
 
     @Autowired
-    public RedisService(final RedisTemplate<String, String> redisTemplate, final StatisticService statisticService) {
+    public RedisService(final RedisTemplate<String, String> redisTemplate,
+                        final StatisticService statisticService,
+                        final JsonConvertService jsonConvertService) {
         this.redisTemplate = redisTemplate;
         this.statisticService = statisticService;
+        this.jsonConvertService = jsonConvertService;
     }
 
     public void saveDataToRedisCache(final String key, final String jsonData) {
@@ -56,10 +60,21 @@ public class RedisService {
      * @throws JsonProcessingException
      */
     public void updateMoviesInRedis(final List<MovieListDto> movies, final String key) throws JsonProcessingException {
-        String json = getJsonStringFromList(movies);
+        String json = jsonConvertService.dataToJson(movies);
         LOGGER.info("Adding movies '{}' to the redis cache with key: '{}'", json, key);
         redisTemplate.opsForValue().set(key, json);
         statisticService.incrementSyncedRedisCounter();
+    }
+
+    /**
+     * Gets data from the Redis cache with the Redis key.
+     * @param key key of the data in Redis cache.
+     * @return data from Redis cache.
+     */
+    public String getMoviesWithKey(final String key) {
+        LOGGER.info("Getting movies from Redis cache with key '{}'.", key);
+        statisticService.incrementSyncedRedisCounter();
+        return redisTemplate.opsForValue().get(key);
     }
 
     private String getJsonStringFromList(final List<MovieListDto> movies) throws JsonProcessingException {

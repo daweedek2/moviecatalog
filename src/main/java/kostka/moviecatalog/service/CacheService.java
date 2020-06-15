@@ -1,7 +1,6 @@
 package kostka.moviecatalog.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import kostka.moviecatalog.dto.MovieListDto;
 import kostka.moviecatalog.service.redis.RedisService;
 import org.slf4j.Logger;
@@ -17,11 +16,13 @@ import java.util.List;
 public class CacheService {
     private static final Logger LOGGER = LoggerFactory.getLogger(CacheService.class);
     private RedisService redisService;
-    private ObjectMapper mapper = new ObjectMapper();
+    private JsonConvertService jsonConvertService;
 
     @Autowired
-    public CacheService(final RedisService redisService) {
+    public CacheService(final RedisService redisService,
+                        final JsonConvertService jsonConvertService) {
         this.redisService = redisService;
+        this.jsonConvertService = jsonConvertService;
     }
 
     public List<MovieListDto> getMoviesFromCacheWithKey(final String key) {
@@ -31,7 +32,7 @@ public class CacheService {
             return Collections.emptyList();
         }
         try {
-            return Arrays.asList(mapper.readValue(json, MovieListDto[].class));
+            return Arrays.asList(jsonConvertService.jsonToData(json, MovieListDto[].class));
         } catch (JsonProcessingException e) {
             LOGGER.error("Cannot get movies from json.", e);
         }
@@ -40,7 +41,8 @@ public class CacheService {
 
     public <T> void cacheData(final String key, final T data) throws JsonProcessingException {
         LOGGER.info("saving data to cache with key '{}'", key);
-        redisService.saveDataToRedisCache(key, prepareJsonData(data));
+        String jsonData = jsonConvertService.dataToJson(data);
+        redisService.saveDataToRedisCache(key, jsonData);
     }
 
     public String getCachedDataJsonWithKey(final String key) {
@@ -48,7 +50,5 @@ public class CacheService {
         return redisService.getDataFromRedisCache(key);
     }
 
-    private <T> String prepareJsonData(final T data) throws JsonProcessingException {
-        return mapper.writeValueAsString(data);
-    }
+
 }

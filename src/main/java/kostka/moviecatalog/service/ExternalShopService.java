@@ -1,7 +1,6 @@
 package kostka.moviecatalog.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import kostka.moviecatalog.dto.MovieListDto;
@@ -49,7 +48,7 @@ public class ExternalShopService {
     private CommunicationService communicationService;
     private UserService userService;
     private CacheService cacheService;
-    private ObjectMapper mapper;
+    private JsonConvertService jsonConvertService;
 
     @Autowired
     public ExternalShopService(
@@ -57,17 +56,17 @@ public class ExternalShopService {
             final DbMovieService dbMovieService,
             final UserService userService,
             final CacheService cacheService,
-            final ObjectMapper mapper) {
+            final JsonConvertService jsonConvertService) {
         this.communicationService = communicationService;
         this.dbMovieService = dbMovieService;
         this.userService = userService;
         this.cacheService = cacheService;
-        this.mapper = mapper;
+        this.jsonConvertService = jsonConvertService;
     }
 
     @PostConstruct
     public void setUp() {
-        mapper.registerModule(new JavaTimeModule());
+        jsonConvertService.registerMapperModule(new JavaTimeModule());
     }
 
     @HystrixCommand(fallbackMethod = "buyMovieInShopServiceFallback")
@@ -111,7 +110,7 @@ public class ExternalShopService {
         if (jsonData == null) {
             return Collections.emptyList();
         }
-        return Arrays.asList(mapper.readValue(jsonData, MovieListDto[].class));
+        return Arrays.asList(jsonConvertService.jsonToData(jsonData, MovieListDto[].class));
     }
 
     @HystrixCommand(fallbackMethod = "checkAlreadyBoughtMovieForUserFallback")
@@ -142,6 +141,8 @@ public class ExternalShopService {
         if (jsonData == null) {
             return 0;
         }
+        List<MovieListDto> userMovies = Arrays.asList(jsonConvertService.jsonToData(jsonData, MovieListDto[].class));
+        return userMovies.size();
         return mapper.readValue(jsonData, int.class);
     }
 

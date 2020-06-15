@@ -1,11 +1,12 @@
 package kostka.moviecatalog.service.runtimeconfiguration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import kostka.moviecatalog.dto.RuntimeConfigDto;
 import kostka.moviecatalog.entity.runtimeconfiguration.RuntimeConfiguration;
 import kostka.moviecatalog.enumeration.RuntimeConfigurationEnum;
 import kostka.moviecatalog.exception.MissingRuntimeConfigurationException;
 import kostka.moviecatalog.repository.RuntimeConfigRepository;
+import kostka.moviecatalog.service.JsonConvertService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,19 +21,28 @@ import static kostka.moviecatalog.factory.RuntimeConfigurationFactory.getOptions
 @Service
 public class RuntimeConfigurationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(RuntimeConfigurationService.class);
+    private RuntimeConfigRepository runtimeConfigRepository;
+    private JsonConvertService jsonConvertService;
     private final RuntimeConfigRepository runtimeConfigRepository;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
-    public RuntimeConfigurationService(final RuntimeConfigRepository runtimeConfigRepository) {
+    public RuntimeConfigurationService(final RuntimeConfigRepository runtimeConfigRepository,
+                                       final JsonConvertService jsonConvertService) {
         this.runtimeConfigRepository = runtimeConfigRepository;
+        this.jsonConvertService = jsonConvertService;
     }
 
+    public RuntimeConfiguration updateRuntimeConfiguration(
+            final RuntimeConfigDto dto) throws JsonProcessingException {
+        String configName = dto.getConfigName();
     public RuntimeConfiguration update(
             final RuntimeConfigDto dto) {
         RuntimeConfigurationEnum runtimeConfigType = getTypeByName(dto.getConfigName());
         Map<String, String> options = dto.getOptions();
+        RuntimeConfiguration runtimeConfig = this.getByName(configName);
+        runtimeConfig.setOptions(jsonConvertService.dataToJson(options));
         RuntimeConfiguration runtimeConfig = this.getConfigByType(runtimeConfigType);
         runtimeConfig.setOptions(getOptionsJson(options));
 
@@ -45,7 +55,7 @@ public class RuntimeConfigurationService {
         LOGGER.info("Getting options of the Runtime Configuration '{}'.", runtimeConfigEnum.getName());
         RuntimeConfiguration runtimeConfig = this.getConfigByType(runtimeConfigEnum);
         try {
-            return mapper.readValue(runtimeConfig.getOptions(), getOptionsClass(runtimeConfigEnum));
+            return jsonConvertService.jsonToData(runtimeConfig.getOptions(), getOptionsClass(runtimeConfigEnum));
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             return null;
@@ -54,7 +64,7 @@ public class RuntimeConfigurationService {
 
     private String getOptionsJson(final Object options) {
         try {
-            return mapper.writeValueAsString(options);
+            return jsonConvertService.dataToJson(options);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             return "ERROR";
