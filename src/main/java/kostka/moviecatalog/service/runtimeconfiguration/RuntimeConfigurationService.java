@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.util.Map;
 
 import static kostka.moviecatalog.factory.RuntimeConfigurationFactory.getOptionsClass;
@@ -59,7 +60,16 @@ public class RuntimeConfigurationService {
         }
     }
 
-    private RuntimeConfiguration getByName(final String name) {
+    public RuntimeConfiguration getByName(final String name) {
         return runtimeConfigRepository.findByName(name).orElseThrow(MissingRuntimeConfigurationException::new);
+    }
+
+    public RuntimeConfiguration create(final @Valid RuntimeConfigDto dto) {
+        LOGGER.info("creating new config with name '{}'", dto.getConfigName());
+        RuntimeConfiguration config = new RuntimeConfiguration();
+        config.setName(dto.getConfigName());
+        Map<String, String> options = dto.getOptions();
+        config.setOptions(getOptionsJson(options));
+        return runtimeConfigRepository.save(config);
     }
 }
