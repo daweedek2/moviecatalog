@@ -1,10 +1,12 @@
 package kostka.moviecatalog.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import kostka.moviecatalog.annotation.UniqueRuntimeConfigName;
 
 import java.util.Map;
 
 public class RuntimeConfigDto {
+    @UniqueRuntimeConfigName
     private String configName;
 
     @JsonProperty("options")
