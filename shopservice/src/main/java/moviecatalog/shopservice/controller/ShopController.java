@@ -59,13 +59,13 @@ public class ShopController {
         return movieOrderService.isOrderAlreadyCreated(movieId, userId);
     }
 
-    @GetMapping("/user/count/{userId}")
+    @GetMapping("/user/boughtCount/{userId}")
     public int getTotalCountOfBoughtMoviesForUser(final @PathVariable Long userId) {
         LOGGER.info("get total movies bought by user with id '{}'", userId);
         return movieOrderService.getTotalOrdersCountForUser(userId);
     }
 
-    @GetMapping("/movie/count/{movieId}")
+    @GetMapping("/movie/soldCount/{movieId}")
     public int getTotalCountOfBoughtMoviesForMovie(final @PathVariable Long movieId) {
         LOGGER.info("get total solds of movie with id '{}'", movieId);
         return movieOrderService.getTotalOrdersCountForMovie(movieId);

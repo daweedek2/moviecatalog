@@ -37,7 +37,7 @@ public class CacheServiceTest {
     @Test
     public void getAllMoviesFromRedisCacheTest() throws JsonProcessingException {
         String moviesJson = create2MoviesJson();
-        Mockito.when(redisService.getMoviesWithKey(eq(ALL_MOVIES_KEY))).thenReturn(moviesJson);
+        Mockito.when(redisService.getDataFromRedisCache(eq(ALL_MOVIES_KEY))).thenReturn(moviesJson);
 
         List<MovieListDto> result = cacheService.getMoviesFromCacheWithKey(ALL_MOVIES_KEY);
 
@@ -49,7 +49,7 @@ public class CacheServiceTest {
     @Test
     public void getTop5MoviesFromRedisCacheTest() throws JsonProcessingException{
         String moviesJson = create2MoviesJson();
-        Mockito.when(redisService.getMoviesWithKey(eq(TOP_MOVIES_KEY))).thenReturn(moviesJson);
+        Mockito.when(redisService.getDataFromRedisCache(eq(TOP_MOVIES_KEY))).thenReturn(moviesJson);
 
         List<MovieListDto> result = cacheService.getMoviesFromCacheWithKey(TOP_MOVIES_KEY);
 
@@ -61,7 +61,7 @@ public class CacheServiceTest {
     @Test
     public void get5LatestMoviesFromRedisCacheTest() throws JsonProcessingException {
         String moviesJson = create2MoviesJson();
-        Mockito.when(redisService.getMoviesWithKey(eq(LATEST_MOVIES_KEY))).thenReturn(moviesJson);
+        Mockito.when(redisService.getDataFromRedisCache(eq(LATEST_MOVIES_KEY))).thenReturn(moviesJson);
 
         List<MovieListDto> result = cacheService.getMoviesFromCacheWithKey(LATEST_MOVIES_KEY);
 

@@ -39,7 +39,8 @@ public class ExternalShopService {
     public static final String USER_HAS_ALREADY_BOUGHT_THIS_MOVIE = "User has already bought this movie.";
     public static final String USER_IS_TOO_YOUNG_TO_BUY_THIS_MOVIE = "User is too young to buy this movie.";
     public static final String USER_IS_BANNED = "User is banned.";
-    public static final String COUNT = "count/";
+    public static final String BOUGHT_COUNT = "boughtCount/";
+    public static final String SOLD_COUNT = "soldCount/";
     private static final String USER_MOVIES_KEY_PREFIX = "userBoughtMovies-";
     private static final String SOLDS_BY_USER_KEY_PREFIX = "userSoldsCount-";
     private static final String SOLDS_BY_MOVIE_KEY_PREFIX = "movieSoldsCount-";
@@ -129,7 +130,7 @@ public class ExternalShopService {
     public int getBoughtMoviesByUserCount(final Long userId) throws JsonProcessingException {
         LOGGER.info("getting count of bought movies for user with id '{}'", userId);
         int count = communicationService.sendGetRequest(
-                SHOP_SERVICE_URL + GET_USER_ORDERS + COUNT + userId,
+                SHOP_SERVICE_URL + GET_USER_ORDERS + BOUGHT_COUNT + userId,
                 int.class);
         cacheService.cacheData(SOLDS_BY_USER_KEY_PREFIX + userId, count);
         return count;
@@ -148,7 +149,7 @@ public class ExternalShopService {
     public int getBoughtMoviesByMovieCount(final Long movieId) throws JsonProcessingException {
         LOGGER.info("get count of solds for movie with id '{}'.", movieId);
         int count = communicationService.sendGetRequest(
-                SHOP_SERVICE_URL + GET_MOVIE_ORDERS + COUNT + movieId,
+                SHOP_SERVICE_URL + GET_MOVIE_ORDERS + SOLD_COUNT + movieId,
                 int.class);
         cacheService.cacheData(SOLDS_BY_MOVIE_KEY_PREFIX + movieId, count);
         return count;
