@@ -23,9 +23,6 @@ public class RuntimeConfigurationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(RuntimeConfigurationService.class);
     private RuntimeConfigRepository runtimeConfigRepository;
     private JsonConvertService jsonConvertService;
-    private final RuntimeConfigRepository runtimeConfigRepository;
-
-    private final ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
     public RuntimeConfigurationService(final RuntimeConfigRepository runtimeConfigRepository,
@@ -34,15 +31,12 @@ public class RuntimeConfigurationService {
         this.jsonConvertService = jsonConvertService;
     }
 
-    public RuntimeConfiguration updateRuntimeConfiguration(
-            final RuntimeConfigDto dto) throws JsonProcessingException {
-        String configName = dto.getConfigName();
     public RuntimeConfiguration update(
-            final RuntimeConfigDto dto) {
+            final RuntimeConfigDto dto) throws JsonProcessingException {
         RuntimeConfigurationEnum runtimeConfigType = getTypeByName(dto.getConfigName());
+        RuntimeConfiguration runtimeConfiguration = getConfigByType(runtimeConfigType);
         Map<String, String> options = dto.getOptions();
-        RuntimeConfiguration runtimeConfig = this.getByName(configName);
-        runtimeConfig.setOptions(jsonConvertService.dataToJson(options));
+        runtimeConfiguration.setOptions(jsonConvertService.dataToJson(options));
         RuntimeConfiguration runtimeConfig = this.getConfigByType(runtimeConfigType);
         runtimeConfig.setOptions(getOptionsJson(options));
 

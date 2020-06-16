@@ -1,7 +1,6 @@
 package kostka.moviecatalog.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import kostka.moviecatalog.dto.MovieListDto;
 import kostka.moviecatalog.dto.OrderDto;
@@ -16,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -62,11 +60,6 @@ public class ExternalShopService {
         this.userService = userService;
         this.cacheService = cacheService;
         this.jsonConvertService = jsonConvertService;
-    }
-
-    @PostConstruct
-    public void setUp() {
-        jsonConvertService.registerMapperModule(new JavaTimeModule());
     }
 
     @HystrixCommand(fallbackMethod = "buyMovieInShopServiceFallback")
@@ -143,7 +136,6 @@ public class ExternalShopService {
         }
         List<MovieListDto> userMovies = Arrays.asList(jsonConvertService.jsonToData(jsonData, MovieListDto[].class));
         return userMovies.size();
-        return mapper.readValue(jsonData, int.class);
     }
 
     @HystrixCommand(fallbackMethod = "getBoughtMoviesByMovieCountFallback")
@@ -162,7 +154,7 @@ public class ExternalShopService {
         if (jsonData == null) {
             return 0;
         }
-        return mapper.readValue(jsonData, int.class);
+        return jsonConvertService.jsonToData(jsonData, int.class);
     }
 
     public void validateUserToBuyMovie(final Long movieId, final Long userId) {

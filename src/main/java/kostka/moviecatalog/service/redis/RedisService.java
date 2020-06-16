@@ -77,11 +77,6 @@ public class RedisService {
         return redisTemplate.opsForValue().get(key);
     }
 
-    private String getJsonStringFromList(final List<MovieListDto> movies) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(movies);
-    }
-
     /**
      * Waits until data are loaded from DB and then updated in Redis.
      * @param moviesSupplier method for fetching movies from db.

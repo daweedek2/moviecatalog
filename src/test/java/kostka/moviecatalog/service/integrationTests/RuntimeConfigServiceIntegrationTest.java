@@ -1,5 +1,6 @@
 package kostka.moviecatalog.service.integrationTests;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import kostka.moviecatalog.MovieCatalogApplication;
 import kostka.moviecatalog.dto.RuntimeConfigDto;
 import kostka.moviecatalog.entity.runtimeconfiguration.RuntimeConfiguration;
@@ -55,7 +56,7 @@ public class RuntimeConfigServiceIntegrationTest {
     }
 
     @Test
-    public void updateConfigSuccessfullyDtoIntegrationTest() {
+    public void updateConfigSuccessfullyDtoIntegrationTest() throws JsonProcessingException {
         String updatedOptions = "{\"limit\":\"1\"}";
         var existingRuntimeConfig = runtimeConfigRepository.save(getExistingRuntimeConfig());
         RuntimeConfigDto dto = getValidDto();
