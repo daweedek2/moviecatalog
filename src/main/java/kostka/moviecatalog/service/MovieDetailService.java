@@ -61,9 +61,10 @@ public class MovieDetailService {
         List<Comment> comments = externalCommentService.getCommentsFromCommentService(movieId);
         List<Rating> ratings = externalRatingService.getRatingsFromRatingService(movieId);
         boolean isBoughtByUser = externalShopService.checkAlreadyBoughtMovieForUser(movieId, userId);
+        int soldCount = externalShopService.getBoughtMoviesByMovieCount(movieId);
         LOGGER.info("Movie data are prepared.");
 
-        return populateMovieDetail(movie, comments, ratings, isBoughtByUser);
+        return populateMovieDetail(movie, comments, ratings, isBoughtByUser, soldCount);
     }
 
     public void setAverageRatingForMovie(final Long movieId) {
@@ -82,7 +83,8 @@ public class MovieDetailService {
     private MovieDetailDto populateMovieDetail(final Movie movie,
                                                final List<Comment> comments,
                                                final List<Rating> ratings,
-                                               final boolean isBoughtByUser) {
+                                               final boolean isBoughtByUser,
+                                               final int soldCount) {
         return new MovieDetailBuilder()
                 .setMovieId(movie.getId())
                 .setName(movie.getName())
@@ -93,6 +95,7 @@ public class MovieDetailService {
                 .setRatings(getRatingDtoListForMovieDetail(ratings))
                 .setBought(isBoughtByUser)
                 .setForAdults(movie.isForAdults())
+                .setSoldsCount(soldCount)
                 .build();
     }
 

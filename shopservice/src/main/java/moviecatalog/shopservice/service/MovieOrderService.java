@@ -107,4 +107,9 @@ public class MovieOrderService {
             final Long userId) {
         return movieOrderRepository.countByUserId(userId);
     }
+
+    public int getTotalOrdersCountForMovie(
+            final Long movieId) {
+        return movieOrderRepository.countByMovieId(movieId);
+    }
 }

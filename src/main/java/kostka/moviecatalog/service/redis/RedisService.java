@@ -62,17 +62,6 @@ public class RedisService {
         statisticService.incrementSyncedRedisCounter();
     }
 
-    /**
-     * Gets data from the Redis cache with the Redis key.
-     * @param key key of the data in Redis cache.
-     * @return data from Redis cache.
-     */
-    public String getMoviesWithKey(final String key) {
-        LOGGER.info("Getting movies from Redis cache with key '{}'.", key);
-        statisticService.incrementSyncedRedisCounter();
-        return redisTemplate.opsForValue().get(key);
-    }
-
     private String getJsonStringFromList(final List<MovieListDto> movies) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(movies);

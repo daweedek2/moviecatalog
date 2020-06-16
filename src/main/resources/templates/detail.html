@@ -19,6 +19,7 @@
     <p class="text">Director: <span th:text="${movieDetailDto.director}"></span></p>
     <p class="text">Description: <span th:text="${movieDetailDto.description}"></span></p>
     <p class="text">Calculated Average Rating: <span th:text="${movieDetailDto.averageRating}"></span></p>
+    <p class="text">Total sold count: <span th:text="${movieDetailDto.soldsCount}"></span></p>
     <p>
         <div th:if="${isAllowedToBuy}">
             <form action="#" th:action="@{/movies/detail/buy}" method="post">
