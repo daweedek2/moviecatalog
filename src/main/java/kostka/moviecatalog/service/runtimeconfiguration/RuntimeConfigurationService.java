@@ -13,36 +13,37 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
 import java.util.Map;
+import java.util.Optional;
 
 import static kostka.moviecatalog.factory.RuntimeConfigurationFactory.getOptionsClass;
 
 @Service
 public class RuntimeConfigurationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(RuntimeConfigurationService.class);
-    private RuntimeConfigRepository runtimeConfigRepository;
+    private final RuntimeConfigRepository runtimeConfigRepository;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
     public RuntimeConfigurationService(final RuntimeConfigRepository runtimeConfigRepository) {
         this.runtimeConfigRepository = runtimeConfigRepository;
     }
 
-    public RuntimeConfiguration updateRuntimeConfiguration(
+    public RuntimeConfiguration update(
             final RuntimeConfigDto dto) {
-        String configName = dto.getConfigName();
+        RuntimeConfigurationEnum runtimeConfigType = getTypeByName(dto.getConfigName());
         Map<String, String> options = dto.getOptions();
-        RuntimeConfiguration runtimeConfig = this.getByName(configName);
+        RuntimeConfiguration runtimeConfig = this.getConfigByType(runtimeConfigType);
         runtimeConfig.setOptions(getOptionsJson(options));
 
-        LOGGER.info("Runtime Configuration '{}' has new options: '{}'.", configName, options);
+        LOGGER.info("Runtime Configuration '{}' has new options: '{}'.", runtimeConfigType.getName(), options);
         return runtimeConfigRepository.save(runtimeConfig);
     }
 
     public <T> T getRuntimeConfigurationOptions(
             final RuntimeConfigurationEnum runtimeConfigEnum) {
         LOGGER.info("Getting options of the Runtime Configuration '{}'.", runtimeConfigEnum.getName());
-        RuntimeConfiguration runtimeConfig = this.getByName(runtimeConfigEnum.getName());
+        RuntimeConfiguration runtimeConfig = this.getConfigByType(runtimeConfigEnum);
         try {
             return mapper.readValue(runtimeConfig.getOptions(), getOptionsClass(runtimeConfigEnum));
         } catch (Exception e) {
@@ -60,16 +61,35 @@ public class RuntimeConfigurationService {
         }
     }
 
-    public RuntimeConfiguration getByName(final String name) {
-        return runtimeConfigRepository.findByName(name).orElseThrow(MissingRuntimeConfigurationException::new);
+    public RuntimeConfiguration getConfigByType(final RuntimeConfigurationEnum configType) {
+        LOGGER.info("Getting config by Type {}", configType);
+        return runtimeConfigRepository.findByConfigType(configType)
+                .orElseThrow(MissingRuntimeConfigurationException::new);
     }
 
     public RuntimeConfiguration create(final @Valid RuntimeConfigDto dto) {
         LOGGER.info("creating new config with name '{}'", dto.getConfigName());
+        RuntimeConfigurationEnum configType = RuntimeConfigurationEnum.valueOf(dto.getConfigName());
         RuntimeConfiguration config = new RuntimeConfiguration();
-        config.setName(dto.getConfigName());
+        config.setConfigType(configType);
         Map<String, String> options = dto.getOptions();
         config.setOptions(getOptionsJson(options));
         return runtimeConfigRepository.save(config);
+    }
+
+    public RuntimeConfigurationEnum getTypeByName(final String name) {
+        return getValueOf(RuntimeConfigurationEnum.class, name)
+                .orElseThrow(MissingRuntimeConfigurationException::new);
+    }
+
+    public Optional<RuntimeConfigurationEnum> getValueOf(final Class<RuntimeConfigurationEnum> configType,
+                                                                final String name){
+        RuntimeConfigurationEnum configValue = null;
+        try {
+            configValue = Enum.valueOf(configType, name);
+        }catch(IllegalArgumentException ex ){
+            throw new MissingRuntimeConfigurationException();
+        }
+        return Optional.of(configValue);
     }
 }

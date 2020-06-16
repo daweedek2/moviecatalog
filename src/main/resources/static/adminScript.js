@@ -34,18 +34,18 @@ $(document).ready(function () {
 });
 
 function toggleFields() {
-    var configType = $("#configType option:selected").text();
+    var configType = $("#configType option:selected").val();
     console.log(configType);
-    if (configType === "visible_movies")
+    if (configType === "VISIBLE_MOVIES")
         $("#visible_movies").show();
     else
         $("#visible_movies").hide();
 }
 
 function updateRuntimeConfig() {
-    var configName = $("#configType option:selected").text();
+    var configName = $("#configType option:selected").val();
     switch (configName) {
-        case "visible_movies":
+        case "VISIBLE_MOVIES":
             updateVisibleMoviesConfig(configName);
             break;
         default:
