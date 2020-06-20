@@ -1,7 +1,6 @@
 package kostka.moviecatalog.service.validation;
 
 import kostka.moviecatalog.annotation.UniqueRuntimeConfigName;
-import kostka.moviecatalog.exception.MissingRuntimeConfigurationException;
 import kostka.moviecatalog.service.runtimeconfiguration.RuntimeConfigurationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,12 +17,20 @@ public class UniqueRuntimeConfigNameValidator implements ConstraintValidator<Uni
     this.runtimeConfigurationService = runtimeConfigurationService;
     }
 
+    /**
+     * Verifies if the configuration is already used.
+     * @param configName string value od the runtime configuration
+     * @param context context
+     * @return boolean.
+     */
     @Override
     public boolean isValid(final String configName, final ConstraintValidatorContext context) {
         try {
-            runtimeConfigurationService.getByName(configName);
+            runtimeConfigurationService.getConfigByType(
+                    runtimeConfigurationService.getTypeByName(configName)
+            );
             return false;
-        } catch (MissingRuntimeConfigurationException e) {
+        } catch (Exception e) {
             return true;
         }
     }

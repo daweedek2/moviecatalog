@@ -35,7 +35,7 @@ public class RuntimeConfigurationController {
     public RuntimeConfiguration updateConfiguration(
             @RequestBody final RuntimeConfigDto dto) {
         LOGGER.info("update runtime config '{}' request", dto.getConfigName());
-        return runtimeConfigurationService.updateRuntimeConfiguration(dto);
+        return runtimeConfigurationService.update(dto);
     }
 
     @ExceptionHandler(value = Exception.class)
