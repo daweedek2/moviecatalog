@@ -4,21 +4,27 @@ services:
     image: redis:5.0.0
     container_name: redis
     ports: ['6379:6379']
+
   elastic:
     image: elasticsearch:7.3.0
+    container_name: elasticsearch
     ports:
       - "9200:9200"
       - "9300:9300"
     environment:
       discovery.type: single-node
+
   kibana:
     image: kibana:7.3.0
+    container_name: kibana
     ports:
       - "5601:5601"
     environment:
       ELASTICSEARCH_HOSTS: http://elastic:9200
+
   logstash:
     image: logstash:7.3.0
+    container_name: logstash
     ports:
       - "9600:9600"
     environment:
@@ -31,6 +37,7 @@ services:
       - ./servicediscovery.log:/servicediscovery.log
       - ./shopservice.log:/shopservice.log
     command: logstash -f /logstash.conf
+
   db:
     image: mysql:8.0.19
     container_name: movie-db
@@ -40,8 +47,10 @@ services:
       MYSQL_PASSWORD: 'password'
       MYSQL_ROOT_PASSWORD: 'password'
     ports: ['3306:3306']
+
   rabbitmq:
     image: rabbitmq:management
+    container_name: rabbit_mq
     ports:
       - "5672:5672"
       - "15672:15672"
