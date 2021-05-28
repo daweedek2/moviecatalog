@@ -73,6 +73,7 @@ public class AdministrationController {
                               final Model model) {
         LOGGER.info("create movie request");
         redisService.incrementGeneralCounterWithLockCheck();
+        // test
 
         if (bindingResult.hasErrors()) {
             addModelAttributes(model);
