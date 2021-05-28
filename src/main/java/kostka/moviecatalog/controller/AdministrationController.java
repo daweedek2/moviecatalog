@@ -79,6 +79,7 @@ public class AdministrationController {
             model.addAttribute(ERROR, INVALID_DTO);
             return ADMIN_VIEW;
         }
+        // release change
 
         Movie movie = dbMovieService.createMovie(dto);
         rabbitMqSender.sendToCreateElasticQueue(movie.getId().toString());
