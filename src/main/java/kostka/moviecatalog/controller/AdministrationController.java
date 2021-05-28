@@ -87,6 +87,7 @@ public class AdministrationController {
         rabbitMqSender.sendRefreshAdminRequestToQueue();
         redirectAttributes.addFlashAttribute(SUCCESS, "Movie is successfully created.");
         return REDIRECT_ADMIN_VIEW;
+        // another release change
     }
 
     /**
